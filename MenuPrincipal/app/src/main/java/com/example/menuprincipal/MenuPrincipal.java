@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -21,22 +22,18 @@ public class MenuPrincipal extends View {
     int altoPantalla;
     Boton[] botones=new Boton[5];
 
-    //todo cambio el constructor para que le pase el ancho y alto de pantalla,
-    //todo ya que se consiguen en el main activity (tema 4)->evita nullpointer y hago todo mas bonito
-    public MenuPrincipal(Context context) {
+    public MenuPrincipal(Context context, Point pantalla) {
         super(context);
+        altoPantalla= pantalla.y;
+        anchoPantalla=pantalla.x;
         this.context=context;
         fondo=BitmapFactory.decodeResource(getResources(),R.drawable.fondomenuprincipal);
-        //fondo=fondo.createScaledBitmap(fondo,anchoPantalla,altoPantalla,true);
-        botones[0]=new Boton(context,100,10,500,400,"tutorial");
-        botones[1]= new Boton(context,100,510,500,400,"Historia");
-        botones[2]= new Boton(context,100,1010,500,400,"Opciones");
-        botones[3]= new Boton(context,100,1510,500,400,"Records");
-        botones[4]= new Boton(context,100,2010,500,400,"Créditos");
-
-
-        //fondo= BitmapFactory.decodeResource(getResources(),R.drawable.fondomenuprincipal);
-        //fondo=Bitmap.createScaledBitmap(fondo,700,1000,false);
+        fondo=Bitmap.createScaledBitmap(fondo,anchoPantalla,altoPantalla,true);
+        botones[0]=new Boton(context,anchoPantalla/4,altoPantalla/6,anchoPantalla/2,altoPantalla/10, getResources().getString(R.string.menuTutorial));
+        botones[1]= new Boton(context,anchoPantalla/4,2*altoPantalla/6,anchoPantalla/2,altoPantalla/10,getResources().getString(R.string.menuHistoria));
+        botones[2]= new Boton(context,anchoPantalla/4,3*altoPantalla/6,anchoPantalla/2,altoPantalla/10,getResources().getString(R.string.menuOpciones));
+        botones[3]= new Boton(context,anchoPantalla/4,4*altoPantalla/6,anchoPantalla/2,altoPantalla/10,getResources().getString(R.string.menuRecords));
+        botones[4]= new Boton(context,anchoPantalla/4,5*altoPantalla/6,anchoPantalla/2,altoPantalla/10,getResources().getString(R.string.menuCreditos));
     }
 
     @Override

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MenuPrincipal</string>
+    <string name="menuTutorial">Tutorial</string>
+    <string name="menuHistoria">Modo Historia</string>
+    <string name="menuRecords">Records</string>
+    <string name="menuOpciones">Opciones</string>
+    <string name="menuCreditos">Créditos</string>
+</resources>

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MenuPrincipal</string>
+    <string name="menuTutorial">Tutorial</string>
+    <string name="menuHistoria">Story Mode</string>
+    <string name="menuRecords">Records</string>
+    <string name="menuOpciones">Options</string>
+    <string name="menuCreditos">Credits</string>
 </resources>

@@ -11,7 +11,6 @@ public class Fondo {
     public Fondo(Bitmap fondo, int speed, int width, int height) {
         this.fondo = fondo;
         this.speed = speed;
-
     }
 
     public void mueve(){

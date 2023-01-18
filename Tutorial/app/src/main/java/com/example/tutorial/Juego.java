@@ -1,5 +1,9 @@
 package com.example.tutorial;
 
+import static android.hardware.Sensor.TYPE_ACCELEROMETER;
+import static android.hardware.Sensor.TYPE_GYROSCOPE;
+import static android.hardware.Sensor.TYPE_ROTATION_VECTOR;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,23 +18,35 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
+
+import static com.example.tutorial.Constantes.altoPantalla;
+import static com.example.tutorial.Constantes.anchoPantalla;
+import static com.example.tutorial.Constantes.context;
+import static com.example.tutorial.Constantes.sensibilidadAcelerometro;
+import static com.example.tutorial.Constantes.tickFrame;
+import static com.example.tutorial.Constantes.umbralSensibilidadX;
+import static com.example.tutorial.Constantes.umbralSensibilidadY;
+import static com.example.tutorial.Constantes.valorInicialInclinacionX;
+import static com.example.tutorial.Constantes.valorInicialInclinacionY;
 
 import androidx.annotation.NonNull;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
     final String TAG = "11111";
     SurfaceHolder surfaceHolder;
-    Context context;
+    Jotaro jotaro;
+    Terry terry;
     Enemigo enemigo;
     Bitmap fondo;
-    int resx,resy;
+
     float accX=0, accY=0;
-    int tickFrame;
+
     long lastTick;
     int frame;
     int frameAccionEnemigo;
     int accionEnemigo=0;
-    boolean enemigoEstaHaciendoUnaAccion=false;
+    int accionPersonaje=0;
 
     private SensorManager sensorManager;
     private final float[] accelerometerReading = new float[3];
@@ -42,19 +58,31 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     public Juego(Context context, Point resolucion) {
         super(context);
-        this.context = context;
+        Constantes.context=context;
+        Constantes.altoPantalla=resolucion.y;
+        Constantes.anchoPantalla=resolucion.x;
+        Constantes.sensibilidadAcelerometro=3;
+        umbralSensibilidadX=0.5f;
+        umbralSensibilidadY=0.5f;
+        valorInicialInclinacionX=0;
+        valorInicialInclinacionY=0;
         this.surfaceHolder =getHolder();
         this.surfaceHolder.addCallback(this);
-        enemigo=new Enemigo(resolucion.x,resolucion.y,context);
-        resx=resolucion.x;
-        resy=resolucion.y;
+        jotaro = new Jotaro(anchoPantalla/3,altoPantalla/3,100);
+        //terry = new Terry(anchoPantalla*2/3,altoPantalla/3,100);
+        enemigo=new Enemigo();
         setFocusable(true);
-        tickFrame=100;
+        tickFrame=150;
         lastTick=System.currentTimeMillis();
-        fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),resx,resy,true);
+        fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 
-        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor giros = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
+        Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
+        Sensor accelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
+        if(vectorRotacion!=null){
+            sensorManager.registerListener(this,vectorRotacion,SensorManager.SENSOR_DELAY_NORMAL,SensorManager.SENSOR_DELAY_UI);
+        }
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
@@ -62,6 +90,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (magneticField != null) {
             sensorManager.registerListener(this, magneticField,
+                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+        }
+        if (giros != null) {
+            sensorManager.registerListener(this, giros,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
 
@@ -77,10 +109,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         Log.i(TAG, "run:oo ");
         if (enemigo.getState() == Thread.State.NEW) enemigo.start();
         if (enemigo.getState() == Thread.State.TERMINATED) {
-            enemigo = new Enemigo(resx,resy,context);
+            enemigo = new Enemigo();
             enemigo.start();
         }
-        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor accelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
@@ -100,101 +132,97 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     }
 
     public void actualizaFrame(){
-        if(System.currentTimeMillis()-tickFrame>lastTick){
+
             //todo actualizar al bicho por cada frame que pasa
             frame++;
-            frameAccionEnemigo++;//con esto luego cambio los sprites
-            if(!enemigoEstaHaciendoUnaAccion) {
-                //accionEnemigo = (int)(Math.random()*10);
-                accionEnemigo=0;
-                enemigoEstaHaciendoUnaAccion=true;
-                frameAccionEnemigo=1;
-            }
+         //   jotaro.currentAnimationFrame++;//con esto luego cambio los sprites
 
-            lastTick=System.currentTimeMillis();
-        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //int accion=event.getAction();
         int accion=event.getActionMasked();
-
         switch (accion){
             case MotionEvent.ACTION_DOWN:
-
-                enemigo.animacionActual=enemigo.jotaroPunchingAnimation;
-                frameAccionEnemigo=0;
-                enemigoEstaHaciendoUnaAccion=true;
+                jotaro.setCurrentAction(1);
                 break;
         }
-
-
-
         return true;
     }
 
     public void dibujar(Canvas c){
-        //c.drawBitmap(enemigo.pruebaTerry[0],500,500,null);
         c.drawBitmap(fondo,0,0,null);
-        switch (accionEnemigo){
-
-            case 1:
-                //punch
-                c.drawBitmap(enemigo.punchAnimation[(frameAccionEnemigo%enemigo.punchAnimation.length)],0,0,null);
-
-                if(frameAccionEnemigo%enemigo.punchAnimation.length==0){
-                    enemigoEstaHaciendoUnaAccion=false;
-                }
-
-                break;
-            default:
-                //iddle
-                //todo cambiar como represento las acciones, no todas las puedo hacer en este metodo, tengo que hacer un switch
-                //todo y distintos valores de frames, ya que si no embeces empieza un ataque pero no lo continua
-                //y cosas raras
-                c.drawBitmap(enemigo.animacionActual[frame%enemigo.animacionActual.length],getWidth()/3,getHeight()/3,null);
-                if(frameAccionEnemigo%enemigo.animacionActual.length==0){
-                    enemigoEstaHaciendoUnaAccion=false;
-                    enemigo.animacionActual=enemigo.jotaroStandingAnimation;
-                }
-                break;
-        }
-        c.drawBitmap(enemigo.terryStandingAnimation[frame % enemigo.terryStandingAnimation.length], getWidth()*2/3, getHeight()/3, null);
-
+        jotaro.dibuja(c);
+        //terry.dibuja(c);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+/*
+        if(event.sensor.getType()==TYPE_ROTATION_VECTOR){
+            float R[] = new float[9];
+            SensorManager.getRotationMatrixFromVector(R,event.values);
+            float[] YPR = new float[3];
+            SensorManager.getOrientation(R,YPR);
+            final float rotacionEnY = YPR[2]*-1.0f;//todo este es el valor que servirá para protegerse
+            //final float y = YPR[0]*-1.0f; //todo estos valores varian de 0 a 1.5 mas o menos
+            final float rotacionEnX = YPR[1]*-1.0f;//todo este es el valor que serviria para mover adelante atras en landscape
 
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            if(System.currentTimeMillis()-tickFrame>lastTick && !jotaro.isDoingAMove){
+
+                if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY){
+                    //todo animacion proteccion hacia arriba
+                    Toast.makeText(context, "ARRIBA", Toast.LENGTH_SHORT).show();
+                }else if(rotacionEnY-valorInicialInclinacionY>umbralSensibilidadY){
+                    //TODO animacion hacia abajo
+                    Toast.makeText(context, "ABAJO", Toast.LENGTH_SHORT).show();
+                }else if(valorInicialInclinacionX-rotacionEnX>umbralSensibilidadX){
+                    //TODO esto es ATRAS
+                    Toast.makeText(context, "BACKWARDS", Toast.LENGTH_SHORT).show();
+                }else if(rotacionEnX-valorInicialInclinacionX>umbralSensibilidadX){
+                    //TODO ESTO VA HACIA DELANTE
+                //    jotaro.setCurrentAction(2);
+                    Toast.makeText(context, "FORWARD", Toast.LENGTH_SHORT).show();
+                }else if(jotaro.getCurrentAction()!=3){
+                    //iddle
+                   // jotaro.setCurrentAction(3);
+                }
+                //todo esto es muy muy susceptible a como el usuario sujete el dispositivo, lo mejor sería calibrar
+                //todo antes de jugar y jugar con variables del usuario
+                //Toast.makeText(context, String.format(" %3f %3f",p,r) , Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        /*if (false) {
+            //event.sensor.getType() == TYPE_ACCELEROMETER
             System.arraycopy(event.values, 0, accelerometerReading,
                     0, accelerometerReading.length);
             //todo: estos valores de x, y fluctuan (mas o menos) entre 0 y 10
             //todo por lo tanto, si supera un umbral(que se podra calibrar desde el menu)-> cambia la accion
             //en java CREO que no se podia hacer un switch case con rangos
             accY = event.values[1];
-            //efectivamente, esto cambia las animaciones que se realizan, tendría que
-            if(!enemigoEstaHaciendoUnaAccion){
+            Log.i(TAG, "zzonSensorChanged: "+event.values[0]+" "+event.values[1]+" "+event.values[2]+" ");
 
-
-                if(accY>3){
-                    enemigo.animacionActual=enemigo.jotaroWalkingForwardAnimation;
-                }else if(accY<-3){
+            if(!jotaro.isDoingAMove){
+                if(accY>sensibilidadAcelerometro){
+                    //todo jotaro walking forward
+                    jotaro.setCurrentAction(2);
+                }else if(accY<-sensibilidadAcelerometro){
                     //walkingBackwards
                     //
                 }else{
                     //iddle
-                    enemigo.animacionActual=enemigo.jotaroStandingAnimation;
+                    jotaro.setCurrentAction(3);
+                    //todo iddle
                 }
             }
             //todo aqui hacer los eventos de pitch y roll??
-            //Toast.makeText(context, accX+" en X,  "+accY+" en Y", Toast.LENGTH_SHORT).show();
-            //mi pana esto LO EJECUTA TODO EL RATO, INCLUSO CON EL MOVIL QUIETO???
         } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             System.arraycopy(event.values, 0, magnetometerReading,
                     0, magnetometerReading.length);
-        }
+        }*/
+
     }
 
     public void updateOrientationAngles() {
@@ -213,23 +241,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
-
-
     class Enemigo extends Thread{
-    Bitmap[] animacionActual;
-    Bitmap[] iddleAnimation = new Bitmap[5];
-    Bitmap[] punchAnimation = new Bitmap[5];
-    Bitmap iddleAnimationFrames; //todo este es el de verdad, los de arriba son pruebas
-    Bitmap[] terryStandingAnimation = new Bitmap[11];
-    Bitmap[] jotaroStandingAnimation = new Bitmap[24];
-    Bitmap[] jotaroWalkingForwardAnimation = new Bitmap[16];
-    Bitmap[] jotaroPunchingAnimation = new Bitmap[10];
-    Bitmap todasLasAnimaciones;
-    Bitmap animacionesTerry;
-    Bitmap[] pruebaTerry = new Bitmap[1];
-    int posx,posy;
-    int height, width;
-    int selectedFrame=0;
+
     boolean sigueVivo=true;
 
 
@@ -242,10 +255,11 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                 if(!surfaceHolder.getSurface().isValid())continue;
                 if(c==null) c=surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    c.drawColor(Color.BLUE);
-                    actualizaFrame(); //todo EQUIVALENTE A ACTUALIZAR FISICA()
-                    dibujar(c);
-                    //TODO EQUIVALENTE A DIBUJAR()
+                    if(System.currentTimeMillis()-tickFrame>lastTick){
+                        actualizaFrame();
+                        dibujar(c);
+                        lastTick=System.currentTimeMillis();
+                    }
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -253,84 +267,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                 if(c!=null)surfaceHolder.unlockCanvasAndPost(c);
             }
         }
-        //todo el bucle de toma de decisiones, que a veces ataque, a veces se mueva
-        //todo otras se defienda...
     }
 
-    public Enemigo(int anchoPantalla,int altoPantalla, Context context){
-        todasLasAnimaciones=BitmapFactory.decodeResource(context.getResources(),R.drawable.animaciones);
-        animacionesTerry=BitmapFactory.decodeResource(context.getResources(),R.drawable.joeee);
-
-        Bitmap aux;
-        this.height=altoPantalla/2;
-        this.width=this.height/3;
-
-        terryStandingAnimation[0]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle1),width,height,true);
-        terryStandingAnimation[1]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle2),width,height,true);
-        terryStandingAnimation[2]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle3),width,height,true);
-        terryStandingAnimation[3]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle4),width,height,true);
-        terryStandingAnimation[4]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle5),width,height,true);
-        terryStandingAnimation[5]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle6),width,height,true);
-        terryStandingAnimation[6]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle7),width,height,true);
-        terryStandingAnimation[7]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle8),width,height,true);
-        terryStandingAnimation[8]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle9),width,height,true);
-        terryStandingAnimation[9]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle10),width,height,true);
-        terryStandingAnimation[10]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle11),width,height,true);
-
-        jotaroPunchingAnimation[0]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch1),width,height,true);
-        jotaroPunchingAnimation[1]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch2),width,height,true);
-        jotaroPunchingAnimation[2]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch3),width,height,true);
-        jotaroPunchingAnimation[3]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch4),width,height,true);
-        jotaroPunchingAnimation[4]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch5),width,height,true);
-        jotaroPunchingAnimation[5]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch6),width,height,true);
-        jotaroPunchingAnimation[6]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch7),width,height,true);
-        jotaroPunchingAnimation[7]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch8),width,height,true);
-        jotaroPunchingAnimation[8]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch9),width,height,true);
-        jotaroPunchingAnimation[9]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch10),width,height,true);
-
-
-        iddleAnimationFrames=BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro);
-
-        for (int i = 0; i < jotaroStandingAnimation.length; i++) {
-            aux=Bitmap.createBitmap(iddleAnimationFrames,i*iddleAnimationFrames.getWidth()/24,0,iddleAnimationFrames.getWidth()/24,iddleAnimationFrames.getHeight());
-            jotaroStandingAnimation[i]=Bitmap.createScaledBitmap(aux,width,height,true);
-        }
-        iddleAnimationFrames=BitmapFactory.decodeResource(context.getResources(),R.drawable.walkingforwardjotaro);
-        for (int i = 0; i < jotaroWalkingForwardAnimation.length; i++) {
-            aux=Bitmap.createBitmap(iddleAnimationFrames,i*iddleAnimationFrames.getWidth()/16,0,iddleAnimationFrames.getWidth()/16,iddleAnimationFrames.getHeight());
-            jotaroWalkingForwardAnimation[i]=Bitmap.createScaledBitmap(aux,width,height,true);
-        }
-        // y los hago transparente en https://transparent.imageonline.co/
-
-        animacionActual= jotaroStandingAnimation;
-
-        posx=altoPantalla/2;
-        posy=anchoPantalla/2;
-        sigueVivo=true;
-        Bitmap bAux;
-        bAux = Bitmap.createBitmap(animacionesTerry,0,0,animacionesTerry.getWidth()/20,animacionesTerry.getHeight()/20);
-        pruebaTerry[0]=Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,0,0,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        iddleAnimation[0] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()/6,0,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        iddleAnimation[1] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()*2/6,0,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        iddleAnimation[2] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()*3/6,0,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        iddleAnimation[3] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()*4/6,0,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        iddleAnimation[4] = Bitmap.createScaledBitmap(bAux,width,height,true);
-
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,0,todasLasAnimaciones.getHeight()*3/4,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        punchAnimation[0] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()*3/4,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        punchAnimation[1] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()*2/6,todasLasAnimaciones.getHeight()*3/4,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        punchAnimation[2] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()*3/6,todasLasAnimaciones.getHeight()*3/4,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        punchAnimation[3] = Bitmap.createScaledBitmap(bAux,width,height,true);
-        bAux= Bitmap.createBitmap(todasLasAnimaciones,todasLasAnimaciones.getWidth()*4/6,todasLasAnimaciones.getHeight()*3/4,todasLasAnimaciones.getWidth()/6,todasLasAnimaciones.getHeight()/4);
-        punchAnimation[4] = Bitmap.createScaledBitmap(bAux,width,height,true);
-    }
 }
 }

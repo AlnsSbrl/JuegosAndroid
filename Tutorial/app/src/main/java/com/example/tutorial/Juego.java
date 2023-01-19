@@ -1,14 +1,12 @@
 package com.example.tutorial;
 
 import static android.hardware.Sensor.TYPE_ACCELEROMETER;
-import static android.hardware.Sensor.TYPE_GYROSCOPE;
 import static android.hardware.Sensor.TYPE_ROTATION_VECTOR;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -20,11 +18,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
+import static com.example.tutorial.Constantes.FPS;
+import static com.example.tutorial.Constantes.context;
 import static com.example.tutorial.Constantes.altoPantalla;
 import static com.example.tutorial.Constantes.anchoPantalla;
-import static com.example.tutorial.Constantes.context;
-import static com.example.tutorial.Constantes.sensibilidadAcelerometro;
-import static com.example.tutorial.Constantes.tickFrame;
 import static com.example.tutorial.Constantes.umbralSensibilidadX;
 import static com.example.tutorial.Constantes.umbralSensibilidadY;
 import static com.example.tutorial.Constantes.valorInicialInclinacionX;
@@ -33,70 +30,50 @@ import static com.example.tutorial.Constantes.valorInicialInclinacionY;
 import androidx.annotation.NonNull;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
-    final String TAG = "11111";
-    SurfaceHolder surfaceHolder;
-    Jotaro jotaro;
-    Terry terry;
-    Enemigo enemigo;
-    Bitmap fondo;
 
-    float accX=0, accY=0;
-
+    SurfaceHolder surfaceHolder; //
+    Jotaro jotaro; //
+    DrawingThread hiloDibuja; //
+    Bitmap fondo; //
     long lastTick;
-    int frame;
-    int frameAccionEnemigo;
-    int accionEnemigo=0;
-    int accionPersonaje=0;
-
-    private SensorManager sensorManager;
-    private final float[] accelerometerReading = new float[3];
-    private final float[] magnetometerReading = new float[3];
-
+    long sleepTime=0;//
+    private SensorManager sensorManager; //
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
-    //int currentTime;
 
     public Juego(Context context, Point resolucion) {
         super(context);
         Constantes.context=context;
         Constantes.altoPantalla=resolucion.y;
         Constantes.anchoPantalla=resolucion.x;
-        Constantes.sensibilidadAcelerometro=3;
+        Constantes.sensibilidadRotacion =3;
+        //Constantes.FPS=10; esto tengo que definirlo fuera, ya que para hacer el sleep del hilo divido entre esto
+        //y si no lo inicializo antes -> divide entre 0-> exception
         umbralSensibilidadX=0.5f;
         umbralSensibilidadY=0.5f;
         valorInicialInclinacionX=0;
         valorInicialInclinacionY=0;
-        this.surfaceHolder =getHolder();
+        this.surfaceHolder=getHolder();
         this.surfaceHolder.addCallback(this);
-        jotaro = new Jotaro(anchoPantalla/3,altoPantalla/3,100);
-        //terry = new Terry(anchoPantalla*2/3,altoPantalla/3,100);
-        enemigo=new Enemigo();
+        jotaro = new Jotaro(anchoPantalla/3,altoPantalla*11/23,100);
+        hiloDibuja =new DrawingThread();
         setFocusable(true);
-        tickFrame=150;
-        lastTick=System.currentTimeMillis();
+
+        lastTick=System.nanoTime();
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 
-        Sensor giros = sensorManager.getDefaultSensor(TYPE_GYROSCOPE);
         Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
-        Sensor accelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
+
         if(vectorRotacion!=null){
             sensorManager.registerListener(this,vectorRotacion,SensorManager.SENSOR_DELAY_NORMAL,SensorManager.SENSOR_DELAY_UI);
         }
-        if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer,
-                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-        }
+
         Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (magneticField != null) {
             sensorManager.registerListener(this, magneticField,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
-        if (giros != null) {
-            sensorManager.registerListener(this, giros,
-                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-        }
-
     }
 
     @Override
@@ -106,19 +83,18 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-        Log.i(TAG, "run:oo ");
-        if (enemigo.getState() == Thread.State.NEW) enemigo.start();
-        if (enemigo.getState() == Thread.State.TERMINATED) {
-            enemigo = new Enemigo();
-            enemigo.start();
-        }
-        Sensor accelerometer = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
-        if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer,
-                    SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
 
-
+        if (hiloDibuja.getState() == Thread.State.NEW) hiloDibuja.start();
+        if (hiloDibuja.getState() == Thread.State.TERMINATED) {
+            hiloDibuja = new DrawingThread();
+            hiloDibuja.start();
         }
+        Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
+
+        if(vectorRotacion!=null){
+            sensorManager.registerListener(this,vectorRotacion,SensorManager.SENSOR_DELAY_NORMAL,SensorManager.SENSOR_DELAY_UI);
+        }
+
         Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (magneticField != null) {
             sensorManager.registerListener(this, magneticField,
@@ -132,15 +108,13 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     }
 
     public void actualizaFrame(){
-
             //todo actualizar al bicho por cada frame que pasa
-            frame++;
-         //   jotaro.currentAnimationFrame++;//con esto luego cambio los sprites
-
+            jotaro.currentAnimationFrame++;//con esto luego cambio los sprites
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        //todo configurar el resto de opciones de multitouch
         int accion=event.getActionMasked();
         switch (accion){
             case MotionEvent.ACTION_DOWN:
@@ -153,12 +127,11 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     public void dibujar(Canvas c){
         c.drawBitmap(fondo,0,0,null);
         jotaro.dibuja(c);
-        //terry.dibuja(c);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-/*
+
         if(event.sensor.getType()==TYPE_ROTATION_VECTOR){
             float R[] = new float[9];
             SensorManager.getRotationMatrixFromVector(R,event.values);
@@ -167,26 +140,29 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             final float rotacionEnY = YPR[2]*-1.0f;//todo este es el valor que servirá para protegerse
             //final float y = YPR[0]*-1.0f; //todo estos valores varian de 0 a 1.5 mas o menos
             final float rotacionEnX = YPR[1]*-1.0f;//todo este es el valor que serviria para mover adelante atras en landscape
-
-
-            if(System.currentTimeMillis()-tickFrame>lastTick && !jotaro.isDoingAMove){
-
+            if(!jotaro.isDoingAMove){
                 if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY){
                     //todo animacion proteccion hacia arriba
-                    Toast.makeText(context, "ARRIBA", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "ARRIBA", Toast.LENGTH_SHORT).show();
                 }else if(rotacionEnY-valorInicialInclinacionY>umbralSensibilidadY){
                     //TODO animacion hacia abajo
-                    Toast.makeText(context, "ABAJO", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "ABAJO", Toast.LENGTH_SHORT).show();
                 }else if(valorInicialInclinacionX-rotacionEnX>umbralSensibilidadX){
                     //TODO esto es ATRAS
-                    Toast.makeText(context, "BACKWARDS", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "BACKWARDS", Toast.LENGTH_SHORT).show();
                 }else if(rotacionEnX-valorInicialInclinacionX>umbralSensibilidadX){
                     //TODO ESTO VA HACIA DELANTE
-                //    jotaro.setCurrentAction(2);
-                    Toast.makeText(context, "FORWARD", Toast.LENGTH_SHORT).show();
+                    if(jotaro.posX<anchoPantalla- jotaro.width){
+                        jotaro.posX+=anchoPantalla/(FPS*10);
+                    }
+                    if(jotaro.getCurrentAction()!=2) {
+                        //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
+                        jotaro.setCurrentAction(2);
+                    }
+                    //Toast.makeText(context, "FORWARD", Toast.LENGTH_SHORT).show();
                 }else if(jotaro.getCurrentAction()!=3){
                     //iddle
-                   // jotaro.setCurrentAction(3);
+                    jotaro.setCurrentAction(3);
                 }
                 //todo esto es muy muy susceptible a como el usuario sujete el dispositivo, lo mejor sería calibrar
                 //todo antes de jugar y jugar con variables del usuario
@@ -198,11 +174,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             //event.sensor.getType() == TYPE_ACCELEROMETER
             System.arraycopy(event.values, 0, accelerometerReading,
                     0, accelerometerReading.length);
-            //todo: estos valores de x, y fluctuan (mas o menos) entre 0 y 10
-            //todo por lo tanto, si supera un umbral(que se podra calibrar desde el menu)-> cambia la accion
-            //en java CREO que no se podia hacer un switch case con rangos
+
+            //todo dejo esto aqui comentado por si mas adelante decido usar el acelerometro como controller
             accY = event.values[1];
-            Log.i(TAG, "zzonSensorChanged: "+event.values[0]+" "+event.values[1]+" "+event.values[2]+" ");
+
 
             if(!jotaro.isDoingAMove){
                 if(accY>sensibilidadAcelerometro){
@@ -227,47 +202,47 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     public void updateOrientationAngles() {
         // Update rotation matrix, which is needed to update orientation angles.
-        SensorManager.getRotationMatrix(rotationMatrix, null,
-                accelerometerReading, magnetometerReading);
-
+        //SensorManager.getRotationMatrix(rotationMatrix, null,
+         //       accelerometerReading, magnetometerReading);
         // "mRotationMatrix" now has up-to-date information.
-
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
-
         // "mOrientationAngles" now has up-to-date information.
     }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
-    class Enemigo extends Thread{
 
-    boolean sigueVivo=true;
+    class DrawingThread extends Thread{
 
+        boolean sigueVivo=true;
 
-    @Override
-    public void run() {
-
-        while(sigueVivo){
-            Canvas c=null;
-            try{
-                if(!surfaceHolder.getSurface().isValid())continue;
-                if(c==null) c=surfaceHolder.lockCanvas();
-                synchronized (surfaceHolder) {
-                    if(System.currentTimeMillis()-tickFrame>lastTick){
+        @Override
+        public void run() {
+            while(sigueVivo){
+                Canvas c=null;
+                try{
+                    if(!surfaceHolder.getSurface().isValid())continue;
+                    if(c==null) c=surfaceHolder.lockCanvas();
+                    synchronized (surfaceHolder) {
                         actualizaFrame();
                         dibujar(c);
-                        lastTick=System.currentTimeMillis();
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }finally{
+                    if(c!=null)surfaceHolder.unlockCanvasAndPost(c);
+                }
+                lastTick+=Constantes.ticksPerFrame;
+                sleepTime = lastTick -System.nanoTime();
+                if(sleepTime>0){
+                    try {
+                        Thread.sleep(sleepTime/1000000);
+                    }catch (InterruptedException e){
+                        e.printStackTrace();
                     }
                 }
-            }catch(Exception e){
-                e.printStackTrace();
-            }finally{
-                if(c!=null)surfaceHolder.unlockCanvasAndPost(c);
             }
         }
     }
-
-}
 }

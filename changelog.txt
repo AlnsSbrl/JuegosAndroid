@@ -1,0 +1,7 @@
+Jan 13		se hizo una version del menu con botones (con dimensiones a machete)
+Jan 17		se modificó el menú para que dependiese de las dimensiones de la pantalla y colocase centrado el texto
+Jan 17		se creó el juego base (con surface view) que dibujaba las animaciones, se seleccionaron los sprites de libre distribucion *ejem* a emplear
+Jan 17		se pulió la animación de puñetazo de jotaro para que se mostrase correctamente
+Jan 18		modularización del juego, implementación del lector de rotacion y onTouchEvent, ahora las animaciones producen ataques epilépticos
+Jan 19		correción del control temporal del juego, ahora las imágenes se reproducen adecuadamente y el personaje principal reacciona a eventos producidos por el usuario
+Jan 19		se creó el changelog

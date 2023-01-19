@@ -22,7 +22,7 @@ public class Personaje {
     boolean invierteAnimacion; //no se si ponerlo aqui
 
     public Personaje(int posX, int posY,int vida) {
-        currentAction=1;
+        currentAction=3;
         this.posX = posX;
         this.posY = posY;
         this.vida=vida;
@@ -34,11 +34,11 @@ public class Personaje {
         switch (currentAction){
             case 1:
                 Log.i("frame", "dibuja: punc"+(currentAnimationFrame));
-               // canvas.drawBitmap(punchAnimation[currentAnimationFrame% punchAnimation.length].getFrameMov(),posX,posY,null);
-                canvas.drawBitmap(punchAnimation[currentAnimationFrame].getFrameMov(),posX,posY,null);
-                currentAnimationFrame++;
+                canvas.drawBitmap(punchAnimation[currentAnimationFrame% punchAnimation.length].getFrameMov(),posX,posY,null);
+                //canvas.drawBitmap(punchAnimation[currentAnimationFrame].getFrameMov(),posX,posY,null);
+                //currentAnimationFrame++;
                 if(currentAnimationFrame>= 10){
-                    currentAnimationFrame=0;
+                    setCurrentAction(3);
                 }
                 break;
             case 2:
@@ -62,7 +62,7 @@ public class Personaje {
 
     public void setCurrentAction(int currentAction) {
         this.currentAction = currentAction;
-        if(currentAction==3){
+        if(currentAction==3||currentAction==2){
             isDoingAMove=false;
         }else{
             isDoingAMove=true;

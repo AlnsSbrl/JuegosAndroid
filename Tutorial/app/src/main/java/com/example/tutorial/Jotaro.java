@@ -5,6 +5,7 @@ import static com.example.tutorial.Constantes.context;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 
 public class Jotaro extends Personaje{
 
@@ -41,6 +42,6 @@ public class Jotaro extends Personaje{
             aux=Bitmap.createBitmap(conjuntoDeFrames,i*conjuntoDeFrames.getWidth()/16,0,conjuntoDeFrames.getWidth()/16,conjuntoDeFrames.getHeight());
             moveForward[i]=new Frame(Bitmap.createScaledBitmap(aux,width,height,true),false,0,0);
         }
-
     }
+
 }

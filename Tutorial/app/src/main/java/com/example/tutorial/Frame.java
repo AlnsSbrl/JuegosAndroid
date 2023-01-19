@@ -7,8 +7,10 @@ public class Frame {
     Bitmap frameMov;
     boolean esGolpeo;
     Rect hitbox; //estos son los frames activos del ataque, los que hacen daño
-    int damage;
-    int energy;
+
+
+    int damage;//igual esto lo quito de aqui y lo situo en una clase nueva "movimiento"
+    int energy;//esto igual que lo de arriba
 
     public boolean golpea(Rect hitboxRival){
         return true;

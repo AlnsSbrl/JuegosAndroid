@@ -11,6 +11,9 @@ public class Personaje {
     Frame[] moveForward;
     Frame[] moveBackwards;
     Frame[] punchAnimation;
+    Frame[] kickAnimation;
+    Frame[] takingLightDamage;
+
     boolean isDoingAMove;
     int height = altoPantalla*2/5;
     int width= height*2/3;
@@ -53,6 +56,17 @@ public class Personaje {
                 Log.i("frame", "dibuja iddl: "+(currentAnimationFrame% iddleAnimation.length));
                 canvas.drawBitmap(iddleAnimation[currentAnimationFrame% iddleAnimation.length].getFrameMov(),posX,posY,null);
                 break;
+            case 4:
+                canvas.drawBitmap(kickAnimation[currentAnimationFrame%kickAnimation.length].getFrameMov(),posX,posY,null);
+                if(currentAnimationFrame>= kickAnimation.length){
+                    setCurrentAction(3);
+                }
+                break;
+            case 5:
+                canvas.drawBitmap(takingLightDamage[currentAnimationFrame%takingLightDamage.length].getFrameMov(),posX,posY,null);
+                if(currentAnimationFrame>= takingLightDamage.length){
+                    setCurrentAction(3);
+                }
         }
     }
 

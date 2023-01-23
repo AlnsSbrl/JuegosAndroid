@@ -1,6 +1,6 @@
 package com.example.tutorial;
 
-import static android.hardware.Sensor.TYPE_ACCELEROMETER;
+
 import static android.hardware.Sensor.TYPE_ROTATION_VECTOR;
 
 import android.content.Context;
@@ -12,14 +12,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import static com.example.tutorial.Constantes.FPS;
-import static com.example.tutorial.Constantes.context;
 import static com.example.tutorial.Constantes.altoPantalla;
 import static com.example.tutorial.Constantes.anchoPantalla;
 import static com.example.tutorial.Constantes.umbralSensibilidadX;
@@ -32,7 +29,8 @@ import androidx.annotation.NonNull;
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
     SurfaceHolder surfaceHolder; //
-    Jotaro jotaro; //
+    Personaje player; //aqui mejor definirlos como PERSONAJES y ya luego, aplicando polimorf,
+    Personaje enemy;
     DrawingThread hiloDibuja; //
     Bitmap fondo; //
     long lastTick;
@@ -55,7 +53,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         valorInicialInclinacionY=0;
         this.surfaceHolder=getHolder();
         this.surfaceHolder.addCallback(this);
-        jotaro = new Jotaro(anchoPantalla/3,altoPantalla*11/23,100);
+        //la clase que es player, podria ponerla en un switch
+        //tambien se podria
+        player = new Jotaro(anchoPantalla/3,altoPantalla*11/23,100);
+        enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,100);
         hiloDibuja =new DrawingThread();
         setFocusable(true);
 
@@ -108,8 +109,13 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     }
 
     public void actualizaFrame(){
-            //todo actualizar al bicho por cada frame que pasa
-            jotaro.currentAnimationFrame++;//con esto luego cambio los sprites
+        //todo actualizar al bicho por cada frame que pasa
+        player.currentAnimationFrame++;//con esto luego cambio los sprites
+        int rnd = (int)(Math.random()*10);
+        if(rnd>6 && !enemy.isDoingAMove){
+            enemy.setCurrentAction(4);
+        }
+        enemy.currentAnimationFrame++;
     }
 
     @Override
@@ -118,7 +124,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         int accion=event.getActionMasked();
         switch (accion){
             case MotionEvent.ACTION_DOWN:
-                jotaro.setCurrentAction(1);
+                player.setCurrentAction(1);
                 break;
         }
         return true;
@@ -126,7 +132,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     public void dibujar(Canvas c){
         c.drawBitmap(fondo,0,0,null);
-        jotaro.dibuja(c);
+        player.dibuja(c);
+        enemy.dibuja(c);
     }
 
     @Override
@@ -140,7 +147,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             final float rotacionEnY = YPR[2]*-1.0f;//todo este es el valor que servirá para protegerse
             //final float y = YPR[0]*-1.0f; //todo estos valores varian de 0 a 1.5 mas o menos
             final float rotacionEnX = YPR[1]*-1.0f;//todo este es el valor que serviria para mover adelante atras en landscape
-            if(!jotaro.isDoingAMove){
+            if(!player.isDoingAMove){
                 if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY){
                     //todo animacion proteccion hacia arriba
                     //Toast.makeText(context, "ARRIBA", Toast.LENGTH_SHORT).show();
@@ -152,17 +159,17 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                     //Toast.makeText(context, "BACKWARDS", Toast.LENGTH_SHORT).show();
                 }else if(rotacionEnX-valorInicialInclinacionX>umbralSensibilidadX){
                     //TODO ESTO VA HACIA DELANTE
-                    if(jotaro.posX<anchoPantalla- jotaro.width){
-                        jotaro.posX+=anchoPantalla/(FPS*10);
+                    if(player.posX<anchoPantalla- player.width){
+                        player.posX+=anchoPantalla/(FPS*5);
                     }
-                    if(jotaro.getCurrentAction()!=2) {
+                    if(player.getCurrentAction()!=2) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
-                        jotaro.setCurrentAction(2);
+                        player.setCurrentAction(2);
                     }
                     //Toast.makeText(context, "FORWARD", Toast.LENGTH_SHORT).show();
-                }else if(jotaro.getCurrentAction()!=3){
+                }else if(player.getCurrentAction()!=3){
                     //iddle
-                    jotaro.setCurrentAction(3);
+                    player.setCurrentAction(3);
                 }
                 //todo esto es muy muy susceptible a como el usuario sujete el dispositivo, lo mejor sería calibrar
                 //todo antes de jugar y jugar con variables del usuario

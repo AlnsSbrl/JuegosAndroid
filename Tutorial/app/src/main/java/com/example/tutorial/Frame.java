@@ -13,13 +13,14 @@ public class Frame {
     int energy;//esto igual que lo de arriba
 
     public boolean golpea(Rect hitboxRival){
-        return true;
+        if(esGolpeo && hitbox.intersect(hitboxRival)) return true;
+        return false;
     }
 
-    public Frame(Bitmap frameMov, boolean esGolpeo /*,Rect hitbox*/, int damage, int energy) {
+    public Frame(Bitmap frameMov, boolean esGolpeo ,/*Rect hitbox,*/ int damage, int energy) {
         this.frameMov = frameMov;
         this.esGolpeo = esGolpeo;
-       // this.hitbox = hitbox;
+        //this.hitbox = hitbox;
         this.damage = damage;
         this.energy = energy;
     }

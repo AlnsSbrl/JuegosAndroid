@@ -23,7 +23,7 @@ public class Jotaro extends Personaje{
         punchAnimation[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch1),width,height,true),false,0,10);
         punchAnimation[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch2),width,height,true),false,0,0);
         punchAnimation[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch3),width,height,true),false,0,0);
-        punchAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch4),width,height,true),true,20,0);
+        punchAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch4),width,height,true),true,200,0);
         punchAnimation[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch5),width,height,true),true,20,0);
         punchAnimation[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch6),width,height,true),false,0,0);
         punchAnimation[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch7),width,height,true),false,0,0);
@@ -39,8 +39,8 @@ public class Jotaro extends Personaje{
         iddleAnimation[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro1),width,height,true),false,0,10);
         iddleAnimation[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro2),width,height,true),false,0,0);
         iddleAnimation[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro3),width,height,true),false,0,0);
-        iddleAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro4),width,height,true),true,20,0);
-        iddleAnimation[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro5),width,height,true),true,20,0);
+        iddleAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro4),width,height,true),false,0,0);
+        iddleAnimation[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro5),width,height,true),false,0,0);
         iddleAnimation[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro6),width,height,true),false,0,0);
         iddleAnimation[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro7),width,height,true),false,0,0);
         iddleAnimation[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.iddlejotaro8),width,height,true),false,0,0);
@@ -55,6 +55,8 @@ public class Jotaro extends Personaje{
             aux=Bitmap.createBitmap(conjuntoDeFrames,i*conjuntoDeFrames.getWidth()/16,0,conjuntoDeFrames.getWidth()/16,conjuntoDeFrames.getHeight());
             moveForward[i]=new Frame(Bitmap.createScaledBitmap(aux,width,height,true),false,0,0);
         }
+
+        currentMoveAnimation=iddleAnimation;
     }
 
 }

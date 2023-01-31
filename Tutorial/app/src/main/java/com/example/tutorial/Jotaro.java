@@ -9,8 +9,8 @@ import android.graphics.Canvas;
 
 public class Jotaro extends Personaje{
 
-    public Jotaro(int posX, int posY, int vida) {
-        super(posX, posY, vida);
+    public Jotaro(int posX, int posY, int vida,boolean isPlayer) {
+        super(posX, posY, vida,isPlayer);
         IniciaAnimaciones();
     }
 
@@ -23,7 +23,7 @@ public class Jotaro extends Personaje{
         punchAnimation[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch1),width,height,true),false,0,10);
         punchAnimation[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch2),width,height,true),false,0,0);
         punchAnimation[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch3),width,height,true),false,0,0);
-        punchAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch4),width,height,true),true,200,0);
+        punchAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch4),width,height,true),true,20,0);
         punchAnimation[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch5),width,height,true),true,20,0);
         punchAnimation[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch6),width,height,true),false,0,0);
         punchAnimation[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.jotaropunch7),width,height,true),false,0,0);

@@ -17,6 +17,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,8 +34,6 @@ import static com.example.tutorial.Constantes.valorInicialInclinacionY;
 
 import androidx.annotation.NonNull;
 
-import java.util.Timer;
-
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
     SurfaceHolder surfaceHolder; //
@@ -43,14 +42,17 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     DrawingThread hiloDibuja; //
     Bitmap fondo; //
     long lastTick;
+    long tickTimer;
+    int duracionCombate;
+    long nanosEnUnSegundo=1000000000;
     long sleepTime=0;//
     private SensorManager sensorManager; //
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
-    Timer tiempoPartida;
     MediaPlayer mp;
     AudioManager audioManager;
     private boolean pause;
+
 
     public Juego(Context context, Point resolucion) {
         super(context);
@@ -58,11 +60,12 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         Constantes.altoPantalla=resolucion.y;
         Constantes.anchoPantalla=resolucion.x;
         Constantes.sensibilidadRotacion =3;
+        duracionCombate=Constantes.tiempoCombate;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        mp=MediaPlayer.create(context,R.raw.thezameteamgalacticremastered);
+        mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mp.setVolume(v/2,v/2);
-        mp.start();
+        mp.start(); //todo cambiar esto de este sitio, ponerlo cuando se inicia la pantalla y pararlo cuando se cierre la pantalla
         //Constantes.FPS=10; esto tengo que definirlo fuera, ya que para hacer el sleep del hilo divido entre esto
         //y si no lo inicializo antes -> divide entre 0-> exception
         umbralSensibilidadX=0.5f;
@@ -73,12 +76,14 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         this.surfaceHolder.addCallback(this);
         //la clase que es player, podria ponerla en un switch
         //tambien se podria
-        player = new Jotaro(anchoPantalla*2/3,altoPantalla*11/23,100);
-        enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,200);
+        player = new Jotaro(anchoPantalla*2/3,altoPantalla*11/23,100,true);
+        enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,200,false);
+        //enemy.vidaActual=100;
         hiloDibuja =new DrawingThread();
         setFocusable(true);
 
         lastTick=System.nanoTime();
+        tickTimer=System.nanoTime();
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 
@@ -119,6 +124,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             sensorManager.registerListener(this, magneticField,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
+
     }
 
     @Override
@@ -129,10 +135,13 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     public void actualizaFrame(){
         //todo actualizar al bicho por cada frame que pasa
         player.currentAnimationFrame++;//con esto luego cambio los sprites
-
+        //Log.i("puta", "vida antes golpe: "+enemy.vidaActual);
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable){
-            enemy.isInvulnerable=true;
-            enemy.vida-=player.damageMov;
+            //enemy.isInvulnerable=true;
+            //enemy.vidaMaxima -=
+            enemy.setVidaActual(player.damageMov);
+            //Log.i("puta", "vida antes golpe: "+enemy.vidaActual);
+
         }
         //int rnd = (int)(Math.random()*15);
         //if(rnd<6 && !enemy.isDoingAMove){
@@ -158,9 +167,17 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         player.dibuja(c);
         enemy.dibuja(c);
         Paint p= new Paint();
-        p.setTextSize(30);
+        p.setTextSize(100);
         p.setColor(Color.WHITE);
-        c.drawText(String.valueOf(enemy.vida),anchoPantalla/2,altoPantalla/2,p);
+        //c.drawText(String.valueOf(enemy.vida),anchoPantalla/2,altoPantalla/2,p);
+        c.drawText((String.valueOf(duracionCombate)),anchoPantalla/2,altoPantalla/10,p);
+
+        if(lastTick-tickTimer>=nanosEnUnSegundo){
+            duracionCombate--;
+            tickTimer=lastTick;
+            //if(duracionCombate==0) acabar escena
+        }
+
     }
 
     @Override
@@ -254,7 +271,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public void run() {
-            while(sigueVivo){
+            while(duracionCombate>=0){
                 Canvas c=null;
                 try{
                     if(!surfaceHolder.getSurface().isValid())continue;
@@ -269,6 +286,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                     if(c!=null)surfaceHolder.unlockCanvasAndPost(c);
                 }
                 lastTick+=Constantes.ticksPerFrame;
+                Log.i("frames", ""+lastTick);
                 sleepTime = lastTick -System.nanoTime();
                 if(sleepTime>0){
                     try {

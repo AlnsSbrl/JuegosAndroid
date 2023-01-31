@@ -10,6 +10,9 @@ public class Constantes {
     static int ticksPerSecond=1000000000;
     static int ticksPerFrame=ticksPerSecond/FPS;
     static int sensibilidadRotacion;
+    static int tiempoCombate=75;
+    static int widthBarraSalud=anchoPantalla*3/10;
+    static int heightBarraSalud=altoPantalla/10;
 
     static float valorInicialInclinacionX; //valor inicial de la orientacion en x del usuario
     static float valorInicialInclinacionY; //valor inicial de la orientacion en y del usuario

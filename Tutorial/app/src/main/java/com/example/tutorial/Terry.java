@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 public class Terry extends Personaje{
-    public Terry(int posX, int posY, int vida) {
-        super(posX, posY, vida);
+    public Terry(int posX, int posY, int vida,boolean isPlayer) {
+        super(posX, posY, vida,isPlayer);
         IniciaAnimaciones();
     }
 

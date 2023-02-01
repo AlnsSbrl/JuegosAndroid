@@ -16,6 +16,5 @@ public class MainActivity extends AppCompatActivity {
         display.getSize(p);
         Juego juego = new Juego(this,p);
         setContentView(juego);
-
     }
 }

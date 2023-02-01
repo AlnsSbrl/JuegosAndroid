@@ -36,17 +36,17 @@ import androidx.annotation.NonNull;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
-    SurfaceHolder surfaceHolder; //
-    Personaje player; //aqui mejor definirlos como PERSONAJES y ya luego, aplicando polimorf,
+    SurfaceHolder surfaceHolder;
+    Personaje player;
     Personaje enemy;
-    DrawingThread hiloDibuja; //
+    DrawingThread hiloDibuja;
     Bitmap fondo; //
     long lastTick;
     long tickTimer;
     int duracionCombate;
     long nanosEnUnSegundo=1000000000;
     long sleepTime=0;//
-    private SensorManager sensorManager; //
+    private SensorManager sensorManager;
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
     MediaPlayer mp;
@@ -65,9 +65,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mp.setVolume(v/2,v/2);
-        mp.start(); //todo cambiar esto de este sitio, ponerlo cuando se inicia la pantalla y pararlo cuando se cierre la pantalla
-        //Constantes.FPS=10; esto tengo que definirlo fuera, ya que para hacer el sleep del hilo divido entre esto
-        //y si no lo inicializo antes -> divide entre 0-> exception
         umbralSensibilidadX=0.5f;
         umbralSensibilidadY=0.5f;
         valorInicialInclinacionX=0;
@@ -78,7 +75,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         //tambien se podria
         player = new Jotaro(anchoPantalla*2/3,altoPantalla*11/23,100,true);
         enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,200,false);
-        //enemy.vidaActual=100;
         hiloDibuja =new DrawingThread();
         setFocusable(true);
 
@@ -86,7 +82,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         tickTimer=System.nanoTime();
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-
         Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
 
         if(vectorRotacion!=null){
@@ -102,7 +97,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-
+        if(mp==null) mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
+        mp.start(); //igual condicionarlo a si el usuario quiere musica
     }
 
     @Override
@@ -130,23 +126,21 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
         sensorManager.unregisterListener(this);
+        //pause=true;
+        mp.pause();
     }
 
     public void actualizaFrame(){
-        //todo actualizar al bicho por cada frame que pasa
-        player.currentAnimationFrame++;//con esto luego cambio los sprites
-        //Log.i("puta", "vida antes golpe: "+enemy.vidaActual);
+
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable){
             //enemy.isInvulnerable=true;
-            //enemy.vidaMaxima -=
             enemy.setVidaActual(player.damageMov);
-            //Log.i("puta", "vida antes golpe: "+enemy.vidaActual);
-
         }
         //int rnd = (int)(Math.random()*15);
         //if(rnd<6 && !enemy.isDoingAMove){
           //  enemy.setCurrentAction(4);
         //}
+        player.currentAnimationFrame++;
         enemy.currentAnimationFrame++;
     }
 
@@ -169,7 +163,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         Paint p= new Paint();
         p.setTextSize(100);
         p.setColor(Color.WHITE);
-        //c.drawText(String.valueOf(enemy.vida),anchoPantalla/2,altoPantalla/2,p);
         c.drawText((String.valueOf(duracionCombate)),anchoPantalla/2,altoPantalla/10,p);
 
         if(lastTick-tickTimer>=nanosEnUnSegundo){
@@ -200,12 +193,17 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                     //Toast.makeText(context, "ABAJO", Toast.LENGTH_SHORT).show();
                 }else if(valorInicialInclinacionX-rotacionEnX>umbralSensibilidadX){
                     //TODO esto es ATRAS
-                    //Toast.makeText(context, "BACKWARDS", Toast.LENGTH_SHORT).show();
+                    if(player.posX>player.width){
+                        player.posX-=anchoPantalla/(FPS*5);
+                        player.hurtbox=new Rect(player.posX,player.posY,player.width+player.posX,player.height+player.posY);
+                    }
                 }else if(rotacionEnX-valorInicialInclinacionX>umbralSensibilidadX){
                     //TODO ESTO VA HACIA DELANTE
                     if(player.posX<anchoPantalla- player.width){
                         player.posX+=anchoPantalla/(FPS*5);
                         player.hurtbox=new Rect(player.posX,player.posY,player.width+player.posX,player.height+player.posY);
+                        //todo esto pasarlo a dentro de la clase, dentro del setPOS
+
                     }
                     if(player.getCurrentAction()!=2) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
@@ -267,11 +265,9 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     class DrawingThread extends Thread{
 
-        boolean sigueVivo=true;
-
         @Override
         public void run() {
-            while(duracionCombate>=0){
+            while(duracionCombate>=0 &&enemy.isAlive &&player.isAlive){
                 Canvas c=null;
                 try{
                     if(!surfaceHolder.getSurface().isValid())continue;
@@ -295,6 +291,15 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                         e.printStackTrace();
                     }
                 }
+            }
+            //todo hacer aqui las victory/losing screens
+            mp.stop(); //esto LO PARA, pero lo de abajo, aunque le ponga un nuevo archivo, lo reanuda???? what
+            //mp=MediaPlayer.create(context,R.raw.medievalfanfare);
+            //mp.start();
+            if(player.vidaActual/player.vidaMaxima>enemy.vidaActual/enemy.vidaMaxima){
+                //todo winning
+            }else{
+                //todo losing
             }
         }
     }

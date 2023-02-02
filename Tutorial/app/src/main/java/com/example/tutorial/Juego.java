@@ -11,12 +11,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -44,6 +46,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     long lastTick;
     long tickTimer;
     int duracionCombate;
+    int dmgTakenDisplay=0;
+    int dmgTakenTextModifier=1;
+    int dmgDoneDisplay=0;
+    int dmgDoneTextModifier=1;
     long nanosEnUnSegundo=1000000000;
     long sleepTime=0;//
     private SensorManager sensorManager;
@@ -52,19 +58,23 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     MediaPlayer mp;
     AudioManager audioManager;
     private boolean pause;
-
+    Typeface dmgFont;//= Typeface.createFromAsset(context.getAssets(), "font/reallyloveselviadesignpersonaluse.ttf");;
 
     public Juego(Context context, Point resolucion) {
         super(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            dmgFont = getResources().getFont(R.font.reallyloveselviadesignpersonaluse);
+        }
         Constantes.context=context;
-        Constantes.altoPantalla=resolucion.y;
-        Constantes.anchoPantalla=resolucion.x;
+        altoPantalla=resolucion.y;
+        anchoPantalla=resolucion.x;
         Constantes.sensibilidadRotacion =3;
         duracionCombate=Constantes.tiempoCombate;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mp.setVolume(v/2,v/2);
+        //dmgFont = Typeface.createFromAsset(context.getAssets(), "font/reallyloveselviadesignpersonaluse.ttf");
         umbralSensibilidadX=0.5f;
         umbralSensibilidadY=0.5f;
         valorInicialInclinacionX=0;
@@ -133,8 +143,17 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     public void actualizaFrame(){
 
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable){
-            //enemy.isInvulnerable=true;
+            enemy.isInvulnerable=true;
             enemy.setVidaActual(player.damageMov);
+            dmgDoneDisplay=player.damageMov;
+            dmgDoneTextModifier=1;
+        }
+
+        if(enemy.golpea(player.hurtbox)&&!player.isInvulnerable){
+            player.isInvulnerable=true;
+            player.setVidaActual(enemy.damageMov);
+            dmgTakenDisplay=enemy.damageMov;
+            dmgTakenTextModifier=1;
         }
         //int rnd = (int)(Math.random()*15);
         //if(rnd<6 && !enemy.isDoingAMove){
@@ -151,6 +170,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         switch (accion){
             case MotionEvent.ACTION_DOWN:
                 player.setCurrentAction(1);
+                //Toast.makeText(context, "人中之龍0 ", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
@@ -161,10 +181,26 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         player.dibuja(c);
         enemy.dibuja(c);
         Paint p= new Paint();
+        Paint pDmgDone=new Paint();
+        Paint pDmgTaken=new Paint();
+        pDmgDone.setTypeface(dmgFont);
+        pDmgTaken.setTypeface(dmgFont);
+        pDmgDone.setTextSize(dmgDoneTextModifier*30);
+        pDmgTaken.setTextSize(dmgTakenDisplay*30);
+        pDmgDone.setARGB(255/dmgDoneTextModifier*30,255,255,255);
+        pDmgTaken.setARGB(255/dmgTakenTextModifier*30,255,255,255);
         p.setTextSize(100);
         p.setColor(Color.WHITE);
         c.drawText((String.valueOf(duracionCombate)),anchoPantalla/2,altoPantalla/10,p);
 
+        //todo si el enemigo o el player han recibido dmg, que se muestre ese valor
+        if(enemy.isInvulnerable){
+            c.drawText(String.valueOf(dmgDoneDisplay),enemy.posX+enemy.width,enemy.height,pDmgDone);
+            dmgDoneTextModifier++;
+        }
+        if(player.isInvulnerable){
+            c.drawText(String.valueOf(dmgTakenDisplay),player.posX,enemy.height,pDmgDone);
+        }
         if(lastTick-tickTimer>=nanosEnUnSegundo){
             duracionCombate--;
             tickTimer=lastTick;
@@ -267,6 +303,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public void run() {
+            
             while(duracionCombate>=0 &&enemy.isAlive &&player.isAlive){
                 Canvas c=null;
                 try{

@@ -14,7 +14,7 @@ public class Terry extends Personaje{
     private void IniciaAnimaciones(){
         iddleAnimation= new Frame[11];
         kickAnimation = new Frame[5];
-
+        takingLightDamage = new Frame[4];
 
         iddleAnimation[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle1),width,height,true),false,0,0);
         iddleAnimation[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryiddle2),width,height,true),false,0,0);
@@ -33,6 +33,11 @@ public class Terry extends Personaje{
         kickAnimation[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrykick3),width,height,true),true,20,0);
         kickAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrykick4),width,height,true),true,20,0);
         kickAnimation[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrykick5),width,height,true),false,0,0);
+
+        takingLightDamage[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrytakinglightdamage1),width,height,true),false,0,0);
+        takingLightDamage[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrytakinglightdamage2),width,height,true),false,0,0);
+        takingLightDamage[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrytakinglightdamage3),width,height,true),false,0,0);
+        takingLightDamage[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrytakinglightdamage4),width,height,true),false,0,0);
 
         currentMoveAnimation=iddleAnimation;
 

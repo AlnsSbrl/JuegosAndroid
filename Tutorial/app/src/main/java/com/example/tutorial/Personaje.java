@@ -112,6 +112,7 @@ public class Personaje {
         currentAnimationFrame=0;
     }
     public void setCurrentAnimation(int action){
+        isInvulnerable=false;
         switch (action){
             case 1:
                 currentMoveAnimation=punchAnimation;
@@ -127,6 +128,7 @@ public class Personaje {
                 break;
             case 5:
                 currentMoveAnimation=takingLightDamage;
+                isInvulnerable=true;
                 break;
         }
     }

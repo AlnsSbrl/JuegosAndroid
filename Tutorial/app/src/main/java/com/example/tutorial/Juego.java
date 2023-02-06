@@ -20,6 +20,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -35,6 +36,7 @@ import static com.example.tutorial.Constantes.valorInicialInclinacionX;
 import static com.example.tutorial.Constantes.valorInicialInclinacionY;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.GestureDetectorCompat;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
@@ -53,6 +55,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     long nanosEnUnSegundo=1000000000;
     long sleepTime=0;//
     private SensorManager sensorManager;
+    GestureDetectorCompat detectorDeGestos;
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
     MediaPlayer mp;
@@ -93,7 +96,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
-
         if(vectorRotacion!=null){
             sensorManager.registerListener(this,vectorRotacion,SensorManager.SENSOR_DELAY_NORMAL,SensorManager.SENSOR_DELAY_UI);
         }
@@ -103,6 +105,41 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             sensorManager.registerListener(this, magneticField,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
+
+        detectorDeGestos=new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
+           /* @Override
+            public boolean onDown(MotionEvent motionEvent) {
+                //player.setCurrentAction(1);
+                return false;
+            }*/
+
+            @Override
+            public void onShowPress(MotionEvent motionEvent) {
+
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent motionEvent) {
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent motionEvent) {
+
+            }
+
+            @Override
+            public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+                player.setCurrentAction(4);
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -143,8 +180,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     public void actualizaFrame(){
 
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable){
-            enemy.isInvulnerable=true;
             enemy.setVidaActual(player.damageMov);
+            enemy.setCurrentAction(5);
             dmgDoneDisplay=player.damageMov;
             dmgDoneTextModifier=1;
         }
@@ -166,13 +203,19 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //todo configurar el resto de opciones de multitouch
-        int accion=event.getActionMasked();
-        switch (accion){
-            case MotionEvent.ACTION_DOWN:
-                player.setCurrentAction(1);
-                //Toast.makeText(context, "人中之龍0 ", Toast.LENGTH_SHORT).show();
-                break;
-        }
+        synchronized (surfaceHolder){
+
+
+            if(!detectorDeGestos.onTouchEvent(event)){
+                int accion=event.getActionMasked();
+                switch (accion){
+                    case MotionEvent.ACTION_DOWN:
+                    player.setCurrentAction(1);
+                            break;
+            };
+        }}
+        /*i
+        }*/
         return true;
     }
 

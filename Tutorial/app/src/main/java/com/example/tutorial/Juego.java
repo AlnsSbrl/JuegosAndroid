@@ -24,7 +24,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import static com.example.tutorial.Constantes.FPS;
 import static com.example.tutorial.Constantes.altoPantalla;
@@ -34,9 +33,13 @@ import static com.example.tutorial.Constantes.umbralSensibilidadX;
 import static com.example.tutorial.Constantes.umbralSensibilidadY;
 import static com.example.tutorial.Constantes.valorInicialInclinacionX;
 import static com.example.tutorial.Constantes.valorInicialInclinacionY;
+import static com.example.tutorial.AccionesPersonaje.*;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GestureDetectorCompat;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
@@ -62,6 +65,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     AudioManager audioManager;
     private boolean pause;
     Typeface dmgFont;//= Typeface.createFromAsset(context.getAssets(), "font/reallyloveselviadesignpersonaluse.ttf");;
+    boolean slowHit=false;
+    HashMap<Integer,Integer> accionesRelizadas=new HashMap<>();
 
     public Juego(Context context, Point resolucion) {
         super(context);
@@ -106,12 +111,14 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
 
-        detectorDeGestos=new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
+        detectorDeGestos = new GestureDetectorCompat(context,new MultiTouchHandler());
+
+        /*detectorDeGestos=new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
            /* @Override
             public boolean onDown(MotionEvent motionEvent) {
                 //player.setCurrentAction(1);
                 return false;
-            }*/
+            }
 
             @Override
             public void onShowPress(MotionEvent motionEvent) {
@@ -120,7 +127,9 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
             @Override
             public boolean onSingleTapUp(MotionEvent motionEvent) {
-                return false;
+
+                player.setCurrentAction(1);
+                return true;
             }
 
             @Override
@@ -138,7 +147,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                 player.setCurrentAction(4);
                 return true;
             }
-        });
+        });*/
 
     }
 
@@ -167,7 +176,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             sensorManager.registerListener(this, magneticField,
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
-
     }
 
     @Override
@@ -181,6 +189,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable){
             enemy.setVidaActual(player.damageMov);
+            slowHit=true;
             enemy.setCurrentAction(5);
             dmgDoneDisplay=player.damageMov;
             dmgDoneTextModifier=1;
@@ -188,6 +197,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         if(enemy.golpea(player.hurtbox)&&!player.isInvulnerable){
             player.isInvulnerable=true;
+            slowHit=true;
             player.setVidaActual(enemy.damageMov);
             dmgTakenDisplay=enemy.damageMov;
             dmgTakenTextModifier=1;
@@ -204,14 +214,12 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     public boolean onTouchEvent(MotionEvent event) {
         //todo configurar el resto de opciones de multitouch
         synchronized (surfaceHolder){
-
-
             if(!detectorDeGestos.onTouchEvent(event)){
                 int accion=event.getActionMasked();
                 switch (accion){
-                    case MotionEvent.ACTION_DOWN:
+                   /* case MotionEvent.ACTION_DOWN:
                     player.setCurrentAction(1);
-                            break;
+                            break;*/
             };
         }}
         /*i
@@ -353,6 +361,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                     if(!surfaceHolder.getSurface().isValid())continue;
                     if(c==null) c=surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder) {
+
                         actualizaFrame();
                         dibujar(c);
                     }
@@ -364,9 +373,18 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                 lastTick+=Constantes.ticksPerFrame;
                 Log.i("frames", ""+lastTick);
                 sleepTime = lastTick -System.nanoTime();
-                if(sleepTime>0){
+                if(slowHit) {
+                    try {
+                        Thread.sleep(200); //esto es como una pausa que se hace cuando hay un golpe, para darle efecto
+                        slowHit = false;
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+                else if(sleepTime>0){
                     try {
                         Thread.sleep(sleepTime/1000000);
+
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }
@@ -381,6 +399,62 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             }else{
                 //todo losing
             }
+        }
+    }
+
+    class MultiTouchHandler implements GestureDetector.OnGestureListener,
+            GestureDetector.OnDoubleTapListener{
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+            //player.setCurrentAction(1);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            player.setCurrentAction(1);
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+            //todo proyectil tipo hadouken, o el power geiser de terry
+        }
+
+        @Override
+        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            //todo derecha
+            player.setCurrentAction(4);
+            //todo izquierda
+
+            //todo up
+            return false;
         }
     }
 }

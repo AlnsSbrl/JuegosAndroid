@@ -1,5 +1,20 @@
 package com.example.tutorial;
 
+import org.jetbrains.annotations.Contract;
+
 public enum AccionesPersonaje {
-    IDDLE,PUNCH, STRONG_PUNCH,KICK,BACK_KICK,PROJECTILE,UPPERCUT,LOWSWEEP,TAKING_LIGHT_DAMAGE,TAKING_HEAVY_DAMAGE,TAUNT,LOSE, WIN
+    IDDLE(0),PUNCH(1),STRONG_PUNCH(2),KICK(3),BACK_KICK(4),PROJECTILE(5),UPPERCUT(6),
+    LOWKICK(7),TAKING_LIGHT_DAMAGE(8),TAKING_HEAVY_DAMAGE(9),TAUNT(10),LOSE(11), WIN(12),MOVE_FORWARD(13),
+    MOVE_BACKWARDS(14);
+
+     private int action;
+
+    AccionesPersonaje(int action){
+        this.action =action;
+    }
+
+    @Contract(pure = true)
+    public int getAction(){
+        return action;
+    }
 }

@@ -43,6 +43,7 @@ import java.util.HashMap;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
+    AccionesPersonaje ac;
     SurfaceHolder surfaceHolder;
     Personaje player;
     Personaje enemy;
@@ -190,13 +191,13 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable){
             enemy.setVidaActual(player.damageMov);
             slowHit=true;
-            enemy.setCurrentAction(5);
+            enemy.setCurrentAction(ac.TAKING_LIGHT_DAMAGE.getAction());
             dmgDoneDisplay=player.damageMov;
             dmgDoneTextModifier=1;
         }
 
         if(enemy.golpea(player.hurtbox)&&!player.isInvulnerable){
-            player.isInvulnerable=true;
+            player.setCurrentAction(ac.TAKING_LIGHT_DAMAGE.getAction());
             slowHit=true;
             player.setVidaActual(enemy.damageMov);
             dmgTakenDisplay=enemy.damageMov;
@@ -292,14 +293,14 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                         //todo esto pasarlo a dentro de la clase, dentro del setPOS
 
                     }
-                    if(player.getCurrentAction()!=2) {
+                    if(player.getCurrentAction()!=ac.MOVE_FORWARD.getAction()) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
-                        player.setCurrentAction(2);
+                        player.setCurrentAction(ac.MOVE_FORWARD.getAction());
                     }
                     //Toast.makeText(context, "FORWARD", Toast.LENGTH_SHORT).show();
-                }else if(player.getCurrentAction()!=3){
+                }else if(player.getCurrentAction()!=ac.IDDLE.getAction()){
                     //iddle
-                    player.setCurrentAction(3);
+                    player.setCurrentAction(ac.IDDLE.getAction());
                 }
                 //todo esto es muy muy susceptible a como el usuario sujete el dispositivo, lo mejor sería calibrar
                 //todo antes de jugar y jugar con variables del usuario
@@ -413,7 +414,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
-            return false;
+            player.setCurrentAction(ac.STRONG_PUNCH.getAction());
+            return true;
         }
 
         @Override
@@ -433,7 +435,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public boolean onSingleTapUp(MotionEvent motionEvent) {
-            player.setCurrentAction(1);
+            player.setCurrentAction(ac.PUNCH.getAction());
             return true;
         }
 
@@ -444,16 +446,19 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public void onLongPress(MotionEvent motionEvent) {
-            //todo proyectil tipo hadouken, o el power geiser de terry
+            //todo proyectil tipo hadouken, o el power geiser de terry O UN TAUNT QUE TE BOOSTEA EL DAÑO QUE HACES OMG
         }
 
         @Override
         public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
             //todo derecha
-            player.setCurrentAction(4);
+            player.setCurrentAction(ac.KICK.getAction());
             //todo izquierda
-
+            //player.setCurrentAction(ac.BACK_KICK.getAction());
             //todo up
+            //player.setCurrentAction(ac.UPPERCUT.getAction());
+            //todo down
+            //player.setCurrentAction(ac.LOWKICK.getAction());
             return false;
         }
     }

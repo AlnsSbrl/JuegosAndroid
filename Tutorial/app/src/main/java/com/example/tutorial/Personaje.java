@@ -15,6 +15,7 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 
 public class Personaje {
+    AccionesPersonaje ac;
     Frame[] iddleAnimation;
     Frame[] moveForward;
     Frame[] moveBackwards;
@@ -43,7 +44,8 @@ public class Personaje {
     boolean invierteAnimacion; //no se si ponerlo aqui
 
     public Personaje(int posX, int posY,int vida, boolean isPlayer) {
-        setCurrentAction(3);
+
+        setCurrentAction(ac.IDDLE.getAction());
         pVida = new Paint();
         pVida.setStyle(Paint.Style.FILL);
         pMarcoVida = new Paint();
@@ -78,8 +80,8 @@ public class Personaje {
         canvas.drawRect(displayTodaLaVida,pMarcoVida);
 
         canvas.drawBitmap(currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].getFrameMov(),posX,posY,null);
-        if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!=3){
-                setCurrentAction(3);
+        if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!=ac.IDDLE.getAction()){
+                setCurrentAction(ac.IDDLE.getAction());
         }
     }
     public boolean golpea(Rect hurtboxEnemigo){
@@ -104,7 +106,7 @@ public class Personaje {
     public void setCurrentAction(int currentAction) {
         setCurrentAnimation(currentAction);
         this.currentAction = currentAction;
-        if(currentAction==3||currentAction==2){
+        if(currentAction==ac.IDDLE.getAction()||currentAction==ac.MOVE_FORWARD.getAction()){
             isDoingAMove=false;
         }else{
             isDoingAMove=true;
@@ -113,20 +115,22 @@ public class Personaje {
     }
     public void setCurrentAnimation(int action){
         isInvulnerable=false;
-        switch (action){
-            case 1:
+        AccionesPersonaje ac = AccionesPersonaje.values()[action];
+        //todo preguntarle a javi como¡
+        switch (ac){
+            case PUNCH:
                 currentMoveAnimation=punchAnimation;
                 break;
-            case 2:
+            case MOVE_FORWARD:
                 currentMoveAnimation=moveForward;
                     break;
-            case 3:
+            case IDDLE:
                 currentMoveAnimation=iddleAnimation;
                 break;
-            case 4:
+            case KICK:
                 currentMoveAnimation=kickAnimation;
                 break;
-            case 5:
+            case TAKING_LIGHT_DAMAGE:
                 currentMoveAnimation=takingLightDamage;
                 isInvulnerable=true;
                 break;

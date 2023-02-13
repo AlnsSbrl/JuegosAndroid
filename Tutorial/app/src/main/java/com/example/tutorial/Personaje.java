@@ -2,27 +2,31 @@ package com.example.tutorial;
 
 import static com.example.tutorial.Constantes.altoPantalla;
 import static com.example.tutorial.Constantes.anchoPantalla;
-import static com.example.tutorial.Constantes.context;
-import static com.example.tutorial.Constantes.widthBarraSalud;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
-
-import androidx.core.content.ContextCompat;
 
 public class Personaje {
     AccionesPersonaje ac;
     Frame[] iddleAnimation;
     Frame[] moveForward;
     Frame[] moveBackwards;
+    Frame[] crouch;
+    Frame[] parry;
+
     Frame[] punchAnimation;
-    Frame[] kickAnimation;
+    Frame[] strongPunch;
+    Frame[] attackBackwards;
+    Frame[] uppercut;
+    Frame[] attackForward;
+    Frame[] lowKick;
     Frame[] takingLightDamage;
+
     Frame[] currentMoveAnimation;
+
     Paint pVida;
     Paint pMarcoVida;
     Rect displayTodaLaVida;
@@ -116,7 +120,6 @@ public class Personaje {
     public void setCurrentAnimation(int action){
         isInvulnerable=false;
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
-        //todo preguntarle a javi como¡
         switch (ac){
             case PUNCH:
                 currentMoveAnimation=punchAnimation;
@@ -127,13 +130,36 @@ public class Personaje {
             case IDDLE:
                 currentMoveAnimation=iddleAnimation;
                 break;
-            case KICK:
-                currentMoveAnimation=kickAnimation;
+            case ATTACK_FORWARD:
+                currentMoveAnimation= attackForward;
                 break;
             case TAKING_LIGHT_DAMAGE:
                 currentMoveAnimation=takingLightDamage;
                 isInvulnerable=true;
                 break;
+            case STRONG_PUNCH:
+                currentMoveAnimation=strongPunch;
+                break;
+            case ATTACK_BACKWARDS:
+                currentMoveAnimation=attackBackwards;
+                break;
+            case UPPERCUT:
+                break;
+            case LOWKICK:
+                currentMoveAnimation=lowKick;
+                break;
+            case PROJECTILE:
+                break;
+            case CROUCH:
+                currentMoveAnimation=crouch;
+                break;
+            case TAUNT:
+                break;
+            case MOVE_BACKWARDS:
+                break;
         }
+        /*(0),(1),(2),(3),(4),(5),(6),
+    (7),(8),TAKING_HEAVY_DAMAGE(9),(10),LOSE(11), WIN(12),(13),
+    (14),(15);*/
     }
 }

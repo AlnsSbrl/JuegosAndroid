@@ -1,6 +1,7 @@
 package com.example.tutorial;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 
 public class Frame {
@@ -17,8 +18,15 @@ public class Frame {
         return false;
     }
 
-    public Frame(Bitmap frameMov, boolean esGolpeo ,/*Rect hitbox,*/ int damage, int energy) {
-        this.frameMov = frameMov;
+    public Bitmap volteaImagen(Bitmap frameMov,boolean isPlayer){
+        Matrix matrix = new Matrix();
+        if(isPlayer) matrix.preScale(-1,1);
+        else return  frameMov;
+        return Bitmap.createBitmap(frameMov,0,0,frameMov.getWidth(),frameMov.getHeight(), matrix,true);
+    }
+
+    public Frame(Bitmap frameMov, boolean esGolpeo, boolean isPlayer, int damage, int energy) {
+        this.frameMov = volteaImagen(frameMov, isPlayer);
         this.esGolpeo = esGolpeo;
         //this.hitbox = hitbox;
         this.damage = damage;

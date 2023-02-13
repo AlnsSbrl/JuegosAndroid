@@ -33,12 +33,10 @@ import static com.example.tutorial.Constantes.umbralSensibilidadX;
 import static com.example.tutorial.Constantes.umbralSensibilidadY;
 import static com.example.tutorial.Constantes.valorInicialInclinacionX;
 import static com.example.tutorial.Constantes.valorInicialInclinacionY;
-import static com.example.tutorial.AccionesPersonaje.*;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GestureDetectorCompat;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Juego extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
@@ -80,7 +78,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         Constantes.sensibilidadRotacion =3;
         duracionCombate=Constantes.tiempoCombate;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
+        mp=MediaPlayer.create(context,R.raw.megalovania);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mp.setVolume(v/2,v/2);
         //dmgFont = Typeface.createFromAsset(context.getAssets(), "font/reallyloveselviadesignpersonaluse.ttf");
@@ -92,7 +90,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         this.surfaceHolder.addCallback(this);
         //la clase que es player, podria ponerla en un switch
         //tambien se podria
-        player = new Jotaro(anchoPantalla*2/3,altoPantalla*11/23,100,true);
+        player = new Ryu(anchoPantalla*1/3,altoPantalla*11/23,100,true);
         enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,200,false);
         hiloDibuja =new DrawingThread();
         setFocusable(true);
@@ -277,8 +275,9 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                     //todo animacion proteccion hacia arriba
                     //Toast.makeText(context, "ARRIBA", Toast.LENGTH_SHORT).show();
                 }else if(rotacionEnY-valorInicialInclinacionY>umbralSensibilidadY){
-                    //TODO animacion hacia abajo
-                    //Toast.makeText(context, "ABAJO", Toast.LENGTH_SHORT).show();
+                    if(!player.isDoingAMove){
+                        player.setCurrentAction(ac.CROUCH.getAction());
+                    }
                 }else if(valorInicialInclinacionX-rotacionEnX>umbralSensibilidadX){
                     //TODO esto es ATRAS
                     if(player.posX>player.width){
@@ -440,24 +439,41 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         }
 
         @Override
-        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float vX, float vY) {
+            /*if(vX>1000&&vX>vY){
+                player.setCurrentAction(ac.PROJECTILE.getAction());
+            } //sinceramente no me da la vida
+            return true;*/
             return false;
         }
 
         @Override
         public void onLongPress(MotionEvent motionEvent) {
             //todo proyectil tipo hadouken, o el power geiser de terry O UN TAUNT QUE TE BOOSTEA EL DAÑO QUE HACES OMG
+            player.setCurrentAction(ac.PROJECTILE.getAction());
         }
 
         @Override
-        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float vX, float vY) {
             //todo derecha
-            player.setCurrentAction(ac.KICK.getAction());
-            //todo izquierda
+            if(vX>2000&&vX>vY){
+                player.setCurrentAction(ac.ATTACK_FORWARD.getAction());
+            }
+            if(vX<-2000&&vX<vY){
+                player.setCurrentAction(ac.ATTACK_BACKWARDS.getAction());
+            }
+            if(vY>2000&&vY>vX){
+                player.setCurrentAction(ac.LOWKICK.getAction());
+            }
+            if(vY<-2000&&vY<vX){
+                player.setCurrentAction(ac.UPPERCUT.getAction());
+            }
+
+            Log.i("cerda", "onFling: v: "+vX+"     v1: "+vY);
             //player.setCurrentAction(ac.BACK_KICK.getAction());
-            //todo up
+
             //player.setCurrentAction(ac.UPPERCUT.getAction());
-            //todo down
+
             //player.setCurrentAction(ac.LOWKICK.getAction());
             return false;
         }

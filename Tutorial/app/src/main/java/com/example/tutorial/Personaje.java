@@ -68,6 +68,7 @@ public class Personaje {
     }
 
     public void dibuja(Canvas canvas){
+        this.actualizaFisica(currentAction);
         int compR =(int)(255-Math.round((vidaActual/(vidaMaxima/2))-1)*255/2);
         if(vidaActual<=vidaMaxima/2){
             compR=255;
@@ -117,6 +118,19 @@ public class Personaje {
         }
         currentAnimationFrame=0;
     }
+
+    public void actualizaFisica(int action){
+        AccionesPersonaje ac = AccionesPersonaje.values()[action];
+        switch (ac){
+            case MOVE_FORWARD:
+                moverEnX(anchoPantalla/10);
+                break;
+            case MOVE_BACKWARDS:
+                moverEnX(-anchoPantalla/10);
+                break;
+        }
+    }
+
     public void setCurrentAnimation(int action){
         isInvulnerable=false;
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
@@ -144,6 +158,7 @@ public class Personaje {
                 currentMoveAnimation=attackBackwards;
                 break;
             case UPPERCUT:
+                currentMoveAnimation=uppercut;
                 break;
             case LOWKICK:
                 currentMoveAnimation=lowKick;
@@ -161,5 +176,27 @@ public class Personaje {
         /*(0),(1),(2),(3),(4),(5),(6),
     (7),(8),TAKING_HEAVY_DAMAGE(9),(10),LOSE(11), WIN(12),(13),
     (14),(15);*/
+    }
+
+    public int getPosX() {
+        return posX;
+    }
+
+    public void moverEnX(int posX) {
+        if(this.posX+posX<anchoPantalla-width && this.posX+posX>0) {
+            this.posX += isPlayer?posX:-posX;
+            hurtbox=new Rect(posX,posY,width+posX,height+posY);
+        }
+    }
+
+    public int getPosY() {
+        return posY;
+    }
+
+    public void moverEnY(int posY) {
+        if(this.posY+posY<altoPantalla+height && this.posY+posY>0){
+            hurtbox=new Rect(posX,posY,width+posX,height+posY);
+            this.posY += posY;
+        }
     }
 }

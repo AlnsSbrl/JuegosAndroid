@@ -1,5 +1,6 @@
 package com.example.tutorial;
 
+import static com.example.tutorial.Constantes.altoPantalla;
 import static com.example.tutorial.Constantes.context;
 
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ public class Ryu extends Personaje{
         crouch = new Frame[1];
         lowKick = new Frame[5];
         attackForward = new Frame[14];
+        uppercut = new Frame[16];
 
         attackBackwards[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingback1),width,height,true),false,this.isPlayer,0,0);
         attackBackwards[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingback2),width,height,true),false,this.isPlayer,0,0);
@@ -79,6 +81,55 @@ public class Ryu extends Personaje{
         lowKick[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown4),width,height/2,true),false,this.isPlayer,0,0);
         lowKick[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown5),width,height/2,true),false,this.isPlayer,0,0);
 
+        uppercut[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup1),width,height,true),false,this.isPlayer,0,0);
+        uppercut[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup2),width,height,true),false,this.isPlayer,0,0);
+        uppercut[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup3),width,height,true),false,this.isPlayer,0,0);
+        uppercut[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup4),width,height,true),false,this.isPlayer,0,0);
+        uppercut[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup5),width,height,true),false,this.isPlayer,0,0);
+        uppercut[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup6),width,height,true),false,this.isPlayer,0,0);
+        uppercut[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup7),width,height,true),false,this.isPlayer,0,0);
+        uppercut[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup8),width,height,true),false,this.isPlayer,0,0);
+        uppercut[8]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup9),width,height,true),false,this.isPlayer,0,0);
+        uppercut[9]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup10),width,height,true),false,this.isPlayer,0,0);
+        uppercut[10]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup11),width,height,true),false,this.isPlayer,0,0);
+        uppercut[11]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup12),width,height,true),false,this.isPlayer,0,0);
+        uppercut[12]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup13),width,height,true),false,this.isPlayer,0,0);
+        uppercut[13]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup14),width,height,true),false,this.isPlayer,0,0);
+        uppercut[14]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup15),width,height,true),false,this.isPlayer,0,0);
+        uppercut[15]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup16),width,height,true),false,this.isPlayer,0,0);
+
+
         currentMoveAnimation=iddleAnimation;
+    }
+
+    @Override
+    public void actualizaFisica(int action) {
+        super.actualizaFisica(action);
+        AccionesPersonaje ac = AccionesPersonaje.values()[action];
+        switch (ac){
+            case UPPERCUT:
+                actualizaUpperCut();
+                break;
+            case ATTACK_BACKWARDS:
+                actualizaTatsu();
+                break;
+        }
+    }
+    public void actualizaUpperCut(){
+        switch (currentAnimationFrame){
+            case 7:
+            case 8:
+            case 9:
+                this.posY-=altoPantalla*2/23;
+                break;
+            case 13:
+            case 14:
+            case 15:
+                this.posY+=altoPantalla*2/23;
+                break;
+        }
+    }
+    public void actualizaTatsu(){
+
     }
 }

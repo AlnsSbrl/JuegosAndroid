@@ -90,7 +90,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         this.surfaceHolder.addCallback(this);
         //la clase que es player, podria ponerla en un switch
         //tambien se podria
-        player = new Ryu(anchoPantalla*1/3,altoPantalla*11/23,100,true);
+        player = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,100,true);
         enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,200,false);
         hiloDibuja =new DrawingThread();
         setFocusable(true);
@@ -279,26 +279,18 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                         player.setCurrentAction(ac.CROUCH.getAction());
                     }
                 }else if(valorInicialInclinacionX-rotacionEnX>umbralSensibilidadX){
-                    //TODO esto es ATRAS
-                    if(player.posX>player.width){
-                        player.posX-=anchoPantalla/(FPS*5);
-                        player.hurtbox=new Rect(player.posX,player.posY,player.width+player.posX,player.height+player.posY);
+
+                    if(player.getCurrentAction()!=ac.MOVE_BACKWARDS.getAction()) {
+                        //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
+                        player.setCurrentAction(ac.MOVE_BACKWARDS.getAction());
                     }
                 }else if(rotacionEnX-valorInicialInclinacionX>umbralSensibilidadX){
-                    //TODO ESTO VA HACIA DELANTE
-                    if(player.posX<anchoPantalla- player.width){
-                        player.posX+=anchoPantalla/(FPS*5);
-                        player.hurtbox=new Rect(player.posX,player.posY,player.width+player.posX,player.height+player.posY);
-                        //todo esto pasarlo a dentro de la clase, dentro del setPOS
 
-                    }
                     if(player.getCurrentAction()!=ac.MOVE_FORWARD.getAction()) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
                         player.setCurrentAction(ac.MOVE_FORWARD.getAction());
                     }
-                    //Toast.makeText(context, "FORWARD", Toast.LENGTH_SHORT).show();
                 }else if(player.getCurrentAction()!=ac.IDDLE.getAction()){
-                    //iddle
                     player.setCurrentAction(ac.IDDLE.getAction());
                 }
                 //todo esto es muy muy susceptible a como el usuario sujete el dispositivo, lo mejor sería calibrar
@@ -407,13 +399,14 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-            //player.setCurrentAction(1);
             return false;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
-            player.setCurrentAction(ac.STRONG_PUNCH.getAction());
+            if(!player.isDoingAMove){
+                player.setCurrentAction(ac.STRONG_PUNCH.getAction());
+            }
             return true;
         }
 
@@ -434,7 +427,9 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public boolean onSingleTapUp(MotionEvent motionEvent) {
-            player.setCurrentAction(ac.PUNCH.getAction());
+            if(!player.isDoingAMove) {
+                player.setCurrentAction(ac.PUNCH.getAction());
+            }
             return true;
         }
 
@@ -450,32 +445,30 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         @Override
         public void onLongPress(MotionEvent motionEvent) {
             //todo proyectil tipo hadouken, o el power geiser de terry O UN TAUNT QUE TE BOOSTEA EL DAÑO QUE HACES OMG
-            player.setCurrentAction(ac.PROJECTILE.getAction());
+            if(!player.isDoingAMove) {
+                player.setCurrentAction(ac.PROJECTILE.getAction());
+            }
         }
 
         @Override
-        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float vX, float vY) {
-            //todo derecha
-            if(vX>2000&&vX>vY){
-                player.setCurrentAction(ac.ATTACK_FORWARD.getAction());
-            }
-            if(vX<-2000&&vX<vY){
-                player.setCurrentAction(ac.ATTACK_BACKWARDS.getAction());
-            }
-            if(vY>2000&&vY>vX){
-                player.setCurrentAction(ac.LOWKICK.getAction());
-            }
-            if(vY<-2000&&vY<vX){
-                player.setCurrentAction(ac.UPPERCUT.getAction());
-            }
+        public boolean onFling(MotionEvent me, MotionEvent me1, float vX, float vY) {
 
-            Log.i("cerda", "onFling: v: "+vX+"     v1: "+vY);
-            //player.setCurrentAction(ac.BACK_KICK.getAction());
-
-            //player.setCurrentAction(ac.UPPERCUT.getAction());
-
-            //player.setCurrentAction(ac.LOWKICK.getAction());
-            return false;
+            if(!player.isDoingAMove) {
+                if (Math.abs( me.getX()-me1.getX())>Math.abs(me.getY()-me1.getY())) {
+                    if(me.getX()<me1.getX()){
+                        player.setCurrentAction(ac.ATTACK_FORWARD.getAction());
+                    }else{
+                        player.setCurrentAction(ac.ATTACK_BACKWARDS.getAction());
+                    }
+                }else{
+                    if(me.getY()<me1.getY()){
+                        player.setCurrentAction(ac.LOWKICK.getAction());
+                    }else{
+                        player.setCurrentAction(ac.UPPERCUT.getAction());
+                    }
+                }
+            }
+            return true;
         }
     }
 }

@@ -19,6 +19,12 @@ public class Ryu extends Personaje{
         lowKick = new Frame[5];
         attackForward = new Frame[14];
         uppercut = new Frame[16];
+        moveForward = new  Frame[8];
+        moveBackwards = new Frame[8];
+        punchAnimation = new Frame[5];
+        takingLightDamage = new Frame[5];
+        parry = new Frame[6];
+        throwingProjectile = new Frame[13];
 
         attackBackwards[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingback1),width,height,true),false,this.isPlayer,0,0);
         attackBackwards[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingback2),width,height,true),false,this.isPlayer,0,0);
@@ -75,11 +81,11 @@ public class Ryu extends Personaje{
         iddleAnimation[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuiddle6),width,height,true),false,this.isPlayer,0,0);
         iddleAnimation[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuiddle7),width,height,true),false,this.isPlayer,0,0);
 
-        lowKick[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown1),width,height/2,true),false,this.isPlayer,0,0);
-        lowKick[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown2),width,height/2,true),true,this.isPlayer,10,0);
-        lowKick[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown3),width,height/2,true),true,this.isPlayer,10,0);
-        lowKick[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown4),width,height/2,true),false,this.isPlayer,0,0);
-        lowKick[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown5),width,height/2,true),false,this.isPlayer,0,0);
+        lowKick[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown1),width,height,true),false,this.isPlayer,0,0);
+        lowKick[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown2),width*7/5,height,true),true,this.isPlayer,10,0);
+        lowKick[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown3),width*7/5,height,true),true,this.isPlayer,10,0);
+        lowKick[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown4),width*7/5,height,true),false,this.isPlayer,0,0);
+        lowKick[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingdown5),width,height,true),false,this.isPlayer,0,0);
 
         uppercut[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup1),width,height,true),false,this.isPlayer,0,0);
         uppercut[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup2),width,height,true),false,this.isPlayer,0,0);
@@ -87,9 +93,9 @@ public class Ryu extends Personaje{
         uppercut[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup4),width,height,true),false,this.isPlayer,0,0);
         uppercut[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup5),width,height,true),false,this.isPlayer,0,0);
         uppercut[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup6),width,height,true),false,this.isPlayer,0,0);
-        uppercut[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup7),width,height,true),false,this.isPlayer,0,0);
-        uppercut[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup8),width,height,true),false,this.isPlayer,0,0);
-        uppercut[8]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup9),width,height,true),false,this.isPlayer,0,0);
+        uppercut[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup7),width,height,true),true,this.isPlayer,50,0);
+        uppercut[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup8),width,height,true),true,this.isPlayer,50,0);
+        uppercut[8]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup9),width,height,true),true,this.isPlayer,50,0);
         uppercut[9]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup10),width,height,true),false,this.isPlayer,0,0);
         uppercut[10]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup11),width,height,true),false,this.isPlayer,0,0);
         uppercut[11]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup12),width,height,true),false,this.isPlayer,0,0);
@@ -97,6 +103,58 @@ public class Ryu extends Personaje{
         uppercut[13]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup14),width,height,true),false,this.isPlayer,0,0);
         uppercut[14]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup15),width,height,true),false,this.isPlayer,0,0);
         uppercut[15]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingup16),width,height,true),false,this.isPlayer,0,0);
+
+        moveForward[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward1),width,height,true),false,this.isPlayer,0,0);
+        moveForward[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward2),width,height,true),false,this.isPlayer,0,0);
+        moveForward[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward3),width,height,true),false,this.isPlayer,0,0);
+        moveForward[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward4),width,height,true),false,this.isPlayer,0,0);
+        moveForward[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward5),width,height,true),false,this.isPlayer,0,0);
+        moveForward[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward6),width,height,true),false,this.isPlayer,0,0);
+        moveForward[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward7),width,height,true),false,this.isPlayer,0,0);
+        moveForward[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveforward8),width,height,true),false,this.isPlayer,0,0);
+
+        moveBackwards[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback1),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback2),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback3),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback4),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback5),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback6),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback7),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryumoveback8),width,height,true),false,this.isPlayer,0,0);
+
+        punchAnimation[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutap1),width,height,true),false,this.isPlayer,0,0);
+        punchAnimation[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutap2),width,height,true),true,this.isPlayer,10,0);
+        punchAnimation[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutap3),width,height,true),true,this.isPlayer,10,0);
+        punchAnimation[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutap4),width,height,true),false,this.isPlayer,0,0);
+        punchAnimation[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutap5),width,height,true),false,this.isPlayer,0,0);
+
+        parry[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprotect1),width,height,true),false,this.isPlayer,0,0);
+        parry[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprotect2),width,height,true),false,this.isPlayer,0,0);
+        parry[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprotect3),width,height,true),false,this.isPlayer,0,0);
+        parry[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprotect4),width,height,true),false,this.isPlayer,0,0);
+        parry[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprotect5),width,height,true),false,this.isPlayer,0,0);
+        parry[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprotect6),width,height,true),false,this.isPlayer,0,0);
+        parryFrame=3;
+
+        takingLightDamage[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutakingdmg1),width,height,true),false,this.isPlayer,0,0);
+        takingLightDamage[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutakingdmg2),width,height,true),false,this.isPlayer,0,0);
+        takingLightDamage[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutakingdmg3),width,height,true),false,this.isPlayer,0,0);
+        takingLightDamage[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutakingdmg4),width,height,true),false,this.isPlayer,0,0);
+        takingLightDamage[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryutakingdmg5),width,height,true),false,this.isPlayer,0,0);
+
+        throwingProjectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress1),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress2),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress3),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress4),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress5),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress6),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress7),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress8),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[8]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress9),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[9]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress10),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[10]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress11),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[11]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress12),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[12]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress13),width,height,true),false,this.isPlayer,0,0);
 
 
         currentMoveAnimation=iddleAnimation;
@@ -116,16 +174,16 @@ public class Ryu extends Personaje{
         }
     }
     public void actualizaUpperCut(){
-        switch (currentAnimationFrame){
+        switch (getCurrentAnimationFrame()){
             case 7:
             case 8:
             case 9:
-                this.posY-=altoPantalla*2/23;
+                moverEnY(-altoPantalla*2/23);
                 break;
             case 13:
             case 14:
             case 15:
-                this.posY+=altoPantalla*2/23;
+                moverEnY(altoPantalla*2/23);
                 break;
         }
     }

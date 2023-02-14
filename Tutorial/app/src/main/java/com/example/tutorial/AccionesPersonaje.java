@@ -18,7 +18,8 @@ public enum AccionesPersonaje {
     WIN(12),
     MOVE_FORWARD(13),
     MOVE_BACKWARDS(14),
-    CROUCH(15);
+    CROUCH(15),
+    PROTECT(16);
 
      private int action;
 

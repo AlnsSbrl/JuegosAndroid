@@ -40,6 +40,6 @@ public class Terry extends Personaje{
         takingLightDamage[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrytakinglightdamage4),width,height,true),false,this.isPlayer,0,0);
 
         currentMoveAnimation=iddleAnimation;
-
+        //isBlocking=true;
     }
 }

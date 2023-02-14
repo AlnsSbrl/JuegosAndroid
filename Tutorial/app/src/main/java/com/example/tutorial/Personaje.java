@@ -16,7 +16,6 @@ public class Personaje {
     Frame[] moveBackwards;
     Frame[] crouch;
     Frame[] parry;
-
     Frame[] punchAnimation;
     Frame[] strongPunch;
     Frame[] attackBackwards;
@@ -24,8 +23,8 @@ public class Personaje {
     Frame[] attackForward;
     Frame[] lowKick;
     Frame[] takingLightDamage;
-
     Frame[] currentMoveAnimation;
+    Frame[] throwingProjectile;
 
     Paint pVida;
     Paint pMarcoVida;
@@ -35,21 +34,34 @@ public class Personaje {
     boolean isPlayer;
     boolean isDoingAMove;
     boolean isInvulnerable;
+    boolean isBlocking;
     boolean isAlive=true;
     int height = altoPantalla*2/5;
     int width= height*2/3;
     int posX,posY;
     int vidaMaxima;
     int vidaActual;
-    int currentAnimationFrame=0;
+    private int currentAnimationFrame=0;
+
+    public int getCurrentAnimationFrame() {
+        return currentAnimationFrame;
+    }
+
+    public void setDeltaCurrentAnimationFrame(int currentAnimationFrame) {
+        this.currentAnimationFrame += currentAnimationFrame;
+        actualizaHitbox();
+    }
+
     int damageMov=0;
+    int parryFrame;
+
     private int currentAction;
     Rect hurtbox;
     boolean invierteAnimacion; //no se si ponerlo aqui
 
     public Personaje(int posX, int posY,int vida, boolean isPlayer) {
 
-        setCurrentAction(ac.IDDLE.getAction());
+        setCurrentAnimation(ac.IDDLE.getAction());
         pVida = new Paint();
         pVida.setStyle(Paint.Style.FILL);
         pMarcoVida = new Paint();
@@ -86,8 +98,9 @@ public class Personaje {
 
         canvas.drawBitmap(currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].getFrameMov(),posX,posY,null);
         if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!=ac.IDDLE.getAction()){
-                setCurrentAction(ac.IDDLE.getAction());
+                setCurrentAnimation(ac.IDDLE.getAction());
         }
+        canvas.drawRect(this.hurtbox,pMarcoVida);
     }
     public boolean golpea(Rect hurtboxEnemigo){
         damageMov=currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].damage;
@@ -99,7 +112,7 @@ public class Personaje {
     }
 
     public boolean setVidaActual(int damageTaken) {
-        this.vidaActual =vidaActual-damageTaken;
+        this.vidaActual =vidaActual-damageTaken<=0?0:vidaActual-damageTaken;
         displayVidaActual = new Rect(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10,altoPantalla/10,(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10)+(vidaActual*anchoPantalla*3/10/vidaMaxima),altoPantalla*2/10);
         Log.i("puta", "esquina derecha: "+(vidaActual/vidaMaxima)*(anchoPantalla*3/10));
         Log.i("puta", "vida actual "+vidaActual+" maxima "+vidaMaxima+" anchoPant "+anchoPantalla);
@@ -108,31 +121,25 @@ public class Personaje {
         }
         return isAlive;
     }
-    public void setCurrentAction(int currentAction) {
-        setCurrentAnimation(currentAction);
-        this.currentAction = currentAction;
-        if(currentAction==ac.IDDLE.getAction()||currentAction==ac.MOVE_FORWARD.getAction()){
-            isDoingAMove=false;
-        }else{
-            isDoingAMove=true;
-        }
-        currentAnimationFrame=0;
-    }
 
     public void actualizaFisica(int action){
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
         switch (ac){
             case MOVE_FORWARD:
-                moverEnX(anchoPantalla/10);
+                moverEnX(anchoPantalla/50);
                 break;
             case MOVE_BACKWARDS:
-                moverEnX(-anchoPantalla/10);
+                moverEnX(-anchoPantalla/50);
                 break;
         }
     }
 
     public void setCurrentAnimation(int action){
+        currentAnimationFrame=0;
+        isDoingAMove=true;
         isInvulnerable=false;
+        isBlocking=false;
+        this.currentAction = action;
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
         switch (ac){
             case PUNCH:
@@ -140,9 +147,11 @@ public class Personaje {
                 break;
             case MOVE_FORWARD:
                 currentMoveAnimation=moveForward;
-                    break;
+                isDoingAMove=false;
+                break;
             case IDDLE:
                 currentMoveAnimation=iddleAnimation;
+                isDoingAMove=false;
                 break;
             case ATTACK_FORWARD:
                 currentMoveAnimation= attackForward;
@@ -164,6 +173,7 @@ public class Personaje {
                 currentMoveAnimation=lowKick;
                 break;
             case PROJECTILE:
+                currentMoveAnimation=throwingProjectile;
                 break;
             case CROUCH:
                 currentMoveAnimation=crouch;
@@ -171,6 +181,11 @@ public class Personaje {
             case TAUNT:
                 break;
             case MOVE_BACKWARDS:
+                currentMoveAnimation=moveBackwards;
+                isDoingAMove=false;
+                break;
+            case PROTECT:
+                currentMoveAnimation=parry;
                 break;
         }
         /*(0),(1),(2),(3),(4),(5),(6),
@@ -185,7 +200,7 @@ public class Personaje {
     public void moverEnX(int posX) {
         if(this.posX+posX<anchoPantalla-width && this.posX+posX>0) {
             this.posX += isPlayer?posX:-posX;
-            hurtbox=new Rect(posX,posY,width+posX,height+posY);
+            actualizaHitbox();
         }
     }
 
@@ -195,8 +210,13 @@ public class Personaje {
 
     public void moverEnY(int posY) {
         if(this.posY+posY<altoPantalla+height && this.posY+posY>0){
-            hurtbox=new Rect(posX,posY,width+posX,height+posY);
             this.posY += posY;
+            actualizaHitbox();
         }
+    }
+    public void actualizaHitbox(){
+        int ancho = currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].getFrameMov().getWidth();
+        int alto = currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].getFrameMov().getHeight();
+        hurtbox=new Rect(this.posX,this.posY,ancho+this.posX,alto+this.posY);
     }
 }

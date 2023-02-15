@@ -24,9 +24,11 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import static com.example.tutorial.Constantes.FPS;
 import static com.example.tutorial.Constantes.altoPantalla;
 import static com.example.tutorial.Constantes.anchoPantalla;
 import static com.example.tutorial.Constantes.context;
+import static com.example.tutorial.Constantes.emplearMusicaFondo;
 import static com.example.tutorial.Constantes.umbralSensibilidadX;
 import static com.example.tutorial.Constantes.umbralSensibilidadY;
 import static com.example.tutorial.Constantes.valorInicialInclinacionX;
@@ -46,7 +48,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     Personaje enemy;
     ArrayList<Proyectil> proyectiles;
     DrawingThread hiloDibuja;
-    Bitmap fondo; //
     long lastTick;
     long tickTimer;
     int duracionCombate;
@@ -55,18 +56,20 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     int dmgDoneDisplay=0;
     int dmgDoneTextModifier=1;
     long nanosEnUnSegundo=1000000000;
+    int contadorCambioSegundos=0;
     long sleepTime=0;//
     private SensorManager sensorManager;
     GestureDetectorCompat detectorDeGestos;
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
-    MediaPlayer mp;
     AudioManager audioManager;
     private boolean pause;
     Typeface dmgFont;
     boolean slowHit=false;
     HashMap<Integer,Integer> accionesRelizadas=new HashMap<>();
-     float rotacionEnY;
+    float rotacionEnY;
+    Fondo fondo;
+
     public Juego(Context context, Point resolucion) {
         super(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -78,10 +81,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         Constantes.sensibilidadRotacion =3;
         duracionCombate=Constantes.tiempoCombate;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        mp=MediaPlayer.create(context,R.raw.megalovania);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mp.setVolume(v/2,v/2);
-        //dmgFont = Typeface.createFromAsset(context.getAssets(), "font/reallyloveselviadesignpersonaluse.ttf");
         umbralSensibilidadX=0.5f;
         umbralSensibilidadY=0.5f;
         valorInicialInclinacionX=0;
@@ -95,7 +95,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         setFocusable(true);
         lastTick=System.nanoTime();
         tickTimer=System.nanoTime();
-        fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.mishimadojo),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
+        fondo = new Fondo(R.drawable.mishimadojo,R.raw.spearofjustice,v);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
         if(vectorRotacion!=null){
@@ -111,8 +111,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        if(mp==null) mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
-        //mp.start(); //igual condicionarlo a si el usuario quiere musica
+        if(fondo.mp==null) fondo.mp=MediaPlayer.create(context,R.raw.battleteamgalacticgrunt8bitremixthezame);
+        if(emplearMusicaFondo) fondo.mp.start();
     }
 
     @Override
@@ -139,10 +139,12 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
         sensorManager.unregisterListener(this);
-        //pause=true;
-        mp.pause();
+        if(emplearMusicaFondo) fondo.mp.pause();
     }
 
+    /**
+     * Detecta las colisiones y actualiza el estado del juego al siguiente frame
+     */
     public void actualizaFrame(){
 
         if(player.golpea(enemy.hurtbox)&&!enemy.isInvulnerable&&!enemy.isBlocking){
@@ -184,12 +186,19 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             proyectil.golpea(proyectil.isFromPlayer?enemy.hurtbox:player.hurtbox);
         }
 
+        tomaDecisionDeLaIA();
+
         if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY && player.getCurrentAnimationFrame()==player.parryFrame &&player.getCurrentAction()==ac.PROTECT.getAction()){
             player.setDeltaCurrentAnimationFrame(-1);
             player.isBlocking=true;
         }
+        contadorCambioSegundos++;
         player.setDeltaCurrentAnimationFrame(1);
         enemy.setDeltaCurrentAnimationFrame(1);
+    }
+
+    public void tomaDecisionDeLaIA(){
+
     }
 
     @Override
@@ -204,8 +213,12 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         return true;
     }
 
+    /**
+     * Método que dibuja los elementos del juego en pantalla
+     * @param c
+     */
     public void dibujar(Canvas c){
-        c.drawBitmap(fondo,0,0,null);
+        c.drawBitmap(fondo.fondo,0,0,null);
         player.dibuja(c);
         enemy.dibuja(c);
         Paint p= new Paint();
@@ -228,13 +241,17 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         if(player.isInvulnerable){
             c.drawText(String.valueOf(dmgTakenDisplay),player.posX,enemy.height,pDmgDone);
         }
-        if(lastTick-tickTimer>=nanosEnUnSegundo){
+        /*if(lastTick-tickTimer>=nanosEnUnSegundo){
             duracionCombate--;
             tickTimer=lastTick;
-        }
+        }*/
 
     }
 
+    /**
+     * Gestor del giroscopio. Establece la animación del personaje en función del evento
+     * @param event
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
 
@@ -331,6 +348,9 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
                         actualizaFrame();
                         dibujar(c);
+                        if(contadorCambioSegundos%FPS==0){
+                            duracionCombate--;
+                        }
                     }
                 }catch(Exception e){
                     e.printStackTrace();
@@ -340,6 +360,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                 lastTick+=Constantes.ticksPerFrame;
                 Log.i("frames", ""+lastTick);
                 sleepTime = lastTick -System.nanoTime();
+
                 if(slowHit) {
                     try {
                         Thread.sleep(200); //esto es como una pausa que se hace cuando hay un golpe, para darle efecto
@@ -358,7 +379,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
                 }
             }
             //todo hacer aqui las victory/losing screens
-            mp.stop(); //esto LO PARA, pero lo de abajo, aunque le ponga un nuevo archivo, lo reanuda???? what
+            fondo.mp.stop(); //esto LO PARA, pero lo de abajo, aunque le ponga un nuevo archivo, lo reanuda???? what
             //mp=MediaPlayer.create(context,R.raw.medievalfanfare);
             //mp.start();
             if(player.vidaActual/player.vidaMaxima>enemy.vidaActual/enemy.vidaMaxima){
@@ -369,6 +390,9 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         }
     }
 
+    /**
+     * Clase que gestiona los eventos de pantalla. Le asigna una animación al jugador según el evento.
+     */
     class MultiTouchHandler implements GestureDetector.OnGestureListener,
             GestureDetector.OnDoubleTapListener{
 
@@ -396,9 +420,7 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         }
 
         @Override
-        public void onShowPress(MotionEvent motionEvent) {
-
-        }
+        public void onShowPress(MotionEvent motionEvent) {}
 
         @Override
         public boolean onSingleTapUp(MotionEvent motionEvent) {
@@ -410,10 +432,6 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         @Override
         public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float vX, float vY) {
-            /*if(vX>1000&&vX>vY){
-                player.setCurrentAction(ac.PROJECTILE.getAction());
-            } //sinceramente no me da la vida
-            return true;*/
             return false;
         }
 

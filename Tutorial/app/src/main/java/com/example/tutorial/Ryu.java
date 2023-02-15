@@ -5,12 +5,25 @@ import static com.example.tutorial.Constantes.context;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.provider.MediaStore;
 
 public class Ryu extends Personaje{
+
     public Ryu(int posX, int posY, int vida, boolean isPlayer) {
         super(posX, posY, vida, isPlayer);
         iniciaAnimaciones();
+        iniciaSFX();
     }
+
+    public void iniciaSFX(){
+        mpUpperCut= MediaPlayer.create(context,R.raw.ryushoryuken);
+        mpBackwardsAttack= MediaPlayer.create(context, R.raw.ryutatsumaki);
+        mpProjectile=MediaPlayer.create(context,R.raw.ryuhadouken);
+    }
+    /**
+     * Inicia los valores iniciales de todas las animaciones del personaje
+     */
     public void iniciaAnimaciones(){
         iddleAnimation=new Frame[7];
         attackBackwards= new Frame[17];
@@ -160,6 +173,10 @@ public class Ryu extends Personaje{
         currentMoveAnimation=iddleAnimation;
     }
 
+    /**
+     * Actualiza la posición del personaje y su hitbox según el movimiento empleado
+     * @param action
+     */
     @Override
     public void actualizaFisica(int action) {
         super.actualizaFisica(action);

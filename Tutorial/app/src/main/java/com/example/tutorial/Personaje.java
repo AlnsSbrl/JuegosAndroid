@@ -2,11 +2,13 @@ package com.example.tutorial;
 
 import static com.example.tutorial.Constantes.altoPantalla;
 import static com.example.tutorial.Constantes.anchoPantalla;
+import static com.example.tutorial.Constantes.emplearSFX;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.util.Log;
 
 public class Personaje {
@@ -25,6 +27,11 @@ public class Personaje {
     Frame[] takingLightDamage;
     Frame[] currentMoveAnimation;
     Frame[] throwingProjectile;
+    //todo lo mejor de esto sería condensar los frames+mediaplayer en una clase? pues sí, pero te jodes meu, xa é demasiado tarde
+    MediaPlayer mpUpperCut;
+    MediaPlayer mpProjectile;
+    MediaPlayer mpBackwardsAttack;
+    MediaPlayer mpForwardAttack;
 
     Paint pVida;
     Paint pMarcoVida;
@@ -134,6 +141,10 @@ public class Personaje {
         }
     }
 
+    /**
+     * Cambia el movimiento del personaje, así como las características especiales que puedan tener estos
+     * @param action la acción que se va a realizar
+     */
     public void setCurrentAnimation(int action){
         currentAnimationFrame=0;
         isDoingAMove=true;
@@ -165,15 +176,24 @@ public class Personaje {
                 break;
             case ATTACK_BACKWARDS:
                 currentMoveAnimation=attackBackwards;
+                if(mpUpperCut!=null && emplearSFX){
+                    mpBackwardsAttack.start();
+                }
                 break;
             case UPPERCUT:
                 currentMoveAnimation=uppercut;
+                if(mpUpperCut!=null && emplearSFX){
+                    mpUpperCut.start();
+                }
                 break;
             case LOWKICK:
                 currentMoveAnimation=lowKick;
                 break;
             case PROJECTILE:
                 currentMoveAnimation=throwingProjectile;
+                if(mpUpperCut!=null && emplearSFX){
+                    mpProjectile.start();
+                }
                 break;
             case CROUCH:
                 currentMoveAnimation=crouch;

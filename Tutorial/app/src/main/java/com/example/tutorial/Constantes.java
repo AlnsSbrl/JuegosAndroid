@@ -6,14 +6,15 @@ public class Constantes {
     static Context context;
     static int altoPantalla;
     static int anchoPantalla;
-    static int FPS=10;
+    static int FPS=18;//establecer un rango entre 10 y 18 mas o menos (esto parece lo maximo que tira en mi movil)
     static int ticksPerSecond=1000000000;
     static int ticksPerFrame=ticksPerSecond/FPS;
     static int sensibilidadRotacion;
     static int tiempoCombate=75;
     static int widthBarraSalud=anchoPantalla*3/10;
     static int heightBarraSalud=altoPantalla/10;
-    static int volumenMusicaFondo;
+    static boolean emplearMusicaFondo=true;
+    static boolean emplearSFX=true;
 
     static float valorInicialInclinacionX; //valor inicial de la orientacion en x del usuario
     static float valorInicialInclinacionY; //valor inicial de la orientacion en y del usuario

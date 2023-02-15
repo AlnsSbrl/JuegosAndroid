@@ -13,7 +13,7 @@ public class Constantes {
     static int tiempoCombate=75;
     static int widthBarraSalud=anchoPantalla*3/10;
     static int heightBarraSalud=altoPantalla/10;
-    static boolean emplearMusicaFondo=true;
+    static boolean emplearMusicaFondo=false;
     static boolean emplearSFX=true;
 
     static float valorInicialInclinacionX; //valor inicial de la orientacion en x del usuario

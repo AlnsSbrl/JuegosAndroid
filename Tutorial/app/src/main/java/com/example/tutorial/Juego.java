@@ -88,8 +88,8 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         valorInicialInclinacionY=0;
         this.surfaceHolder=getHolder();
         this.surfaceHolder.addCallback(this);
-        player = new Ryu(anchoPantalla*1/2,altoPantalla*11/23,100,true);
-        enemy = new Terry(anchoPantalla*2/3,altoPantalla*11/23,200,false);
+        player = new Ryu(anchoPantalla*0,altoPantalla*11/23,10000,true);
+        enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,200,false);
         proyectiles= new ArrayList<>();
         hiloDibuja =new DrawingThread();
         setFocusable(true);
@@ -175,18 +175,42 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
             slowHit=true;
             player.setCurrentAnimation(ac.TAKING_LIGHT_DAMAGE.getAction());
             player.isInvulnerable=false;
-            //enemy.isBlocking=false;
-        }
-        //int rnd = (int)(Math.random()*15);
-        //if(rnd<6 && !enemy.isDoingAMove){
-          //  enemy.setCurrentAction(4);
-        //}
-        //todo colision de proyectiles
-        for(Proyectil proyectil: proyectiles){
-            proyectil.golpea(proyectil.isFromPlayer?enemy.hurtbox:player.hurtbox);
         }
 
-        tomaDecisionDeLaIA();
+        if(player.getCurrentAction()==ac.PROJECTILE.getAction()&&player.getCurrentAnimationFrame()==player.throwingProjectileFrame){
+            Proyectil pr = new Proyectil(player.projectile,player.projectileFinished,true,player.posXProyectil,player.posYProyectil);
+            proyectiles.add(pr);
+        }
+        //todo: checkear si los proyectiles se golpean entre sí
+        if(enemy.getCurrentAction()==ac.PROJECTILE.getAction()&&enemy.getCurrentAnimationFrame()==enemy.throwingProjectileFrame){
+            Proyectil pr = new Proyectil(enemy.projectile,enemy.projectileFinished,false,enemy.posXProyectil-enemy.width,enemy.posYProyectil);
+            proyectiles.add(pr);
+        }
+
+        for (Proyectil pr:proyectiles) {
+            pr.moverEnX(pr.speed);
+        }
+
+        for(int i=proyectiles.size();i>0;i--){
+            Proyectil pr = proyectiles.get(i-1);
+            if(pr.golpea(pr.isFromPlayer?enemy.hurtbox:player.hurtbox)){
+                proyectiles.remove(pr);
+                if(pr.isFromPlayer){
+                    enemy.setVidaActual(pr.damageMov);
+                    enemy.setCurrentAnimation(ac.TAKING_LIGHT_DAMAGE.getAction());
+                }else{
+                    player.setVidaActual(pr.damageMov);
+                    player.setCurrentAnimation(ac.TAKING_LIGHT_DAMAGE.getAction());
+                }
+                slowHit=true;
+                dmgDoneDisplay=pr.damageMov;
+                dmgDoneTextModifier=1;
+            }
+        }
+
+        if(!enemy.isDoingAMove){
+            tomaDecisionDeLaIA();
+        }
 
         if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY && player.getCurrentAnimationFrame()==player.parryFrame &&player.getCurrentAction()==ac.PROTECT.getAction()){
             player.setDeltaCurrentAnimationFrame(-1);
@@ -198,7 +222,142 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
     }
 
     public void tomaDecisionDeLaIA(){
+        //todo QUE DEPENDA DE LA VIDA DE LA GENTE TMB
+        //y si esta acorralado haga otra cosa tmb
+        if(enemy.posX-enemy.posEnemigo>anchoPantalla/2){
+            //o se acerca
+            comportamientoADistancia();
+            //o dispara proyectil
+        }else if(enemy.posX-enemy.posEnemigo<anchoPantalla/5){
+            comportamientoCercano();
+        }else{
+            comportamientoMiddleDistance();
+            //mas raro que haga un movimiento, pero lo hace a "reaccion"
+        }
+    }
+    public void comportamientoADistancia(){
+        int accion = (int)(Math.random()*25+1);
+        if(enemy.vidaActual/enemy.vidaMaxima>player.vidaActual/player.vidaMaxima){
+            accion=(int)(Math.random()*20+1);
+        }
+        switch (accion){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
+                break;
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                enemy.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
+                break;
+            case 10:
+                enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
+                break;
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+                enemy.setCurrentAnimation(ac.MOVE_FORWARD.getAction());
+                break;
+            default:
+                break;
+        }
+    }
 
+    public void comportamientoCercano(){
+
+        int accion = (int)(Math.random()*25+1);
+        if(enemy.getCurrentAction()==ac.PROTECT.getAction()){
+            accion=(int)(Math.random()*100+1);
+        }
+        switch (accion){
+            case 1:
+            case 2:
+            case 3:
+                enemy.setCurrentAnimation(ac.UPPERCUT.getAction());
+                break;
+            case 4:
+                enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
+                break;
+            case 5:
+            case 6:
+            case 7:
+                enemy.setCurrentAnimation(ac.PUNCH.getAction());
+                break;
+            case 8:
+            case 9:
+            case 10:
+                enemy.setCurrentAnimation(ac.STRONG_PUNCH.getAction());
+                break;
+            case 11:
+            case 12:
+                enemy.setCurrentAnimation(ac.LOWKICK.getAction());
+                break;
+            case 13:
+            case 14:
+            case 15:
+                enemy.setCurrentAnimation(ac.ATTACK_FORWARD.getAction());
+                break;
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+                enemy.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
+                break;
+            case 22:
+                enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
+                break;
+            default:
+                enemy.setCurrentAnimation(ac.PROTECT.getAction());
+                break;
+        }
+    }
+
+    public void comportamientoMiddleDistance(){
+        int r = (int)(Math.random()*10+1);
+        boolean vaGanando = enemy.vidaActual/enemy.vidaMaxima>player.vidaActual/player.vidaMaxima;
+        switch (r){
+            case 1:
+                if(player.isBlocking){
+                    enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
+                }
+                else if(player.getCurrentAction()==ac.MOVE_FORWARD.getAction()){
+                    int rndAction = (int)(Math.random()*7+1);
+                    enemy.setCurrentAnimation(rndAction);
+                }else if(player.isDoingAMove){
+                    enemy.setCurrentAnimation(ac.PROTECT.getAction());
+                }
+                break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                enemy.setCurrentAnimation(vaGanando?ac.MOVE_BACKWARDS.getAction():ac.MOVE_FORWARD.getAction());
+                break;
+            case 7:
+            case 8:
+                enemy.setCurrentAnimation(vaGanando?ac.MOVE_FORWARD.getAction():ac.MOVE_BACKWARDS.getAction());
+                break;
+            case 9:
+            case 10:
+                break;
+
+        }
     }
 
     @Override
@@ -240,6 +399,10 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
         }
         if(player.isInvulnerable){
             c.drawText(String.valueOf(dmgTakenDisplay),player.posX,enemy.height,pDmgDone);
+        }
+
+        for (Proyectil pr:proyectiles) {
+            pr.dibuja(c);
         }
         /*if(lastTick-tickTimer>=nanosEnUnSegundo){
             duracionCombate--;

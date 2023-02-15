@@ -27,6 +27,8 @@ public class Personaje {
     Frame[] takingLightDamage;
     Frame[] currentMoveAnimation;
     Frame[] throwingProjectile;
+    Frame[] projectile;
+    Frame[] projectileFinished;
     //todo lo mejor de esto sería condensar los frames+mediaplayer en una clase? pues sí, pero te jodes meu, xa é demasiado tarde
     MediaPlayer mpUpperCut;
     MediaPlayer mpProjectile;
@@ -46,8 +48,11 @@ public class Personaje {
     int height = altoPantalla*2/5;
     int width= height*2/3;
     int posX,posY;
+    int posXProyectil, posYProyectil;
     int vidaMaxima;
     int vidaActual;
+    int posEnemigo;
+
     private int currentAnimationFrame=0;
 
     public int getCurrentAnimationFrame() {
@@ -61,6 +66,7 @@ public class Personaje {
 
     int damageMov=0;
     int parryFrame;
+    int throwingProjectileFrame;
 
     private int currentAction;
     Rect hurtbox;
@@ -107,9 +113,16 @@ public class Personaje {
         if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!=ac.IDDLE.getAction()){
                 setCurrentAnimation(ac.IDDLE.getAction());
         }
-        canvas.drawRect(this.hurtbox,pMarcoVida);
+        //canvas.drawRect(this.hurtbox,pMarcoVida);
     }
+
+    /**
+     * Detecta si ha habido una colisión con el enemigo y actualiza dónde se encuentra el enemigo
+     * @param hurtboxEnemigo hurtbox del enemigo
+     * @return true si ha habido contacto, false si no
+     */
     public boolean golpea(Rect hurtboxEnemigo){
+        this.posEnemigo=(hurtboxEnemigo.left);
         damageMov=currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].damage;
         return (currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].esGolpeo && hurtbox.intersect(hurtboxEnemigo));
     }
@@ -120,6 +133,7 @@ public class Personaje {
 
     public boolean setVidaActual(int damageTaken) {
         this.vidaActual =vidaActual-damageTaken<=0?0:vidaActual-damageTaken;
+        this.moverEnX(-anchoPantalla/35);
         displayVidaActual = new Rect(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10,altoPantalla/10,(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10)+(vidaActual*anchoPantalla*3/10/vidaMaxima),altoPantalla*2/10);
         Log.i("puta", "esquina derecha: "+(vidaActual/vidaMaxima)*(anchoPantalla*3/10));
         Log.i("puta", "vida actual "+vidaActual+" maxima "+vidaMaxima+" anchoPant "+anchoPantalla);
@@ -217,11 +231,19 @@ public class Personaje {
         return posX;
     }
 
+    /**
+     * Mueve al personaje si este movimiento no rompe las condiciones establecidas(que esté dentro de la pantalla y que el player esté a la izquierda y el enemigo a la derecha)
+     * @param posX
+     */
     public void moverEnX(int posX) {
-        if(this.posX+posX<anchoPantalla-width && this.posX+posX>0) {
+        if(this.posX+posX<anchoPantalla-width && this.posX+posX>0&&((isPlayer&&this.posX+posX<posEnemigo)||!isPlayer&&this.posX-posX>posEnemigo)) {
             this.posX += isPlayer?posX:-posX;
-            actualizaHitbox();
+        }else if(this.posX+posX>anchoPantalla-width){
+            this.posX=anchoPantalla-width;
+        }else if(this.posX+posX<0){
+            this.posX=0;
         }
+        actualizaHitbox();
     }
 
     public int getPosY() {

@@ -1,6 +1,7 @@
 package com.example.tutorial;
 
 import static com.example.tutorial.Constantes.altoPantalla;
+import static com.example.tutorial.Constantes.anchoPantalla;
 import static com.example.tutorial.Constantes.context;
 
 import android.graphics.Bitmap;
@@ -16,7 +17,7 @@ public class Ryu extends Personaje{
         iniciaSFX();
     }
 
-    public void iniciaSFX(){
+    private void iniciaSFX(){
         mpUpperCut= MediaPlayer.create(context,R.raw.ryushoryuken);
         mpBackwardsAttack= MediaPlayer.create(context, R.raw.ryutatsumaki);
         mpProjectile=MediaPlayer.create(context,R.raw.ryuhadouken);
@@ -24,7 +25,7 @@ public class Ryu extends Personaje{
     /**
      * Inicia los valores iniciales de todas las animaciones del personaje
      */
-    public void iniciaAnimaciones(){
+    private void iniciaAnimaciones(){
         iddleAnimation=new Frame[7];
         attackBackwards= new Frame[17];
         strongPunch= new Frame[9];
@@ -38,6 +39,7 @@ public class Ryu extends Personaje{
         takingLightDamage = new Frame[5];
         parry = new Frame[6];
         throwingProjectile = new Frame[13];
+        projectile = new Frame[5];
 
         attackBackwards[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingback1),width,height,true),false,this.isPlayer,0,0);
         attackBackwards[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuflingback2),width,height,true),false,this.isPlayer,0,0);
@@ -169,6 +171,15 @@ public class Ryu extends Personaje{
         throwingProjectile[11]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress12),width,height,true),false,this.isPlayer,0,0);
         throwingProjectile[12]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress13),width,height,true),false,this.isPlayer,0,0);
 
+        throwingProjectileFrame=5;
+
+        projectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprojectile1),width*2/3,height*2/5,true),true,this.isPlayer,15,0);
+        projectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprojectile2),width*2/3,height*2/5,true),true,this.isPlayer,15,0);
+        projectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprojectile3),width*2/3,height*2/5,true),true,this.isPlayer,15,0);
+        projectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprojectile4),width*2/3,height*2/5,true),true,this.isPlayer,15,0);
+        projectile[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuprojectile5),width*2/3,height*2/5,true),true,this.isPlayer,15,0);
+        this.posXProyectil=this.posX+throwingProjectile[0].getFrameMov().getWidth()*3/5;
+        this.posYProyectil=this.posY+throwingProjectile[0].getFrameMov().getHeight()/6;
 
         currentMoveAnimation=iddleAnimation;
     }
@@ -181,9 +192,12 @@ public class Ryu extends Personaje{
     public void actualizaFisica(int action) {
         super.actualizaFisica(action);
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
+        this.posXProyectil=this.posX+throwingProjectile[0].getFrameMov().getWidth();
+        this.posYProyectil=this.posY+throwingProjectile[0].getFrameMov().getWidth()/3;
         switch (ac){
             case UPPERCUT:
-                actualizaUpperCut();
+                actualizaUpperCut();//todo: aqui hay un problema cuando te golpean mientras estás airborne-> realizar una nueva accion de heavy damage y boolean de isAirborne
+                //en caso de que te golpeen en el aire te quedas en esa animacion hasta que llegues al "suelo"
                 break;
             case ATTACK_BACKWARDS:
                 actualizaTatsu();
@@ -205,6 +219,6 @@ public class Ryu extends Personaje{
         }
     }
     public void actualizaTatsu(){
-
+        moverEnX(anchoPantalla/50);
     }
 }

@@ -223,17 +223,32 @@ public class Juego extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     public void tomaDecisionDeLaIA(){
         //todo QUE DEPENDA DE LA VIDA DE LA GENTE TMB
+        boolean isWinning=enemy.vidaActual/enemy.vidaMaxima>player.vidaActual/player.vidaMaxima;
+        boolean isCornered=enemy.posX>anchoPantalla*8/10;
+        boolean estanSeparados=enemy.posX-enemy.posEnemigo>anchoPantalla/3;
+        boolean estanCerca =enemy.posX-enemy.posEnemigo<enemy.width*3/2;
         //y si esta acorralado haga otra cosa tmb
-        if(enemy.posX-enemy.posEnemigo>anchoPantalla/2){
-            //o se acerca
-            comportamientoADistancia();
-            //o dispara proyectil
-        }else if(enemy.posX-enemy.posEnemigo<anchoPantalla/5){
-            comportamientoCercano();
+        if(isCornered)
+        {
+            if(!isWinning &&estanCerca){
+                //todo salir de esquina SUPER AGRESIVO
+            }else if(isWinning &&estanCerca){
+                //todo: superDEFENSIVO
+            }else if(isWinning && !estanCerca){
+                //todo: spam proyectiles, PERO no se aleja
+            }else{
+                //todo: intenta recuperar STAGE Control -> attack backwards/mover adelante NUNCA ATRAS
+            }
         }else{
+            //aqui el enemigo NO está arrinconado
+            if(isWinning && !estanCerca){
+                //comportamiento spammer y manteniendo distancia
+            }
+            comportamientoCercano();
+        }
             comportamientoMiddleDistance();
             //mas raro que haga un movimiento, pero lo hace a "reaccion"
-        }
+
     }
     public void comportamientoADistancia(){
         int accion = (int)(Math.random()*25+1);

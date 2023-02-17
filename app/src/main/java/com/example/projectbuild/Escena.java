@@ -5,11 +5,18 @@ import android.view.MotionEvent;
 
 public class Escena {
 
-    int numEscena;
+    int numEscena=-1;
+    boolean hasFinished;
+
+    int returnEscene;
 
     public Escena(int numEscena){
         this.numEscena=numEscena;
+        this.hasFinished=false;
     }
+
+
+
     public void dibuja(Canvas c){
 
     }
@@ -17,9 +24,10 @@ public class Escena {
 
     }
 
-    /*int onTouchEvent(MotionEvent e){
+    int onTouchEvent(MotionEvent e){
         int x= (int)e.getX();
         int y=(int)e.getY();
 
-    }*/
+        return this.numEscena;
+    }
 }

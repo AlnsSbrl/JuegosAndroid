@@ -15,6 +15,7 @@ public class Ryu extends Personaje{
 
     public Ryu(int posX, int posY, int vida, boolean isPlayer) {
         super(posX, posY, vida, isPlayer);
+        this.name="Ryu"; //todo ponerlo en string mejor
         iniciaAnimaciones();
         iniciaSFX();
     }

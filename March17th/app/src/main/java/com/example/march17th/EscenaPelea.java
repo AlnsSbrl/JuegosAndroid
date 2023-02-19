@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Build;
+import android.text.TextPaint;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -38,7 +39,6 @@ public class EscenaPelea extends Escena implements SensorEventListener {
     Personaje player;
     Personaje enemy;
     ArrayList<Proyectil> proyectiles;
-    int duracionCombate;
     int dmgTakenDisplay=0;
     int dmgTakenTextModifier=1;
     int dmgDoneDisplay=0;
@@ -52,22 +52,24 @@ public class EscenaPelea extends Escena implements SensorEventListener {
     Typeface dmgFont;
     boolean slowHit=false;
     int contadorCambioSegundos=0;
+    Scoreboard scoreboard;
 
-    public EscenaPelea(int numEscena) {
+    public EscenaPelea(int numEscena /*,Personaje personajeJugador, Personaje personajeEnemigo, EscenarioCombate escenario */) {
         super(numEscena);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dmgFont = context.getResources().getFont(R.font.reallyloveselviadesignpersonaluse);
         }
         returnEscene=0;
-        duracionCombate=Constantes.tiempoCombate;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         umbralSensibilidadX=0.5f;
         umbralSensibilidadY=0.5f;
         valorInicialInclinacionX=0;
         valorInicialInclinacionY=0;
-        player = new Ryu(anchoPantalla*0,altoPantalla*11/23,10000,true);
-        enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,200,false);
+
+        player = new Ryu(anchoPantalla*0,altoPantalla*11/23,500,true);
+        enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,500,false);
+        scoreboard = new Scoreboard(player.name,enemy.name,false);
         proyectiles= new ArrayList<>();
         fondo = new EscenarioCombate(R.drawable.mishimadojo,R.raw.spearofjustice);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -186,21 +188,29 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             Proyectil pr = proyectiles.get(i-1);
             if(pr.golpea(pr.isFromPlayer?enemy.hurtbox:player.hurtbox)){
                 proyectiles.remove(pr);
-                if(pr.isFromPlayer){
+                if(pr.isFromPlayer && !enemy.currentMoveAnimation[enemy.getCurrentAnimationFrame()].esGolpeo){
                     enemy.setVidaActual(pr.damageMov);
                     enemy.setCurrentAnimation(ac.TAKING_LIGHT_DAMAGE.getAction());
-                }else{
+                    slowHit=true;
+                    dmgDoneDisplay=pr.damageMov;
+                    dmgDoneTextModifier=1;
+                }else if(!pr.isFromPlayer && !player.currentMoveAnimation[player.getCurrentAnimationFrame()].esGolpeo){
                     player.setVidaActual(pr.damageMov);
                     player.setCurrentAnimation(ac.TAKING_LIGHT_DAMAGE.getAction());
+                    slowHit=true;
+                    dmgTakenDisplay=pr.damageMov;
+                    dmgTakenTextModifier=1;
                 }
-                slowHit=true;
-                dmgDoneDisplay=pr.damageMov;
-                dmgDoneTextModifier=1;
             }
         }
-
+        //TODO clase enemigo, que contiene un personaje
         if(!enemy.isDoingAMove){
             tomaDecisionDeLaIA();
+        }
+
+        if(enemy.getCurrentAnimationFrame()==enemy.parryFrame && enemy.getCurrentAction()==ac.PROTECT.getAction()){
+            enemy.setDeltaCurrentAnimationFrame(-1);
+            enemy.isBlocking=true;
         }
 
         if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY && player.getCurrentAnimationFrame()==player.parryFrame &&player.getCurrentAction()==ac.PROTECT.getAction()){
@@ -209,12 +219,12 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
         contadorCambioSegundos++;
         if(contadorCambioSegundos%FPS==0){
-            duracionCombate--;
+            scoreboard.actualizaTiempo();
         }
         player.setDeltaCurrentAnimationFrame(1);
         enemy.setDeltaCurrentAnimationFrame(1);
 
-        if(enemy.vidaActual<=0||player.vidaActual<=0||duracionCombate<=0){
+        if(enemy.vidaActual<=0||player.vidaActual<=0||scoreboard.currentTime<=0){
             hasFinished=true;
         }
     }
@@ -229,73 +239,37 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         if(isCornered)
         {//todo aqui PROHIBIDO IR PARA ATRAS, que se me buggea el bicho lmaoo
             if(!isWinning &&estanCerca){
-                //todo salir de esquina SUPER AGRESIVO
+                comportamientoCercanoArrinconado(25); //esto haria que fuese mas probable que atacase
             }else if(isWinning &&estanCerca){
-                //todo: superDEFENSIVO
+                comportamientoCercanoArrinconado(50); //esto hace que sea mas probable que se defienda
             }else if(isWinning && !estanCerca){
                 //todo: spam proyectiles
+                comportamientoADistanciaArrinconado(15);
             }else{ //es decir, está perdiendo y no estáis cerca el uno del otro
-                //todo: intenta recuperar STAGE Control -> attack backwards/mover adelante NUNCA ATRAS
+                //intenta recuperar STAGE Control -> attack backwards/mover adelante NUNCA ATRAS
+                comportamientoADistanciaArrinconado(25);
             }
         }else{
             //aqui el enemigo NO está arrinconado
             if(isWinning && !estanCerca){
+                comportamientoMantenerDistancia(15);
                 //comportamiento spammer y manteniendo distancia
+            }else if(!isWinning && !estanCerca){
+                //intenta acercarse
+                comportamientoADistanciaArrinconado(10);
+            }else if(isWinning && estanCerca){
+                comportamientoCercano(40); //todo menos bloq, se queda pillado
+                //comportamiento algo mas pasivo, incluso se echa para atras
+            }else{
+                comportamientoCercano(15);//todo tbh me falta incluir más veces el iddle animation
             }
-            comportamientoCercano();
+            //comportamientoCercano();
         }
-        comportamientoMiddleDistance();
-        //mas raro que haga un movimiento, pero lo hace a "reaccion"
 
     }
-    public void comportamientoADistancia(){
-        int accion = (int)(Math.random()*25+1);
-        if(enemy.vidaActual/enemy.vidaMaxima>player.vidaActual/player.vidaMaxima){
-            accion=(int)(Math.random()*20+1);
-        }
-        switch (accion){
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
-                break;
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-                enemy.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
-                break;
-            case 10:
-                enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
-                break;
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-                enemy.setCurrentAnimation(ac.MOVE_FORWARD.getAction());
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void comportamientoCercano(){
-
-        int accion = (int)(Math.random()*25+1);
-        if(enemy.getCurrentAction()==ac.PROTECT.getAction()){
-            accion=(int)(Math.random()*100+1);
-        }
-        switch (accion){
+    public void comportamientoCercanoArrinconado(int max){
+        int queHacer = (int)(Math.random()*max+1);
+        switch (queHacer){
             case 1:
             case 2:
             case 3:
@@ -329,14 +303,113 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             case 19:
             case 20:
             case 21:
-                enemy.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
+                enemy.setCurrentAnimation(ac.MOVE_FORWARD.getAction());
                 break;
             case 22:
                 enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
                 break;
             default:
-                enemy.setCurrentAnimation(ac.PROTECT.getAction());
+                if(enemy.getCurrentAction()!=ac.PROTECT.getAction()){
+                    enemy.setCurrentAnimation(ac.PROTECT.getAction());
+                }
                 break;
+        }
+    }
+    public void comportamientoADistanciaArrinconado(int max){
+        int accion = (int)(Math.random()*max+1);
+        switch (accion){
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
+                break;
+            case 5:
+                enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
+                break;
+            default:
+                enemy.setCurrentAnimation(ac.MOVE_FORWARD.getAction());
+                break;
+        }
+    }
+    public void comportamientoMantenerDistancia(int max){
+        int num= (int)(Math.random()*max+1);
+        switch (num){
+            case 1:
+                enemy.setCurrentAnimation(ac.ATTACK_FORWARD.getAction());
+                break;
+            case 2:
+                enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
+                break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
+                break;
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                enemy.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
+                break;
+            case 13:
+            default:
+                enemy.setCurrentAnimation(ac.MOVE_FORWARD.getAction());
+                break;
+        }
+    }
+    public void comportamientoCercano(int max){
+
+        int accion = (int)(Math.random()*max+1);
+        if(enemy.getCurrentAction()==ac.PROTECT.getAction()){
+            accion=(int)(Math.random()*100+1);
+        }
+        switch (accion){
+            case 1:
+            case 2:
+                enemy.setCurrentAnimation(ac.PUNCH.getAction());
+                break;
+            case 3:
+            case 4:
+                enemy.setCurrentAnimation(ac.UPPERCUT.getAction());
+                break;
+
+            case 5:
+                enemy.setCurrentAnimation(ac.PROJECTILE.getAction());
+                break;
+            case 6:
+            case 7:
+                enemy.setCurrentAnimation(ac.STRONG_PUNCH.getAction());
+                break;
+            case 8:
+            case 9:
+                enemy.setCurrentAnimation(ac.LOWKICK.getAction());
+                break;
+            case 10:
+            case 11:
+                enemy.setCurrentAnimation(ac.ATTACK_FORWARD.getAction());
+                break;
+            case 12:
+            case 13:
+                enemy.setCurrentAnimation(ac.ATTACK_BACKWARDS.getAction());
+                break;
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+                enemy.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
+                break;
+            default:
+                if(enemy.getCurrentAction()!=ac.PROTECT.getAction()){
+                    enemy.setCurrentAnimation(ac.PROTECT.getAction());
+                }
         }
     }
 
@@ -393,7 +466,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         c.drawBitmap(fondo.fondo,0,0,null);
         player.dibuja(c);
         enemy.dibuja(c);
-        Paint p= new Paint();
+        //TextPaint p= new TextPaint();
         Paint pDmgDone=new Paint();
         Paint pDmgTaken=new Paint();
         pDmgDone.setTypeface(dmgFont);
@@ -402,9 +475,12 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         pDmgTaken.setTextSize(dmgTakenDisplay*30);
         pDmgDone.setARGB(255/dmgDoneTextModifier*30,255,255,255);
         pDmgTaken.setARGB(255/dmgTakenTextModifier*30,255,255,255);
-        p.setTextSize(100);
-        p.setColor(Color.WHITE);
-        c.drawText((String.valueOf(duracionCombate)),anchoPantalla/2,altoPantalla/10,p);
+
+        scoreboard.dibuja(c);
+        //p.setUnderlineText(true);
+        //todo scoreboard class
+
+        //c.drawText((String.valueOf(duracionCombate)),anchoPantalla/2,player.displayMarcoVidaTotal.bottom,p);
 
         if(enemy.isInvulnerable){
             c.drawText(String.valueOf(dmgDoneDisplay),enemy.posX+enemy.width,enemy.height,pDmgDone);
@@ -412,6 +488,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
         if(player.isInvulnerable){
             c.drawText(String.valueOf(dmgTakenDisplay),player.posX,enemy.height,pDmgDone);
+            dmgTakenTextModifier++;
         }
 
         for (Proyectil pr:proyectiles) {

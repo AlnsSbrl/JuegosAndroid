@@ -13,6 +13,10 @@ public class Constantes {
     static int tiempoCombate=75;
     static int widthBarraSalud=anchoPantalla*3/10;
     static int heightBarraSalud=altoPantalla/10;
+    static int currentPlayerWins=0;
+    static int totalPlayerWins;
+    static int currentCPUWins=0;
+    static int totalCPUWins;
     static boolean emplearMusicaFondo=false;
     static boolean emplearSFX=false;
     static boolean emplearVibracion=false;

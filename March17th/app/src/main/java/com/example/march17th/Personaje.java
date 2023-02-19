@@ -18,6 +18,7 @@ import android.util.Log;
 public class Personaje {
 
 
+    String name;
     /**
      * animación del personaje cuando está quieto
      */
@@ -272,8 +273,8 @@ public class Personaje {
         isDoingAMove=false;
         isInvulnerable=false;
         this.isPlayer=isPlayer;
-        displayMarcoVidaTotal = new Rect(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10,altoPantalla/10,isPlayer?anchoPantalla*4/10:anchoPantalla*9/10,altoPantalla*2/10);
-        displayVidaActual = new Rect(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10,altoPantalla/10,(vidaActual/vidaMaxima)*(isPlayer?anchoPantalla*4/10:anchoPantalla*9/10),altoPantalla*2/10);
+        displayMarcoVidaTotal = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,isPlayer?anchoPantalla*8/52+anchoPantalla*16/52:anchoPantalla*27/52+anchoPantalla*16/53,altoPantalla*7/25);
+        displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,(vidaActual/vidaMaxima)*(isPlayer?anchoPantalla*8/52+anchoPantalla*16/52:anchoPantalla*27/52+anchoPantalla*16/53),altoPantalla*7/25);
         hurtbox=new Rect(posX,posY,posX+width,posY+height);
     }
 
@@ -321,7 +322,9 @@ public class Personaje {
     public boolean setVidaActual(int damageTaken) {
         this.vidaActual =vidaActual-damageTaken<=0?0:vidaActual-damageTaken;
         this.moverEnX(-anchoPantalla/35);
-        displayVidaActual = new Rect(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10,altoPantalla/10,(isPlayer?anchoPantalla*1/10:anchoPantalla*6/10)+(vidaActual*anchoPantalla*3/10/vidaMaxima),altoPantalla*2/10);
+        displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52)+(vidaActual*anchoPantalla*16/52/vidaMaxima),altoPantalla*7/25);
+        //displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*34/52,altoPantalla*6/25,(vidaActual/vidaMaxima)*(isPlayer?anchoPantalla*8/52+anchoPantalla*11/52:anchoPantalla*34/52+anchoPantalla*11/53),altoPantalla*7/25);
+
         Log.i("puta", "esquina derecha: "+(vidaActual/vidaMaxima)*(anchoPantalla*3/10));
         Log.i("puta", "vida actual "+vidaActual+" maxima "+vidaMaxima+" anchoPant "+anchoPantalla);
         if(vidaActual<=0){
@@ -426,7 +429,8 @@ public class Personaje {
      * @param posX
      */
     public void moverEnX(int posX) {
-        if(this.posX+posX<anchoPantalla-width && this.posX+posX>0&&((isPlayer&&this.posX+posX<posEnemigo)||!isPlayer&&this.posX-posX>posEnemigo)) {
+
+        if(this.posX+posX<anchoPantalla-width && this.posX+posX>0&&((isPlayer&&this.posX+posX<posEnemigo-this.width/3)||!isPlayer&&this.posX-posX>posEnemigo+this.width/3)) {
             this.posX += isPlayer?posX:-posX;
         }else if(this.posX+posX>anchoPantalla-width){
             this.posX=anchoPantalla-width;

@@ -10,6 +10,7 @@ public class Terry extends Personaje{
     public Terry(int posX, int posY, int vida,boolean isPlayer) {
         super(posX, posY, vida,isPlayer);
         IniciaAnimaciones();
+        this.name="Terry";
     }
 
     private void IniciaAnimaciones(){

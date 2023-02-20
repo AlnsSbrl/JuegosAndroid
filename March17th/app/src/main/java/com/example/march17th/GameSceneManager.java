@@ -39,7 +39,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        escenaActual=new EscenaMenu(0);
+        //escenaActual=new EscenaMenu(0);
+        escenaActual=new EscenaCalibracionGyro(8);
+
 
     }
 
@@ -92,6 +94,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     break;
                 case SETTINGS:
                     escenaActual = new EscenaConfiguracion(3);
+                    break;
+                case CALIBRACION:
+                    escenaActual = new EscenaCalibracionGyro(8);
                     break;
             }
         }

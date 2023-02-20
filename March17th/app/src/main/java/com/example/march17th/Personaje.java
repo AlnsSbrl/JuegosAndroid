@@ -204,7 +204,7 @@ public class Personaje {
     /**
      * Frame del movimiento actual del personaje
      */
-    private int currentAnimationFrame=0;
+    int currentAnimationFrame=0;
 
     /**
      * Daño que está haciendo en este instante el movimiento del personaje
@@ -224,7 +224,7 @@ public class Personaje {
     /**
      * Indica la acción actual que está ejecutando el personaje
      */
-    private int currentAction;
+    int currentAction;
 
     /**
      * Hurtbox del personaje

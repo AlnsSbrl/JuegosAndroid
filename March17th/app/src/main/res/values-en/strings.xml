@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pantalla_inicio">Press to continue</string>
+    <string name="FirstTimePrompt">Gyroscope is needed for basic character control</string>
+    <string name="FirstTimePrompt2">it is highly recommended to set it up before playing</string>
+    <string name="GyroConfigStarting">Hold the device with both hands and wait until it\'s finished</string>
+    <string name="GyroConfigInProcess">Calibrating...</string>
+    <string name="GyroConfigDone">Done!</string>
+    <string name="GyroSensibilityOnX">Sensibility on X Axis</string>
+    <string name="GyroSensibilityOnY">Sensibility on Y Axis</string>
+    <string name="UseMusic">Music</string>
+    <string name="FPSControl">Frame Rate</string>
+    <string name="GyroOption">Gyroscope</string>
+    <string name="SaveOptions">Save</string>
+    <string name="CancelOptions">Cancel</string>
+    <string name="Settings">Settings</string>
+    <string name="LOW">Low</string>
+    <string name="MEDIUM">Medium</string>
+    <string name="HIGH">High</string>
+</resources>

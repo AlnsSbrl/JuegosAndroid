@@ -14,9 +14,11 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.text.TextPaint;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+import android.widget.Toast;
 
 import static com.example.march17th.Constantes.FPS;
 import static com.example.march17th.Constantes.altoPantalla;
@@ -62,10 +64,10 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         returnEscene=0;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        umbralSensibilidadX=0.5f;
-        umbralSensibilidadY=0.5f;
-        valorInicialInclinacionX=0;
-        valorInicialInclinacionY=0;
+        //umbralSensibilidadX=0.5f;
+        //umbralSensibilidadY=0.5f;
+        //valorInicialInclinacionX=0;
+        //valorInicialInclinacionY=0;
 
         player = new Ryu(anchoPantalla*0,altoPantalla*11/23,500,true);
         enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,500,false);
@@ -95,7 +97,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             rotacionEnY = YPR[2]*-1.0f;// este es el valor que servirá para protegerse
             //final float y = YPR[0]*-1.0f; // estos valores varian de 0 a 1.5 mas o menos
             final float rotacionEnX = YPR[1]*-1.0f;// este es el valor que serviria para mover adelante atras en landscape
-
+            //Toast.makeText(context, "ee "+rotacionEnY, Toast.LENGTH_SHORT).show();
             if(!player.isDoingAMove){
                 if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY){
                     if(player.getCurrentAction()!=ac.PROTECT.getAction()){

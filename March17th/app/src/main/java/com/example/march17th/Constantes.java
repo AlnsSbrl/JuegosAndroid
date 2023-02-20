@@ -24,9 +24,13 @@ public class Constantes {
     static AccionesPersonaje ac;
     static EscenasJuego scn;
 
-    static float valorInicialInclinacionX; //valor inicial de la orientacion en x del usuario
-    static float valorInicialInclinacionY; //valor inicial de la orientacion en y del usuario
-    static float umbralSensibilidadX; //valor de la sensibilidad con la que el usuario se siente comodo para que se realice la accion
-    static float umbralSensibilidadY; //lo mismo que arriba
+    static float valorInicialInclinacionX=0.5f; //valor inicial de la orientacion en x del usuario
+    static float valorInicialInclinacionY=0.5f; //valor inicial de la orientacion en y del usuario
+    static float umbralSensibilidadX=0.5f; //valor de la sensibilidad con la que el usuario se siente comodo para que se realice la accion
+    static float umbralSensibilidadY=0.5f; //lo mismo que arriba
 
+    static float valorDefaultInclinacionX=0.5f;
+    static float valorDefaultInclinacionY=0.5f;
+    static float umbralDeultEnX=0.5f;
+    static float umbralDefaultEnY=0.5f;
 }

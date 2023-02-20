@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">March17th</string>
+    <string name="app_name" translatable="false">March17th</string>
     <string name="pantalla_inicio">Presione para continuar</string>
     <string name="FirstTimePrompt">El giroscopio es necesario para el control básico del personaje</string>
     <string name="FirstTimePrompt2">se recomienda configurar las preferencias antes de jugar</string>
@@ -9,17 +9,27 @@
     <string name="GyroConfigDone">¡Terminado!</string>
     <string name="GyroSensibilityOnX">Establece la sensibilidad en el eje X</string>
     <string name="GyroSensibilityOnY">Establece la sensibilidad en el eje Y</string>
-    <string name="Sound">Sonido</string>
+    <string name="Sound" translatable="false">Sonido</string>
     <string name="UseMusic">Música</string>
-    <string name="UseSFX">SFX</string>
+    <string name="UseSFX" translatable="false">SFX</string>
     <string name="FPSControl">Ajuste de frames</string>
     <string name="GyroOption">Giroscopio</string>
     <string name="SaveOptions">Guardar</string>
     <string name="CancelOptions">Cancelar</string>
-    <string name="Tutorial">Tutorial</string>
-    <string name="PlayAgainstComputer">Jugar</string>
+    <string name="Tutorial" translatable="false">Tutorial</string>
+    <string name="PlayAgainstComputer" translatable="false">Jugar</string>
     <string name="Settings">Configuración</string>
-    <string name="Records">Records</string>
-    <string name="Credits">Créditos</string>
+    <string name="Records" translatable="false">Records</string>
+    <string name="Credits" translatable="false">Créditos</string>
+    <string name="ES" translatable="false">🇪🇸</string>
+    <string name="EN" translatable="false">🇬🇧</string>
+    <string name="GL" translatable="false">🇵🇹</string>
+    <string name="DE" translatable="false">🇩🇪</string>
+    <string name="ZH" translatable="false">🇨🇳</string>
+    <string name="LOW">Poca</string>
+    <string name="MEDIUM">Media</string>
+    <string name="HIGH">Alta</string>
+
+
 
 </resources>

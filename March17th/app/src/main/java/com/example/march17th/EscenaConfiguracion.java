@@ -57,7 +57,7 @@ public class EscenaConfiguracion extends Escena{
             btnIdiomas[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/6-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(resBtnIdioma[i]),scn.SETTINGS.getEscena(),!lang.equals(languages[i]));
         }
         botones=new Boton[5];
-        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),useMusic);
+        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic),scn.SETTINGS.getEscena(),useMusic);
         botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),useSFX);
         botones[2]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/4,altoPantalla/10,context.getResources().getString(R.string.CancelOptions).toUpperCase(Locale.ROOT),scn.MENU_PRINCIPAL.getEscena(),true);
         botones[3]= new Boton(anchoPantalla/2,4*altoPantalla/6-altoPantalla/10,anchoPantalla/4,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT),scn.MENU_PRINCIPAL.getEscena(),true);
@@ -74,9 +74,11 @@ public class EscenaConfiguracion extends Escena{
             Resources res=context.getResources();
             DisplayMetrics dm=res.getDisplayMetrics();
             android.content.res.Configuration conf=res.getConfiguration();
-            conf.locale=new Locale(idioma.toLowerCase());
+            //conf.locale=new Locale(idioma.toLowerCase());
+            //conf.setLocale(new Locale(idioma.toLowerCase()));
+            conf.setLocale(Locale.ENGLISH);
             res.updateConfiguration(conf, dm);
-            Init();
+            //Init();
     }
 
     /**
@@ -96,6 +98,7 @@ public class EscenaConfiguracion extends Escena{
             }
         }else{
             //todo preguntar como hacer que rote bien la imagen
+            ///podria hacer un array de bitmaps y tiraria pero bueh
             //basicamente solo me rota al crear el bitmap, pero es que me desplaza al bitmap a la otra punta??
             matrix.reset();
             //matrix.postRotate(30,loading.getWidth()/2,loading.getHeight()/2);
@@ -115,7 +118,6 @@ public class EscenaConfiguracion extends Escena{
         if(aux!=this.numEscena &&aux!=-1){
             return aux;
         }
-        Toast.makeText(context, ""+lang, Toast.LENGTH_SHORT).show();
         for (Boton b:botones) {
             if(b.hitbox.contains(x,y)){
                 if(b==botones[0]){
@@ -135,6 +137,7 @@ public class EscenaConfiguracion extends Escena{
                 }
                 if(b==btnIdiomas[1]){
                     CambiaIdioma("en");
+                    Log.i(" en", "onTouchEvent: ");
                 }
                 if(b==btnIdiomas[2]){
                     CambiaIdioma("pt_PT");

@@ -3,7 +3,7 @@
     <string name="pantalla_inicio">Presione para continuar</string>
     <string name="FirstTimePrompt">El giroscopio es necesario para el control básico del personaje</string>
     <string name="FirstTimePrompt2">se recomienda configurar las preferencias antes de jugar</string>
-    <string name="GyroConfig">Configurar valores del giroscopio</string>
+    <string name="GyroConfig" translatable="false">Configurar valores del giroscopio</string>
     <string name="GyroConfigStarting">Agarre el dispositivo con las dos manos y manténgalo en la posición más cómoda para jugar</string>
     <string name="GyroConfigInProcess">Calibrando...</string>
     <string name="GyroConfigDone">¡Terminado!</string>

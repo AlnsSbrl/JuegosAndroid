@@ -64,12 +64,12 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         returnEscene=0;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        //umbralSensibilidadX=0.5f;
-        //umbralSensibilidadY=0.5f;
-        //valorInicialInclinacionX=0;
-        //valorInicialInclinacionY=0;
-
-        player = new Ryu(anchoPantalla*0,altoPantalla*11/23,500,true);
+        umbralSensibilidadX=0.5f;
+        umbralSensibilidadY=0.5f;
+        valorInicialInclinacionX=0;
+        valorInicialInclinacionY=0;
+        Log.i("hola", "EscenaPelea: ");
+        player = new Terry(anchoPantalla*0,altoPantalla*11/23,500,true);
         enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,500,false);
         scoreboard = new Scoreboard(player.name,enemy.name,false);
         proyectiles= new ArrayList<>();
@@ -176,14 +176,24 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             Proyectil pr = new Proyectil(player.projectile,player.projectileFinished,true,player.posXProyectil,player.posYProyectil);
             proyectiles.add(pr);
         }
+        if(player instanceof Terry &&player.getCurrentAction()==ac.LOWKICK.getAction() && player.getCurrentAnimationFrame()==player.throwingProjectileFrame){
+            PowerGeyser pr = new PowerGeyser(((Terry) player).powerGeyser,((Terry) player).powerGeyser,true,player.posXProyectil,player.posYProyectil);
+
+            Log.i("geyser", "lo deberia crear: "+((Terry) player).powerGeyser.toString());
+            proyectiles.add(pr);
+        }
         //todo: checkear si los proyectiles se golpean entre sí
         if(enemy.getCurrentAction()==ac.PROJECTILE.getAction()&&enemy.getCurrentAnimationFrame()==enemy.throwingProjectileFrame){
             Proyectil pr = new Proyectil(enemy.projectile,enemy.projectileFinished,false,enemy.posXProyectil-enemy.width,enemy.posYProyectil);
             proyectiles.add(pr);
         }
+        /*if(enemy instanceof Terry &&enemy.getCurrentAction()==ac.LOWKICK.getAction() && enemy.getCurrentAnimationFrame()==enemy.throwingProjectileFrame){
+            PowerGeyser pr = new PowerGeyser(((Terry) enemy).powerGeyser,((Terry) enemy).powerGeyser,false,enemy.posXProyectil,enemy.posYProyectil);
+            proyectiles.add(pr);
+        }*/
 
-        for (Proyectil pr:proyectiles) {
-            pr.moverEnX(pr.speed);
+        for(Proyectil p: proyectiles){
+            p.moverEnX(p.speed);
         }
 
         for(int i=proyectiles.size();i>0;i--){
@@ -207,7 +217,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
         //TODO clase enemigo, que contiene un personaje
         if(!enemy.isDoingAMove){
-            tomaDecisionDeLaIA();
+            //tomaDecisionDeLaIA();
         }
 
         if(enemy.getCurrentAnimationFrame()==enemy.parryFrame && enemy.getCurrentAction()==ac.PROTECT.getAction()){

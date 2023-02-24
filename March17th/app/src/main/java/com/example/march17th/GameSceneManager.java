@@ -39,8 +39,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        escenaActual=new EscenaMenu(0);
+        //escenaActual=new EscenaMenu(0);
         //escenaActual=new EscenaCalibracionGyro(8);
+        escenaActual=new EscenaPelea(0);
 
 
     }
@@ -85,6 +86,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     public void cambiaEscena(int nuevaEscena){
         if(escenaActual.numEscena!=nuevaEscena){
             EscenasJuego scn = EscenasJuego.values()[nuevaEscena];
+            Log.i("holaa", "cambiaEscena: "+scn);
+
             switch (scn){
                 case MENU_PRINCIPAL:
                     escenaActual= new EscenaMenu(0);

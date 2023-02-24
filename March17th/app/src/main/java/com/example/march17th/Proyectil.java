@@ -96,11 +96,15 @@ public class Proyectil {
      * mueve el proyectil dentro de los confines posibles
      * @param posX incremento en el eje X
      */
-    public void moverEnX(int posX) {
+    public boolean moverEnX(int posX) {
         if(this.posX+posX<anchoPantalla-this.hitbox.width() && this.posX+posX>0) {
             this.posX += isFromPlayer?posX:-posX;
             actualizaHitbox();
         }
+        if(this.posX==0||this.posX>=anchoPantalla){
+            return false;
+        }
+        return true;
     }
 
     /**

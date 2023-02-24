@@ -201,8 +201,8 @@ public class Ryu extends Personaje{
         super.actualizaFisica(action);
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
         //actualiza en cualquier momento la posición de donde se lanzaría el proyectil
-        this.posXProyectil=this.posX+throwingProjectile[0].getFrameMov().getWidth();
-        this.posYProyectil=this.posY+throwingProjectile[0].getFrameMov().getWidth()/3;
+        this.posXProyectil=this.posX+throwingProjectile[0].getFrameMov().getWidth()*3/5;
+        this.posYProyectil=this.posY+throwingProjectile[0].getFrameMov().getHeight()/6;
         switch (ac){
             case UPPERCUT:
                 actualizaUpperCut();//todo: aqui hay un problema cuando te golpean mientras estás airborne-> realizar una nueva accion de heavy damage y boolean de isAirborne

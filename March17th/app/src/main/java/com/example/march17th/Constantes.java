@@ -23,6 +23,7 @@ public class Constantes {
     static int volume;
     static AccionesPersonaje ac;
     static EscenasJuego scn;
+    static Mapas map;
 
     static float valorInicialInclinacionX=0.5f; //valor inicial de la orientacion en x del usuario
     static float valorInicialInclinacionY=0.5f; //valor inicial de la orientacion en y del usuario

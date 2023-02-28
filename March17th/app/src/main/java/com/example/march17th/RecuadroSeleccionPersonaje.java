@@ -21,7 +21,7 @@ public class RecuadroSeleccionPersonaje {
     int height;
     int width;
     int personaje;
-    int[] imagenPersonaje= new int[]{R.drawable.ryuagachao,R.drawable.terryiddle1};//todo hacer recorte del cuadro
+    int[] imagenPersonaje= new int[]{R.drawable.random,R.drawable.ryuportrait, R.drawable.terryportrait };//todo hacer recorte del cuadro
     Paint p;
     boolean isSelected;
 

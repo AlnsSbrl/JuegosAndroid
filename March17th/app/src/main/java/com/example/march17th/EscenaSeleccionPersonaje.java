@@ -4,15 +4,20 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import static com.example.march17th.Constantes.*;
+
+import java.util.ArrayList;
+
 public class EscenaSeleccionPersonaje extends Escena{
 
     //todo implementar un cuadrado donde se vea el escenario y se cambia con fling
+    //todo -> dtap elige al enemigo, tap
     int nextScene;
     int selectedCharacter=-1;
     int selectedMap=-1;
     RecuadroSeleccionPersonaje selecRyu;
     RecuadroSeleccionPersonaje selecTerry;
     RecuadroSeleccionPersonaje selecRandom;
+    ArrayList<Bitmap> selectorDeMapas= new ArrayList<>(); //todo crear una clase (o metodo) al que le pasas un numero y segun ese numero te devuelve un escenario de combate (tb hacer enumerado)
     Boton aceptar;
     Boton atras;
     EscenarioCombate escenarioCombate;

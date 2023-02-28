@@ -64,10 +64,6 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         returnEscene=0;
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        umbralSensibilidadX=0.5f;
-        umbralSensibilidadY=0.5f;
-        valorInicialInclinacionX=0;
-        valorInicialInclinacionY=0;
         Log.i("hola", "EscenaPelea: ");
         player = new Terry(anchoPantalla*0,altoPantalla*11/23,500,true);
         enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,500,false);

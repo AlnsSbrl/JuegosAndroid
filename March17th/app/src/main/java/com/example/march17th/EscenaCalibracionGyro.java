@@ -17,6 +17,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -41,6 +42,8 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
 
     Bitmap fondo;
     Bitmap blankScreen;
+    Bitmap[] loading;
+    int dibujaLoad=0;
     int segundosCalibrado=10;
     int contCalibre=0;
     private SensorManager sensorManager;
@@ -55,27 +58,16 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
         super(numEscena);
         umbrX= umbralSensibilidadX;
         umbrY = umbralSensibilidadY;
-        int indexMarcado=-1;
         btnesSensibilidadY=new Boton[3];
         btnesSensibilidadX=new Boton[3];
-        for (int i =0; i<btnesSensibilidadX.length;i++){
-            if(valoresSensibilidad[i]==umbrX){
-                indexMarcado=i;
-            }
-            btnesSensibilidadX[i]= new Boton(anchoPantalla/4+(i*anchoPantalla*2/10),3*altoPantalla/6-altoPantalla/10,anchoPantalla*2/10,altoPantalla*2/15, context.getString(textoBtnesSensibilidad[i]),scn.CALIBRACION.getEscena(),i==indexMarcado);
-        }
-        indexMarcado=-1;
-        for (int i =0; i<btnesSensibilidadY.length;i++){
-            if(valoresSensibilidad[i]==umbrY){
-                indexMarcado=i;
-            }
-            btnesSensibilidadY[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/6-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(textoBtnesSensibilidad[i]),scn.CALIBRACION.getEscena(),i==indexMarcado);
-        }
+        InicializaBotones();
+        iniciaLoad();
         //estos valores son los elegidos por el usuario
 
         valorIniX= valorInicialInclinacionX;
         valorIniY=valorInicialInclinacionY;
-        btnCalibrar= new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.GyroConfig).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(),true);
+        btnCalibrar= new Boton(anchoPantalla/4,altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.GyroConfig).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(),true);
+        btnRestablecer= new Boton(anchoPantalla/4,6*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.GyroConfig).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(),true);
 
 
         isCalibrating=false;
@@ -88,6 +80,40 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
         if(vectorRotacion!=null){
             sensorManager.registerListener(this,vectorRotacion,SensorManager.SENSOR_DELAY_NORMAL,SensorManager.SENSOR_DELAY_UI);
         }
+    }
+    public void iniciaLoad(){
+        loading = new Bitmap[4];
+        loading[0]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.loading),anchoPantalla/15,altoPantalla/15,true);
+        loading[1]=volteaImagen(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.loading),anchoPantalla/15,altoPantalla/15,true),false,false);
+        loading[2]=volteaImagen(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.loading),anchoPantalla/15,altoPantalla/15,true),true,false);
+        loading[3]=volteaImagen(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.loading),anchoPantalla/15,altoPantalla/15,true),true,true);
+
+    }
+    public Bitmap volteaImagen(Bitmap frameMov,boolean volteaEnX,boolean volteaEnY){
+        Matrix matrix = new Matrix();
+        float degrees=90;
+        if(volteaEnX) degrees=degrees*2;
+        if(volteaEnY) degrees = degrees*2;
+        matrix.setRotate(degrees);
+        return Bitmap.createBitmap(frameMov,0,0,frameMov.getWidth(),frameMov.getHeight(), matrix,true);
+    }
+
+    public void InicializaBotones(){
+        int indexMarcado=-1;
+        for (int i =0; i<btnesSensibilidadX.length;i++){
+            if(valoresSensibilidad[i]==umbrX){
+                indexMarcado=i;
+            }
+            btnesSensibilidadX[i]= new Boton(anchoPantalla/4+(i*anchoPantalla*2/10),3*altoPantalla/7-altoPantalla/10,anchoPantalla*2/10,altoPantalla*2/15, context.getString(textoBtnesSensibilidad[i]),scn.CALIBRACION.getEscena(),i==indexMarcado);
+        }
+        indexMarcado=-1;
+        for (int i =0; i<btnesSensibilidadY.length;i++){
+            if(valoresSensibilidad[i]==umbrY){
+                indexMarcado=i;
+            }
+            btnesSensibilidadY[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/7-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(textoBtnesSensibilidad[i]),scn.CALIBRACION.getEscena(),i==indexMarcado);
+        }
+
     }
 
     public void calibrar(boolean calibrar){
@@ -119,11 +145,13 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
             for(Boton b:btnesSensibilidadX){
                 if(b.hitbox.contains(x,y)){
                     cambiarSensibilidad(b);
+                    InicializaBotones();
                 }
             }
             for(Boton b: btnesSensibilidadY){
                 if(b.hitbox.contains(x,y)){
                     cambiarSensibilidad(b);
+                    InicializaBotones();
                 }
             }
 
@@ -186,10 +214,12 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
                 b.dibujar(c);
             }
             for(Boton b:btnesSensibilidadY){
-               // b.dibujar(c);
+               b.dibujar(c);
             }
         }else {
-            c.drawBitmap(blankScreen, anchoPantalla / 10, altoPantalla / 10, null);
+            //c.drawBitmap(blankScreen, anchoPantalla / 10, altoPantalla / 10, null);
+            c.drawBitmap(loading[dibujaLoad%loading.length],anchoPantalla/10,altoPantalla/10,null);
+            dibujaLoad++;
         }
     }
     @Override
@@ -204,21 +234,21 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
 
             if(!isCalibrating){
 
-                if(valorIniY-rotacionEnY>umbralSensibilidadY){
+                if(valorIniY-rotacionEnY>umbrY){
                     if(player.getCurrentAction()!=ac.PROTECT.getAction()){
                         player.setCurrentAnimation(ac.PROTECT.getAction());
                     }
-                }else if(rotacionEnY-valorIniY>umbralSensibilidadY){
+                }else if(rotacionEnY-valorIniY>umbrY){
                     if(!player.isDoingAMove){
                         player.setCurrentAnimation(ac.CROUCH.getAction());
                     }
-                }else if(valorIniX-rotacionEnX>umbralSensibilidadX){
+                }else if(valorIniX-rotacionEnX>umbrX){
 
                     if(player.getCurrentAction()!=ac.MOVE_BACKWARDS.getAction()) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
                         player.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
                     }
-                }else if(rotacionEnX-valorIniX>umbralSensibilidadX){
+                }else if(rotacionEnX-valorIniX>umbrX){
 
                     if(player.getCurrentAction()!=ac.MOVE_FORWARD.getAction()) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)

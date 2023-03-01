@@ -33,17 +33,22 @@ public class RecuadroSeleccionPersonaje {
         height=alto;
         isSelected=false;
         buttonImage=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),imagenPersonaje[personaje]),ancho,alto,true);
-       Paint p = new Paint();
+       p = new Paint();
        p.setColor(Color.YELLOW);
+       p.setStyle(Paint.Style.STROKE);
+       p.setStrokeWidth(5);
+
     }
 
     public void dibujar(Canvas c){
         c.drawBitmap(buttonImage,hitbox.left,hitbox.top,null);
         //c.drawText(textoBoton,hitbox.centerX(),hitbox.centerY()+paintTexto.getTextSize()/2,paintTexto);
+        //p.setColor(Color.YELLOW);
+
         if(isSelected){
             c.drawRect(hitbox,p);
         }
-        c.save();
+        //c.save();
     }
 
     /**

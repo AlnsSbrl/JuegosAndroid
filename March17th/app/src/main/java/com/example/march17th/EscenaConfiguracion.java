@@ -20,26 +20,71 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+/**
+ * Escena donde se cambian los ajustes de usuario
+ */
 public class EscenaConfiguracion extends Escena{
 
+    /**
+     * Distintos botones de configuracion (uso de musica, uso de sfx, giroscopio, volver al menu)
+     */
     Boton[] botones;
-    Bitmap loading=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.loading),anchoPantalla/10,anchoPantalla/10,true);
 
+    /**
+     * Imágenes que se muestran cuando se cambian los botones de idioma
+     */
+    Bitmap[] loading;
+    /**
+     * frame que indica qué imagen se dibuja mientras cambian los botones de idioma
+     */
+    int frameDibuja=0;
+
+    /**
+     * Fondo + musica
+     */
     EscenarioCombate escn;
-    Boton[] btnIdiomas;
-    String lang;
-    String[] languages= new String[]{"es","en","pt","de","zh"};
-    int[] resBtnIdioma= new int[]{R.string.ES,R.string.EN,R.string.GL,R.string.DE,R.string.ZH};
-    boolean useMusic;//=true;
-    boolean useSFX;//=true;
-    boolean dibuja=false;
-    Matrix matrix = new Matrix();
 
+    /**
+     * Botones de los distintos idiomas
+     */
+    Boton[] btnIdiomas;
+
+    /**
+     * variable auxiliar para determinar que boton está "pulsado" según el idioma
+     */
+    String lang;
+    /**
+     * auxiliar para decir que idioma tiene cada boton
+     */
+    String[] languages= new String[]{"es","en","pt","de","zh"};
+
+    /**
+     * emojiis de selección de idioma
+     */
+    int[] resBtnIdioma= new int[]{R.string.ES,R.string.EN,R.string.GL,R.string.DE,R.string.ZH};
+
+    /**
+     * permite al usuario cambiar si se usan o no los sonidos
+     */
+    boolean useMusic;
+    boolean useSFX;
+
+    /**
+     * cuando se cambia el idioma deja de dibujar los botones mientras se generan de nuevo
+     */
+    boolean dibuja=false;
+
+
+    /**
+     * Inicia los valores según los parámetros
+     * @param numEscena
+     */
     public EscenaConfiguracion(int numEscena) {
         super(numEscena);
         escn=new EscenarioCombate(R.drawable.snow,R.raw.megalovania);
         useMusic=Constantes.emplearMusicaFondo;
         useSFX=Constantes.emplearSFX;
+        iniciaLoad();
         Init();
     }
 
@@ -49,36 +94,44 @@ public class EscenaConfiguracion extends Escena{
      */
     public void Init(){
         dibuja=false;
-        Resources res = context.getResources();
-        android.content.res.Configuration conf = res.getConfiguration();
-        lang = conf.locale.toString().split("_")[0];
+        lang = Constantes.getIdioma().split("_")[0];;
         btnIdiomas=new Boton[5];
         for (int i =0; i<languages.length;i++){
             btnIdiomas[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/6-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(resBtnIdioma[i]),scn.SETTINGS.getEscena(),!lang.equals(languages[i]));
         }
-        botones=new Boton[5];
+        botones=new Boton[4];
         botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic),scn.SETTINGS.getEscena(),useMusic);
         botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),useSFX);
-        botones[2]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/4,altoPantalla/10,context.getResources().getString(R.string.CancelOptions).toUpperCase(Locale.ROOT),scn.MENU_PRINCIPAL.getEscena(),true);
-        botones[3]= new Boton(anchoPantalla/2,4*altoPantalla/6-altoPantalla/10,anchoPantalla/4,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT),scn.MENU_PRINCIPAL.getEscena(),true);
-        botones[4]= new Boton(anchoPantalla/4,3*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.GyroOption).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(), true);
+        botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.GyroOption).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(), true);
+        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT),scn.MENU_PRINCIPAL.getEscena(),true);
         dibuja=true;
     }
 
     /**
-     * Cambia el idioma
-     * @param idioma
-     * @author Javier Conde
+     * Inicia los valores de la imagen que aparece cuando no se dibujan los botones y estos se crean
      */
-    public void CambiaIdioma(String idioma){
-            Resources res=context.getResources();
-            DisplayMetrics dm=res.getDisplayMetrics();
-            android.content.res.Configuration conf=res.getConfiguration();
-            //conf.locale=new Locale(idioma.toLowerCase());
-            //conf.setLocale(new Locale(idioma.toLowerCase()));
-            conf.setLocale(Locale.ENGLISH);
-            res.updateConfiguration(conf, dm);
-            //Init();
+    public void iniciaLoad(){
+        loading = new Bitmap[4];
+        loading[0]=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.cagando),anchoPantalla/15,anchoPantalla/15,true);
+        loading[1]=volteaImagen(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.cagando),anchoPantalla/15,anchoPantalla/15,true),false,false);
+        loading[2]=volteaImagen(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.cagando),anchoPantalla/15,anchoPantalla/15,true),true,false);
+        loading[3]=volteaImagen(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.cagando),anchoPantalla/15,anchoPantalla/15,true),true,true);
+    }
+
+    /**
+     * Gira la imagen que se pasa como parámetro cierto número de grados. Por defecto la gira 90º.
+     * @param frameMov imagen que se voltea
+     * @param giraUnPoco true: dobla los grados que se gira la imagen
+     * @param giraUnPocoMas true: dobla los grados que se gira la imagen
+     * @return
+     */
+    public Bitmap volteaImagen(Bitmap frameMov,boolean giraUnPoco,boolean giraUnPocoMas){
+        Matrix matrix = new Matrix();
+        float degrees=90;
+        if(giraUnPoco) degrees=degrees*2;
+        if(giraUnPocoMas) degrees = degrees*2;
+        matrix.setRotate(degrees);
+        return Bitmap.createBitmap(frameMov,0,0,frameMov.getWidth(),frameMov.getHeight(), matrix,true);
     }
 
     /**
@@ -97,19 +150,17 @@ public class EscenaConfiguracion extends Escena{
                 b.dibujar(c);
             }
         }else{
-            //todo preguntar como hacer que rote bien la imagen
-            ///podria hacer un array de bitmaps y tiraria pero bueh
-            //basicamente solo me rota al crear el bitmap, pero es que me desplaza al bitmap a la otra punta??
-            matrix.reset();
-            //matrix.postRotate(30,loading.getWidth()/2,loading.getHeight()/2);
-            matrix.preRotate(30,loading.getWidth()/2,loading.getWidth()/2);
-            c.setMatrix(matrix);
-            //loading = Bitmap.createBitmap(loading,0,0,loading.getWidth(),loading.getHeight(), matrix,true);
-            c.drawBitmap(loading,0,0,null);
-            c.setMatrix(null);
+            frameDibuja++;
+            c.drawBitmap(loading[frameDibuja%loading.length],0,0,null);
+
         }
     }
 
+    /**
+     * Gestiona la pulsación de los botones
+     * @param e
+     * @return
+     */
     @Override
     int onTouchEvent(MotionEvent e) {
         int x= (int)e.getX();
@@ -125,7 +176,9 @@ public class EscenaConfiguracion extends Escena{
                 }else if(b==botones[1]) {
                     this.setUseSFX(!useSFX);
                 }else{
-                    //todo guardar shared prefferences y constantes
+                    Constantes.emplearSFX=this.useSFX;
+                    Constantes.emplearMusicaFondo= this.useMusic;
+                    Constantes.guardarValores();
                     return b.numEscena;
                 }
             }
@@ -133,32 +186,39 @@ public class EscenaConfiguracion extends Escena{
         for(Boton b:btnIdiomas){
             if(b.hitbox.contains(x,y)){
                 if(b==btnIdiomas[0]){
-                    CambiaIdioma("es_ES");
+                    Constantes.setIdioma("es_ES");
                 }
                 if(b==btnIdiomas[1]){
-                    CambiaIdioma("en");
-                    Log.i(" en", "onTouchEvent: ");
+                    Constantes.setIdioma("en");
                 }
                 if(b==btnIdiomas[2]){
-                    CambiaIdioma("pt_PT");
+                    Constantes.setIdioma("pt_PT");
                 }
                 if(b==btnIdiomas[3]){
-                    CambiaIdioma("de_DE");
+                    Constantes.setIdioma("de_DE");
                 }
                 if(b==btnIdiomas[4]){
-                    CambiaIdioma("zh_CN");
+                    Constantes.setIdioma("zh_CN");
                 }
+                Init();
             }
         }
         return this.numEscena;
     }
 
+    /**
+     * cambia el valor useMusic y cambia el color del botón para indicar su valor
+     * @param useMusic
+     */
     public void setUseMusic(boolean useMusic) {
         this.useMusic = useMusic;
         botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),this.useMusic);
-
     }
 
+    /**
+     * cambia el valor de useSFX y cambia el color del botón para indicar su valor
+     * @param useSFX
+     */
     public void setUseSFX(boolean useSFX) {
         this.useSFX = useSFX;
         botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),useSFX);

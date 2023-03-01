@@ -5,7 +5,7 @@
     <string name="FirstTimePrompt2">it is highly recommended to set it up before playing</string>
     <string name="GyroConfigStarting">Hold the device with both hands and wait until it\'s finished</string>
     <string name="GyroConfigInProcess">Calibrating...</string>
-    <string name="GyroConfigDone">Done!</string>
+    <string name="ReestablecerGyro">Done!</string>
     <string name="GyroSensibilityOnX">Sensibility on X Axis</string>
     <string name="GyroSensibilityOnY">Sensibility on Y Axis</string>
     <string name="UseMusic">Music</string>

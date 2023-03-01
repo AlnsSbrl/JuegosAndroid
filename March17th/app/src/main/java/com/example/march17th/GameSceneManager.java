@@ -25,9 +25,10 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     public GameSceneManager(Context context, Point resolucion){
         super(context);
         Constantes.context=context;
+        Constantes.leerValores();
+        Constantes.setIdioma(Constantes.getIdioma());
         altoPantalla=resolucion.y;
         anchoPantalla=resolucion.x;
-        Constantes.sensibilidadRotacion =3;
         this.surfaceHolder=getHolder();
         this.surfaceHolder.addCallback(this);//todo ver esto
         hiloDibuja =new DrawingThread();
@@ -41,7 +42,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         //escenaActual=new EscenaMenu(0);
         //escenaActual=new EscenaCalibracionGyro(8);
-        escenaActual=new EscenaPelea(0);
+        escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena());
+        //escenaActual= new EscenaConfiguracion(scn.SETTINGS.getEscena());
+        //escenaActual=new EscenaPelea(0);
 
 
     }
@@ -116,7 +119,6 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     synchronized (surfaceHolder){
                         escenaActual.actualizaFisica();
                         escenaActual.dibuja(canvas);
-                        Log.i("cerda", "dibujo escena "+escenaActual.numEscena);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -124,7 +126,6 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     if(canvas!=null)surfaceHolder.unlockCanvasAndPost(canvas);
                 }
                 lastTick+=Constantes.ticksPerFrame;
-                Log.i("frames", ""+lastTick);
                 sleepTime = lastTick -System.nanoTime();
 
                 if(slowHit) {

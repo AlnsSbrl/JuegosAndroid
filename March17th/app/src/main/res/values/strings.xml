@@ -3,12 +3,10 @@
     <string name="pantalla_inicio">Presione para continuar</string>
     <string name="FirstTimePrompt">El giroscopio es necesario para el control básico del personaje</string>
     <string name="FirstTimePrompt2">se recomienda configurar las preferencias antes de jugar</string>
-    <string name="GyroConfig" translatable="false">Configurar valores del giroscopio</string>
-    <string name="GyroConfigStarting">Agarre el dispositivo con las dos manos y manténgalo en la posición más cómoda para jugar</string>
-    <string name="GyroConfigInProcess">Calibrando...</string>
-    <string name="GyroConfigDone">¡Terminado!</string>
-    <string name="GyroSensibilityOnX">Establece la sensibilidad en el eje X</string>
-    <string name="GyroSensibilityOnY">Establece la sensibilidad en el eje Y</string>
+    <string name="GyroConfig" translatable="false">Calibrar</string>
+    <string name="ReestablecerGyro">Por defecto</string>
+    <string name="GyroSensibilityOnX">Eje X</string>
+    <string name="GyroSensibilityOnY">Eje Y</string>
     <string name="Sound" translatable="false">Sonido</string>
     <string name="UseMusic">Música</string>
     <string name="UseSFX" translatable="false">SFX</string>
@@ -29,6 +27,7 @@
     <string name="LOW">Poca</string>
     <string name="MEDIUM">Media</string>
     <string name="HIGH">Alta</string>
+
 
 
 

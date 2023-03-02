@@ -68,6 +68,6 @@ public class Scoreboard {
     }
 
     public void actualizaTiempo(){
-
+        currentTime--;
     }
 }

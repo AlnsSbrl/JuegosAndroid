@@ -8,6 +8,11 @@ public class Escena {
     int numEscena=-1;
     boolean hasFinished;
 
+    /**
+     * Escenario de combate
+     */
+    EscenarioCombate escenario;
+
     int returnEscene;
 
     public Escena(int numEscena){

@@ -2,6 +2,9 @@ package com.example.march17th;
 
 import org.jetbrains.annotations.Contract;
 
+/**
+ * Enumerado para las distintas acciones que puede hacer un personaje
+ */
 public enum AccionesPersonaje {
     IDDLE(0),
     PUNCH(1),
@@ -21,6 +24,9 @@ public enum AccionesPersonaje {
     CROUCH(15),
     PROTECT(16);
 
+    /**
+     * acción que se realiza
+     */
      private int action;
 
     AccionesPersonaje(int action){

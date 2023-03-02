@@ -3,12 +3,14 @@ package com.example.march17th;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.util.Locale;
 
 public class Constantes {
+
     static Context context;
     static int altoPantalla;
     static int anchoPantalla;
@@ -28,10 +30,12 @@ public class Constantes {
     static boolean emplearMusicaFondo=false;
     static boolean emplearSFX=false;
     static boolean emplearVibracion=false;
-    static int volume;
+    //static AudioManager audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    static int volume;//= audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     static AccionesPersonaje ac;
     static EscenasJuego scn;
     static Mapas map;
+    static ListaPersonajes personaje;
     private static String lang;
 
     static float valorInicialInclinacionX; //valor inicial de la orientacion en x del usuario

@@ -8,6 +8,7 @@ import static com.example.march17th.Constantes.volume;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 /**
  * Clase que representa un escenario, con un fondo y una canción asociados
@@ -33,6 +34,14 @@ public class EscenarioCombate {
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),resourceBitmap),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         mp=MediaPlayer.create(context,resourceAudio);
         mp.setVolume(volume/2,volume/2);
-
+    }
+    public void Reproduce(){
+        if(Constantes.emplearMusicaFondo){
+            mp.start();
+            Log.i("scn", "toca otra vez Sam: ");
+        }
+    }
+    public void Pausa(){
+        mp.pause();
     }
 }

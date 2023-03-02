@@ -6,9 +6,9 @@ public class MapaSelector {
 
     static ArrayList<EscenarioCombate> mapasDisponibles;
 
-    private static int[] bitmaps = new int[]{R.drawable.schweppes,R.drawable.mezquita,R.drawable.montana,R.drawable.mishimadojo,R.drawable.swamp};
+    public static int[] bitmaps = new int[]{R.drawable.schweppes,R.drawable.mezquita,R.drawable.montana,R.drawable.mishimadojo,R.drawable.swamp};
     private static int[] musicas = new int[]{R.raw.battleteamgalacticgrunt8bitremixthezame,R.raw.megalovania,R.raw.spearofjustice,R.raw.thezameteamgalacticremastered, R.raw.subnauticaexosuit};
-
+    //todo meter la cancion del karmaggan???????
     public static void Init(){
 
         mapasDisponibles= new ArrayList<>();

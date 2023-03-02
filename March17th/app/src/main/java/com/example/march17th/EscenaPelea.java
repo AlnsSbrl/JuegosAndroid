@@ -4,7 +4,6 @@ import static android.hardware.Sensor.TYPE_ROTATION_VECTOR;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
@@ -13,17 +12,16 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Build;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.widget.Toast;
 
 import static com.example.march17th.Constantes.FPS;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.context;
+import static com.example.march17th.Constantes.scn;
 import static com.example.march17th.Constantes.umbralSensibilidadX;
 import static com.example.march17th.Constantes.umbralSensibilidadY;
 import static com.example.march17th.Constantes.valorInicialInclinacionX;
@@ -38,38 +36,117 @@ import java.util.ArrayList;
 public class EscenaPelea extends Escena implements SensorEventListener {
 
     AudioManager audioManager;
+    /**
+     * Personaje manejado por el jugador
+     */
     Personaje player;
+    /**
+     * Personaje manejado por la IA
+     */
     Personaje enemy;
+
+    /**
+     * Colección de proyectiles que se lanzan durante el juego
+     */
     ArrayList<Proyectil> proyectiles;
+
+    /**
+     * El número que aparece en pantalla cuando golpean al jugador
+     */
     int dmgTakenDisplay=0;
+    /**
+     * El número que muestra el daño que se recibe se hace grande y desvane, esto modifica el tamaño y la transparencia
+     */
     int dmgTakenTextModifier=1;
+
+    /**
+     * El número que aparece en pantalla cuando el jugador hace daño
+     */
     int dmgDoneDisplay=0;
+    /**
+     * Modificador de tamaño y transparencia del número en cuestión
+     */
     int dmgDoneTextModifier=1;
+
+
     private SensorManager sensorManager;
     public GestureDetectorCompat detectorDeGestos;
-    private final float[] rotationMatrix = new float[9];
-    private final float[] orientationAngles = new float[3];
+    //private final float[] rotationMatrix = new float[9];
+    //private final float[] orientationAngles = new float[3];
+    /**
+     * Valor devuelto por el giroscopio en el eje Y
+     * @apiNote se hace valor de clase para hacer comprobaciones en actualizaFisica()
+     */
     float rotacionEnY;
-    EscenarioCombate fondo;
+
+
+
+    /**
+     * Fuente no nativa de android para mostrar el daño
+     */
     Typeface dmgFont;
+
+    /**
+     * Efecto que ralentiza el combate cuando hay un golpeo
+     */
     boolean slowHit=false;
+
+    /**
+     * variable auxiliar para cambiar el display que muestra el tiempo de combate
+     */
     int contadorCambioSegundos=0;
+
+    /**
+     * Marco que muestra el tiempo y las victorias actuales de jugador e IA
+     */
     Scoreboard scoreboard;
 
-    public EscenaPelea(int numEscena /*,Personaje personajeJugador, Personaje personajeEnemigo, EscenarioCombate escenario */) {
+    public EscenaPelea(int numEscena){
         super(numEscena);
+    }
+
+    /**
+     * Inicia los valores según los parámetros
+     * @param numEscena
+     * @param personajeJugador número que indica qué personaje es el jugador
+     * @param personajeEnemigo número que indica qué personaje es el enemigo
+     * @param escenario el fondo y la música que se emplean
+     */
+    public EscenaPelea(int numEscena, int personajeJugador, int personajeEnemigo, EscenarioCombate escenario) {
+        this(numEscena);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             dmgFont = context.getResources().getFont(R.font.reallyloveselviadesignpersonaluse);
         }
-        returnEscene=0;
+        ListaPersonajes perso = ListaPersonajes.values()[personajeJugador];
+        if(personajeJugador==perso.RANDOM.getPersonaje()){
+            int max=ListaPersonajes.values().length-1;
+            personajeJugador = (int)(Math.random()*max+1);
+            perso=ListaPersonajes.values()[personajeJugador];
+        }
+        switch (perso){
+            case TERRY:
+                player = new Terry(anchoPantalla*0,altoPantalla*11/23,500,true);
+                break;
+            case RYU:
+                player = new Ryu(anchoPantalla*0,altoPantalla*11/23,500,true);
+                break;
+            case RANDOM:
+                Log.i("scn", "CUIDADO EL RANDOM TIENE MAL EL RANGO ");
+                break;
+        }
+
+        returnEscene=scn.ELEGIR_PERSONAJES.getEscena();
         audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         int v=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         Log.i("hola", "EscenaPelea: ");
-        player = new Terry(anchoPantalla*0,altoPantalla*11/23,500,true);
-        enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,500,false);
+        enemy = new Ryu(anchoPantalla*2/3,altoPantalla*11/23,50,false);
         scoreboard = new Scoreboard(player.name,enemy.name,false);
         proyectiles= new ArrayList<>();
-        fondo = new EscenarioCombate(R.drawable.mishimadojo,R.raw.spearofjustice);
+        this.escenario = escenario;
+
+            this.escenario.Reproduce();
+
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
         if(vectorRotacion!=null){
@@ -471,7 +548,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
      * @param c
      */
     public void dibuja(Canvas c){
-        c.drawBitmap(fondo.fondo,0,0,null);
+        c.drawBitmap(escenario.fondo,0,0,null);
         player.dibuja(c);
         enemy.dibuja(c);
         //TextPaint p= new TextPaint();

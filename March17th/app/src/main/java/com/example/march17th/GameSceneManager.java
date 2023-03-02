@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.media.AudioManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -18,13 +21,16 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     DrawingThread hiloDibuja;
     long sleepTime=0;//
     boolean slowHit=false;
-
+    AudioManager audioManager;//=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    //static int volume;//= audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     long nanosEnUnSegundo=1000000000;
     Escena escenaActual;//=new Escena(0);
     int nuevaEscena;
     public GameSceneManager(Context context, Point resolucion){
         super(context);
         Constantes.context=context;
+        audioManager=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        volume= audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         Constantes.leerValores();
         Constantes.setIdioma(Constantes.getIdioma());
         altoPantalla=resolucion.y;
@@ -36,13 +42,14 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         setFocusable(true);
         lastTick=System.nanoTime();
         tickTimer=System.nanoTime();
+        MapaSelector.Init();
     }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         //escenaActual=new EscenaMenu(0);
         //escenaActual=new EscenaCalibracionGyro(8);
-        escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena());
+        escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),false);
         //escenaActual= new EscenaConfiguracion(scn.SETTINGS.getEscena());
         //escenaActual=new EscenaPelea(0);
 
@@ -64,12 +71,22 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
             synchronized (surfaceHolder){
                 if(escenaActual.getClass()==EscenaPelea.class){
                     if(!((EscenaPelea)escenaActual).detectorDeGestos.onTouchEvent(event)){
+
                     int accion=event.getActionMasked();
                     switch (accion){
                     }
                 }
+
             }
-        }
+                if(escenaActual.getClass()==EscenaSeleccionPersonaje.class){
+                    if(!((EscenaSeleccionPersonaje)escenaActual).detectorDeGestos.onTouchEvent(event)){
+                        int action=event.getActionMasked();
+                        switch (action){
+
+                        }
+                    }
+                }
+            }
         int pointerIndex = event.getActionIndex();
         int pointerID = event.getPointerId(pointerIndex);
         int accion = event.getActionMasked();
@@ -89,14 +106,17 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     public void cambiaEscena(int nuevaEscena){
         if(escenaActual.numEscena!=nuevaEscena){
             EscenasJuego scn = EscenasJuego.values()[nuevaEscena];
-            Log.i("holaa", "cambiaEscena: "+scn);
+            Log.i("scn", "cambiaEscena: "+scn);
 
             switch (scn){
                 case MENU_PRINCIPAL:
                     escenaActual= new EscenaMenu(0);
                     break;
+
                 case COMBATE_REAL:
-                    escenaActual = new EscenaPelea(1);//aqui pasarle dos personajes
+                    int persoPlayer = ((EscenaSeleccionPersonaje)escenaActual).selectedCharacter;
+                    int map = ((EscenaSeleccionPersonaje)escenaActual).indexMapa;
+                    escenaActual = new EscenaPelea(1,persoPlayer,0,MapaSelector.consigueMapa(map));//aqui pasarle dos personajes
                     break;
                 case SETTINGS:
                     escenaActual = new EscenaConfiguracion(3);
@@ -104,14 +124,43 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 case CALIBRACION:
                     escenaActual = new EscenaCalibracionGyro(8);
                     break;
+                case ELEGIR_PERSONAJES:
+                    Log.i("scn", "cambiaEscena: "+scn);
+                    //boolean isTutorial=true;
+                    if(escenaActual instanceof EscenaPelea || (escenaActual instanceof EscenaMenu && !((EscenaMenu) escenaActual).goesToTutorial)){
+                        Log.i("scn", "detecta para poner tutorial: "+scn);
+                        //sera que con el instanceof o el cast hace que no pueda aprovechar
+                        escenaActual= new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),false);
+
+
+                    }
+
+                    /*
+                    if(escenaActual instanceof EscenaTutorial || (escenaActual instanceof  EscenaMenu && !((EscenaMenu)escenaActual).goesToTutorial)){
+                        escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),true);
+                    }
+                    */
             }
         }
     }
 
+    /**
+     * Trozo de código pa que no me pete el juego
+     * @author Mónica Romero
+     */
+    public Handler mHandler;
+    boolean termina=true;
     class DrawingThread extends Thread{
+
         @Override
         public void run() {
-            while(true){
+            Looper.prepare();
+            mHandler = new Handler() {
+                public void handleMessage(Message msg) {
+                    // process incoming messages here
+                }
+            };
+            while(termina){
                 Canvas canvas=null;
                 try {
                     if(!surfaceHolder.getSurface().isValid())continue;
@@ -130,7 +179,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
                 if(slowHit) {
                     try {
-                        Thread.sleep(200); //esto es como una pausa que se hace cuando hay un golpe, para darle efecto
+                        Thread.sleep(250); //esto es como una pausa que se hace cuando hay un golpe, para darle efecto
                         slowHit = false;
                     }catch(InterruptedException e){
                         e.printStackTrace();
@@ -146,11 +195,13 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 }
                 if(escenaActual!=null){
                     if(escenaActual.hasFinished){
+                        escenaActual.escenario.Pausa();
                         cambiaEscena(escenaActual.returnEscene);
                     }
                 }
             //todo aqui iria el control de frames? en plan, lo hago siempre
             }
+            Looper.loop();
         }
     }
 }

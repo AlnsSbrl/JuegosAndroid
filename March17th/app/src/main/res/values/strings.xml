@@ -27,7 +27,8 @@
     <string name="LOW">Poca</string>
     <string name="MEDIUM">Media</string>
     <string name="HIGH">Alta</string>
-
+    <string name="Empezar" translatable="false">Empezar</string>
+    <string name="Atras" translatable="false">Atrás</string>
 
 
 

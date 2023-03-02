@@ -7,10 +7,10 @@ public enum EscenasJuego {
     MENU_PRINCIPAL(0),
     COMBATE_REAL(1),
     SETTINGS(2),
-    ELEGIR_PERSONAJES(6),
-    TUTORIAL(3),
-    VICTORIA(4),
-    DERROTA(5),
+    ELEGIR_PERSONAJES(3),
+    TUTORIAL(4),
+    VICTORIA(5),
+    DERROTA(6),
     CREDITOS(7),
     CALIBRACION(8);
 

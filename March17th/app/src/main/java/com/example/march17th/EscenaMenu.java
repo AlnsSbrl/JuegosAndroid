@@ -19,8 +19,8 @@ public class EscenaMenu extends Escena{
     Boton[] botones=new Boton[5];
     boolean goesToTutorial;
 
-    public EscenaMenu(int numEscena) {
-        super(numEscena);
+    public EscenaMenu(int numEscena, EscenarioCombate escen) {
+        super(numEscena,escen);
         escenario = new EscenarioCombate(R.drawable.mishimadojo,R.raw.thezameteamgalacticremastered);
         botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getResources().getString(R.string.Tutorial).toUpperCase(Locale.ROOT),scn.ELEGIR_PERSONAJES.getEscena(),true);
         botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.PlayAgainstComputer).toUpperCase(Locale.ROOT),scn.ELEGIR_PERSONAJES.getEscena(),true);

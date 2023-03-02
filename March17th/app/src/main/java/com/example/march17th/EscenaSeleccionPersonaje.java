@@ -17,7 +17,6 @@ public class EscenaSeleccionPersonaje extends Escena{
 
     //todo -> dtap elige al enemigo, tap
     //todo -> hacer que si no se selecciona ningún personaje se escoja aleatoriamente (es un motivo por el que peta)
-    //int nextScene;
     int selectedCharacter=-1;
     int selectedMap=3;
     RecuadroSeleccionPersonaje selecRyu;
@@ -30,18 +29,15 @@ public class EscenaSeleccionPersonaje extends Escena{
     Boton aceptar;
     Boton atras;
     Bitmap marcoMapa;
-    EscenarioCombate escenarioCombate;
     //todo agregar el marcador, donde se ponen los nombres y los recuadros del seleccionado (tanto para player como para enemigo) en grande
 
-    public EscenaSeleccionPersonaje(int numEscena) {
-        super(numEscena);
-        for(int i=0; i<MapaSelector.bitmaps.length;i++){
-            selectorDeMapas.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),MapaSelector.bitmaps[i]),anchoPantalla/2,altoPantalla/3,true));
+    public EscenaSeleccionPersonaje(int numEscena, EscenarioCombate escenarioCombate) {
+        super(numEscena, escenarioCombate);
+        for(int i = 0; i<MapaSelector.bitmapsCombate.length; i++){
+            selectorDeMapas.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),MapaSelector.bitmapsCombate[i]),anchoPantalla/2,altoPantalla/3,true));
         }
         marcoMapa= Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.marcoseleccionmapa),anchoPantalla/2,altoPantalla/3,true);
         plantelLuchadores = new ArrayList<>();
-
-        escenarioCombate=new EscenarioCombate(R.drawable.characterselection,R.raw.battleteamgalacticgrunt8bitremixthezame);
         selecRandom = new RecuadroSeleccionPersonaje(anchoPantalla/2,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RANDOM.getPersonaje());
         selecRyu= new RecuadroSeleccionPersonaje(anchoPantalla/2-anchoPantalla/10,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RYU.getPersonaje());
         selecTerry = new RecuadroSeleccionPersonaje(anchoPantalla/2+anchoPantalla/10,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.TERRY.getPersonaje());
@@ -52,8 +48,8 @@ public class EscenaSeleccionPersonaje extends Escena{
 
         detectorDeGestos = new GestureDetectorCompat(context,new EscenaSeleccionPersonaje.MultiTouchHandler());
     }
-    public EscenaSeleccionPersonaje(int numEscena, boolean isTutorial){
-        this(numEscena);
+    public EscenaSeleccionPersonaje(int numEscena,EscenarioCombate escenarioCombate, boolean isTutorial){
+        this(numEscena, escenarioCombate);
         aceptar= new Boton(anchoPantalla*7/10,altoPantalla*7/10, anchoPantalla*3/10,altoPantalla/10, context.getResources().getString(R.string.Empezar).toUpperCase(),isTutorial?scn.TUTORIAL.getEscena():scn.COMBATE_REAL.getEscena(), true);
 
     }
@@ -66,13 +62,14 @@ public class EscenaSeleccionPersonaje extends Escena{
             return aux;
         }
 
+        /*
         //todo gestionar el fling desde aqui????
         if(!detectorDeGestos.onTouchEvent(e)){
             int accion=e.getActionMasked();
             switch (accion){
 
             }
-        }
+        }*/
 
         if(aceptar.onTouch(x,y)){
             Log.i("scn", "onTouchEvent: "+aceptar.numEscena);
@@ -91,7 +88,8 @@ public class EscenaSeleccionPersonaje extends Escena{
 
     @Override
     public void dibuja(Canvas c) {
-        c.drawBitmap(this.escenarioCombate.fondo, 0,0,null);
+        super.dibuja(c);
+        //c.drawBitmap(this.escenarioCombate.fondo, 0,0,null);
         selecRyu.dibujar(c);
         selecTerry.dibujar(c);
         selecRandom.dibujar(c);
@@ -113,7 +111,16 @@ public class EscenaSeleccionPersonaje extends Escena{
         @Override
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
 
+            int x = (int) motionEvent.getX();
+            int y = (int) motionEvent.getY();
 
+            for(RecuadroSeleccionPersonaje r:plantelLuchadores){
+                r.isSelected=false;
+                if(r.onTouch(x,y)){
+                    r.isSelected=true;
+                    selectedCharacter=r.personaje;
+                }
+            }
             return false;
         }
         //todo asignar a player
@@ -133,17 +140,7 @@ public class EscenaSeleccionPersonaje extends Escena{
         @Override
         public boolean onDown(MotionEvent motionEvent) {
 
-            //todo cambiarlo a on single tap confirmed
-            int x = (int) motionEvent.getX();
-            int y = (int) motionEvent.getY();
 
-            for(RecuadroSeleccionPersonaje r:plantelLuchadores){
-                r.isSelected=false;
-                if(r.onTouch(x,y)){
-                    r.isSelected=true;
-                    selectedCharacter=r.personaje;
-                }
-            }
             return false;
         }
 

@@ -79,8 +79,8 @@ public class EscenaConfiguracion extends Escena{
      * Inicia los valores según los parámetros
      * @param numEscena
      */
-    public EscenaConfiguracion(int numEscena) {
-        super(numEscena);
+    public EscenaConfiguracion(int numEscena, EscenarioCombate escen) {
+        super(numEscena,escen);
         escn=new EscenarioCombate(R.drawable.snow,R.raw.megalovania);
         useMusic=Constantes.emplearMusicaFondo;
         useSFX=Constantes.emplearSFX;
@@ -213,6 +213,11 @@ public class EscenaConfiguracion extends Escena{
     public void setUseMusic(boolean useMusic) {
         this.useMusic = useMusic;
         botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),this.useMusic);
+        if(useMusic){
+            this.escenario.Reproduce();
+        }else{
+            this.escenario.Pausa();
+        }
     }
 
     /**

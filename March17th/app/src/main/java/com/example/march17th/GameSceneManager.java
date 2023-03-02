@@ -42,14 +42,13 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         setFocusable(true);
         lastTick=System.nanoTime();
         tickTimer=System.nanoTime();
-        MapaSelector.Init();
     }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         //escenaActual=new EscenaMenu(0);
         //escenaActual=new EscenaCalibracionGyro(8);
-        escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),false);
+        escenaActual = new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(),MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),false);
         //escenaActual= new EscenaConfiguracion(scn.SETTINGS.getEscena());
         //escenaActual=new EscenaPelea(0);
 
@@ -58,6 +57,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+        //todo: arreglar aqui cuando sales de la app y vuelves a entrar
+        this.escenaActual.escenario.Pausa();
     }
 
     @Override
@@ -107,22 +108,23 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         if(escenaActual.numEscena!=nuevaEscena){
             EscenasJuego scn = EscenasJuego.values()[nuevaEscena];
             Log.i("scn", "cambiaEscena: "+scn);
-
+            escenaActual.escenario.Pausa();
             switch (scn){
                 case MENU_PRINCIPAL:
-                    escenaActual= new EscenaMenu(0);
+                    escenaActual= new EscenaMenu(0, MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
                     break;
 
                 case COMBATE_REAL:
                     int persoPlayer = ((EscenaSeleccionPersonaje)escenaActual).selectedCharacter;
                     int map = ((EscenaSeleccionPersonaje)escenaActual).indexMapa;
-                    escenaActual = new EscenaPelea(1,persoPlayer,0,MapaSelector.consigueMapa(map));//aqui pasarle dos personajes
+                    if(persoPlayer<0) persoPlayer=0;
+                    escenaActual = new EscenaPelea(1,MapaSelector.consigueMapa(map),persoPlayer,0);//aqui pasarle dos personajes
                     break;
                 case SETTINGS:
-                    escenaActual = new EscenaConfiguracion(3);
+                    escenaActual = new EscenaConfiguracion(3,escenaActual instanceof EscenaCalibracionGyro?escenaActual.escenario:MapaSelector.consigueMenu(Menus.OPCIONES.getMenu()));
                     break;
                 case CALIBRACION:
-                    escenaActual = new EscenaCalibracionGyro(8);
+                    escenaActual = new EscenaCalibracionGyro(8,escenaActual.escenario);
                     break;
                 case ELEGIR_PERSONAJES:
                     Log.i("scn", "cambiaEscena: "+scn);
@@ -130,7 +132,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     if(escenaActual instanceof EscenaPelea || (escenaActual instanceof EscenaMenu && !((EscenaMenu) escenaActual).goesToTutorial)){
                         Log.i("scn", "detecta para poner tutorial: "+scn);
                         //sera que con el instanceof o el cast hace que no pueda aprovechar
-                        escenaActual= new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),false);
+                        escenaActual= new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(),MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),false);
 
 
                     }
@@ -195,7 +197,6 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 }
                 if(escenaActual!=null){
                     if(escenaActual.hasFinished){
-                        escenaActual.escenario.Pausa();
                         cambiaEscena(escenaActual.returnEscene);
                     }
                 }

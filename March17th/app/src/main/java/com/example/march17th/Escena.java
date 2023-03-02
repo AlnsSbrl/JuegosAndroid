@@ -15,15 +15,17 @@ public class Escena {
 
     int returnEscene;
 
-    public Escena(int numEscena){
+    public Escena(int numEscena, EscenarioCombate escenario){
         this.numEscena=numEscena;
         this.hasFinished=false;
+        this.escenario=escenario;
+        this.escenario.Reproduce();
     }
 
 
 
     public void dibuja(Canvas c){
-
+        c.drawBitmap(escenario.fondo,0,0,null);
     }
     public void actualizaFisica(){
 

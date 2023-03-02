@@ -138,8 +138,8 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
      * Inicia valores y establece el sensor de rotación
      * @param numEscena
      */
-    public EscenaCalibracionGyro(int numEscena) {
-        super(numEscena);
+    public EscenaCalibracionGyro(int numEscena, EscenarioCombate escenario) {
+        super(numEscena,escenario);
         umbrX= umbralSensibilidadX;
         umbrY = umbralSensibilidadY;
         btnesSensibilidadY=new Boton[3];

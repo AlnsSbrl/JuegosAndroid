@@ -6,7 +6,7 @@ public enum Mapas {
 
     EDIFICIO(0),
     MEZQUITA(1),
-    MOUNTAIN(2),
+    SNOW(2),
     DOJO(3),
     SWAMP(4);
 

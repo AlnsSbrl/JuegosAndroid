@@ -14,8 +14,6 @@ import android.os.Build;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-
 import static com.example.march17th.Constantes.FPS;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
@@ -24,13 +22,12 @@ import static com.example.march17th.Constantes.umbralSensibilidadX;
 import static com.example.march17th.Constantes.umbralSensibilidadY;
 import static com.example.march17th.Constantes.valorInicialInclinacionX;
 import static com.example.march17th.Constantes.valorInicialInclinacionY;
-import static com.example.march17th.Constantes.ac;
-
-
 import androidx.core.view.GestureDetectorCompat;
-
 import java.util.ArrayList;
 
+/**
+ * Escena de un combate contra la IA
+ */
 public class EscenaPelea extends Escena implements SensorEventListener {
 
     /**
@@ -105,9 +102,9 @@ public class EscenaPelea extends Escena implements SensorEventListener {
     /**
      * Inicia los valores según los parámetros
      * @param numEscena identificador escena actual
+     * @param escenario el fondo y la música que se emplean
      * @param personajeJugador número que indica qué personaje es el jugador
      * @param personajeEnemigo número que indica qué personaje es el enemigo
-     * @param escenario el fondo y la música que se emplean
      */
     public EscenaPelea(int numEscena,EscenarioCombate escenario, int personajeJugador, int personajeEnemigo) {
         this(numEscena,escenario);
@@ -123,10 +120,10 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
         switch (perso){
             case TERRY:
-                player = new Terry(anchoPantalla*0,altoPantalla*11/23,500,true);
+                player = new Terry(anchoPantalla/3,altoPantalla*11/23,500,true);
                 break;
             case RYU:
-                player = new Ryu(anchoPantalla*0,altoPantalla*11/23,500,true);
+                player = new Ryu(anchoPantalla/3,altoPantalla*11/23,500,true);
                 break;
             default:
                 Log.i("scn", "CUIDADO EL RANDOM TIENE MAL EL RANGO ");
@@ -170,7 +167,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType()==TYPE_ROTATION_VECTOR){
-            float R[] = new float[9];
+            float []R = new float[9];
             SensorManager.getRotationMatrixFromVector(R,event.values);
             float[] YPR = new float[3];
             SensorManager.getOrientation(R,YPR);
@@ -184,7 +181,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                         player.setCurrentAnimation(AccionesPersonaje.PROTECT.getAction());
                     }
                 }else if(rotacionEnY-valorInicialInclinacionY>umbralSensibilidadY){
-                    if(!player.isDoingAMove){
+                    if(player.currentAction!=AccionesPersonaje.CROUCH.getAction()){
                         player.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
                     }
                 }else if(valorInicialInclinacionX-rotacionEnX>umbralSensibilidadX){
@@ -299,7 +296,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             enemy.isBlocking=true;
         }
 
-        if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY && player.getCurrentAnimationFrame()==player.parryFrame &&player.getCurrentAction()==ac.PROTECT.getAction()){
+        if(valorInicialInclinacionY-rotacionEnY>umbralSensibilidadY && player.getCurrentAnimationFrame()==player.parryFrame &&player.getCurrentAction()== AccionesPersonaje.PROTECT.getAction()){
             player.setDeltaCurrentAnimationFrame(-1);
             player.isBlocking=true;
         }
@@ -319,7 +316,6 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         //todo QUE DEPENDA DE LA VIDA DE LA GENTE TMB
         boolean isWinning=enemy.vidaActual/enemy.vidaMaxima>player.vidaActual/player.vidaMaxima;
         boolean isCornered=enemy.posX>anchoPantalla*8/10;
-        boolean estanSeparados=enemy.posX-enemy.posEnemigo>anchoPantalla/3;
         boolean estanCerca =enemy.posX-enemy.posEnemigo<enemy.width*3/2;
         //y si esta acorralado haga otra cosa tmb
         if(isCornered)
@@ -499,51 +495,6 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
     }
 
-    public void comportamientoMiddleDistance(){
-        int r = (int)(Math.random()*10+1);
-        boolean vaGanando = enemy.vidaActual/enemy.vidaMaxima>player.vidaActual/player.vidaMaxima;
-        switch (r){
-            case 1:
-                if(player.isBlocking){
-                    enemy.setCurrentAnimation(AccionesPersonaje.PROJECTILE.getAction());
-                }
-                else if(player.getCurrentAction()== AccionesPersonaje.MOVE_FORWARD.getAction()){
-                    int rndAction = (int)(Math.random()*7+1);
-                    enemy.setCurrentAnimation(rndAction);
-                }else if(player.isDoingAMove){
-                    enemy.setCurrentAnimation(AccionesPersonaje.PROTECT.getAction());
-                }
-                break;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-                enemy.setCurrentAnimation(vaGanando? AccionesPersonaje.MOVE_BACKWARDS.getAction(): AccionesPersonaje.MOVE_FORWARD.getAction());
-                break;
-            case 7:
-            case 8:
-                enemy.setCurrentAnimation(vaGanando? AccionesPersonaje.MOVE_FORWARD.getAction(): AccionesPersonaje.MOVE_BACKWARDS.getAction());
-                break;
-            case 9:
-            case 10:
-                break;
-
-        }
-    }
-
-
-    public boolean onTouchEvent(MotionEvent event,SurfaceHolder surfaceHolder) {
-        synchronized (surfaceHolder){
-            if(!detectorDeGestos.onTouchEvent(event)){
-                int accion=event.getActionMasked();
-                switch (accion){
-                }
-            }
-        }
-        return true;
-    }
-
     /**
      * Método que dibuja los elementos del juego en pantalla
      * @param c canvas
@@ -588,9 +539,14 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             return false;
         }
 
+        /**
+         * Establece la animación del jugador a golpeo fuerte
+         * @param motionEvent evento
+         * @return true
+         */
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
-            if(!player.isDoingAMove || (player.isDoingAMove &&player.getCurrentAction() == AccionesPersonaje.PUNCH.getAction())){
+            if(!player.isDoingAMove || (player.getCurrentAction() == AccionesPersonaje.PUNCH.getAction())){
                 player.setCurrentAnimation(AccionesPersonaje.STRONG_PUNCH.getAction());
             }
             return true;
@@ -609,6 +565,11 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         @Override
         public void onShowPress(MotionEvent motionEvent) {}
 
+        /**
+         * Establece la animación del jugador al puñetazo básico
+         * @param motionEvent evento
+         * @return true
+         */
         @Override
         public boolean onSingleTapUp(MotionEvent motionEvent) {
             if(!player.isDoingAMove) {
@@ -622,14 +583,25 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             return false;
         }
 
+        /**
+         * Lanza un proyectil
+         * @param motionEvent evento
+         */
         @Override
         public void onLongPress(MotionEvent motionEvent) {
-            //todo proyectil tipo hadouken, o el power geiser de terry O UN TAUNT QUE TE BOOSTEA EL DAÑO QUE HACES OMG
             if(!player.isDoingAMove) {
                 player.setCurrentAnimation(AccionesPersonaje.PROJECTILE.getAction());
             }
         }
 
+        /**
+         * Según la dirección hacia donde se desplace el dedo establecerá una posición u otra
+         * @param me datos del evento al pulsar la pantalla
+         * @param me1 datos del evento al dejar de pulsar la pantalla
+         * @param vX velocidad en x
+         * @param vY velocidad en y
+         * @return true
+         */
         @Override
         public boolean onFling(MotionEvent me, MotionEvent me1, float vX, float vY) {
 
@@ -651,6 +623,6 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             return true;
         }
     }
-    }
+}
 
 

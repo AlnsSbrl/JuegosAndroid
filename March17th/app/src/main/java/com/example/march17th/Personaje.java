@@ -3,14 +3,12 @@ package com.example.march17th;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.emplearSFX;
-import static com.example.march17th.Constantes.ac;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
-import android.util.Log;
 
 /**
  * Representa la estructura base de cada personaje que aparece en el juego
@@ -260,7 +258,7 @@ public class Personaje {
      */
     public Personaje(int posX, int posY,int vida, boolean isPlayer) {
 
-        setCurrentAnimation(ac.IDDLE.getAction());
+        setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
         pVida = new Paint();
         pVida.setStyle(Paint.Style.FILL);
         pMarcoVida = new Paint();
@@ -280,7 +278,7 @@ public class Personaje {
 
     /**
      * Dibuja los componentes del personaje en pantalla (la vida, el marco de la vida total y el frame del movimiento actual)
-     * @param canvas
+     * @param canvas canvas
      */
     public void dibuja(Canvas canvas){
         //estos cálculos son para darle un color a la barra de vida según cuánto le queda (en %)
@@ -293,14 +291,13 @@ public class Personaje {
             compG=0;
         }
         pVida.setARGB(255,compR,compG,0);
-
         canvas.drawRect(displayVidaActual,pVida);
+
+
         pMarcoVida.setColor(Color.WHITE);
         pMarcoVida.setStrokeWidth(15);
         canvas.drawRect(displayMarcoVidaTotal,pMarcoVida);
-
         canvas.drawBitmap(currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].getFrameMov(),posX,posY,null);
-
         //canvas.drawRect(this.hurtbox,pMarcoVida); esto es para la hitbox, para debuggear
     }
 
@@ -319,28 +316,28 @@ public class Personaje {
         return currentAction;
     }
 
-    public boolean setVidaActual(int damageTaken) {
-        this.vidaActual =vidaActual-damageTaken<=0?0:vidaActual-damageTaken;
+    /**
+     * Cambia la vida actual del personaje, establece si sigue vivo y lo desplaza ligeramente hacia atrás por el hostión recibido
+     * @param damageTaken vida que se le resta al personaje
+     */
+    public void setVidaActual(int damageTaken) {
+        this.vidaActual = Math.max(vidaActual - damageTaken, 0);
         this.moverEnX(-anchoPantalla/35);
         displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52)+(vidaActual*anchoPantalla*16/52/vidaMaxima),altoPantalla*7/25);
-        //displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*34/52,altoPantalla*6/25,(vidaActual/vidaMaxima)*(isPlayer?anchoPantalla*8/52+anchoPantalla*11/52:anchoPantalla*34/52+anchoPantalla*11/53),altoPantalla*7/25);
-
-        Log.i("puta", "esquina derecha: "+(vidaActual/vidaMaxima)*(anchoPantalla*3/10));
-        Log.i("puta", "vida actual "+vidaActual+" maxima "+vidaMaxima+" anchoPant "+anchoPantalla);
         if(vidaActual<=0){
             isAlive=false;
         }
-        return isAlive;
     }
 
     /**
      * Algunos movimientos, por el mero hecho de estar ejecutando esa animación, mueven al personaje
      * Este método realiza ese movimiento según qué acción se esté ejecutando
-     * @param action
+     * Además, si se termina una acción establece que se vuelva a la iddle animation
+     * @param action acción que se está ejecutando
      */
     public void actualizaFisica(int action){
-        if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!=ac.IDDLE.getAction()){
-            setCurrentAnimation(ac.IDDLE.getAction());
+        if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!= AccionesPersonaje.IDDLE.getAction()){
+            setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
         }
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
         switch (ac){
@@ -380,6 +377,9 @@ public class Personaje {
                 break;
             case ATTACK_FORWARD:
                 currentMoveAnimation= forwardAttack;
+                if(mpForwardAttack!=null && emplearSFX){
+                    mpForwardAttack.start();
+                }
                 break;
             case TAKING_LIGHT_DAMAGE:
                 currentMoveAnimation=takingLightDamage;
@@ -402,6 +402,9 @@ public class Personaje {
                 break;
             case LOWKICK:
                 currentMoveAnimation= downwardAttack;
+                if(mpLowerAttack!=null && emplearSFX){
+                    mpLowerAttack.start();
+                }
                 break;
             case PROJECTILE:
                 currentMoveAnimation=throwingProjectile;
@@ -426,7 +429,7 @@ public class Personaje {
 
     /**
      * Mueve al personaje si este movimiento no rompe las condiciones establecidas(que esté dentro de la pantalla y que el player esté a la izquierda y el enemigo a la derecha)
-     * @param posX
+     * @param posX cantidad que se desplaza en horizontal
      */
     public void moverEnX(int posX) {
 
@@ -442,7 +445,7 @@ public class Personaje {
 
     /**
      * Mueve al personaje si este movimiento no hace que el personaje se salga por pantalla
-     * @param posY
+     * @param posY cantidad que se desplaza en vertical
      */
     public void moverEnY(int posY) {
         if(this.posY+posY<altoPantalla+height && this.posY+posY>0){

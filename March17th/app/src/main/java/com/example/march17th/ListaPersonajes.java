@@ -2,6 +2,10 @@ package com.example.march17th;
 
 import org.jetbrains.annotations.Contract;
 
+/**
+ * Lista de personajes disponibles
+ * @apiNote son muchos, lo sé :)
+ */
 public enum ListaPersonajes {
     RANDOM(0),
     RYU(1),

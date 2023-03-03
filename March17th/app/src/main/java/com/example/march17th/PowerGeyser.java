@@ -4,6 +4,9 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.Log;
 
+/**
+ * Proyectil especial del personaje Terry
+ */
 public class PowerGeyser extends Proyectil{
 
     /**
@@ -20,6 +23,11 @@ public class PowerGeyser extends Proyectil{
         this.currentAnimation=animDisp;
     }
 
+    /**
+     * Impide que se mueva en el eje x como el resto de proyectiles
+     * @param posX incremento en el eje X
+     * @return si ha acabado de hacer la animación
+     */
     @Override
     public boolean moverEnX(int posX) {
         actualizaHitbox();
@@ -29,10 +37,13 @@ public class PowerGeyser extends Proyectil{
         return frame>=currentAnimation.length;
     }
 
+    /**
+     * dibuja al proyectil
+     * @param canvas canvas
+     */
     @Override
     public void dibuja(Canvas canvas) {
         super.dibuja(canvas);
-        Log.i("geyser", "dibuja: ");
     }
 
     @Override

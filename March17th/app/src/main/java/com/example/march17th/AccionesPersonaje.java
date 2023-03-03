@@ -27,7 +27,7 @@ public enum AccionesPersonaje {
     /**
      * acción que se realiza
      */
-     private int action;
+     private final int action;
 
     AccionesPersonaje(int action){
         this.action =action;

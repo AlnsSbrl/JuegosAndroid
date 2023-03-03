@@ -1,22 +1,13 @@
 package com.example.march17th;
 
-import static com.example.march17th.Constantes.ac;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.context;
-import static com.example.march17th.Constantes.scn;
-
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.os.LocaleList;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -77,7 +68,8 @@ public class EscenaConfiguracion extends Escena{
 
     /**
      * Inicia los valores según los parámetros
-     * @param numEscena
+     * @param numEscena id de la escena
+     * @param escen fondo y música
      */
     public EscenaConfiguracion(int numEscena, EscenarioCombate escen) {
         super(numEscena,escen);
@@ -94,16 +86,16 @@ public class EscenaConfiguracion extends Escena{
      */
     public void Init(){
         dibuja=false;
-        lang = Constantes.getIdioma().split("_")[0];;
+        lang = Constantes.getIdioma().split("_")[0];
         btnIdiomas=new Boton[5];
         for (int i =0; i<languages.length;i++){
-            btnIdiomas[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/6-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(resBtnIdioma[i]),scn.SETTINGS.getEscena(),!lang.equals(languages[i]));
+            btnIdiomas[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/6-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(resBtnIdioma[i]), EscenasJuego.SETTINGS.getEscena(),!lang.equals(languages[i]));
         }
         botones=new Boton[4];
-        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic),scn.SETTINGS.getEscena(),useMusic);
-        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),useSFX);
-        botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.GyroOption).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(), true);
-        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT),scn.MENU_PRINCIPAL.getEscena(),true);
+        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic), EscenasJuego.SETTINGS.getEscena(),useMusic);
+        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useSFX);
+        botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.GyroOption).toUpperCase(Locale.ROOT), EscenasJuego.CALIBRACION.getEscena(), true);
+        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT), EscenasJuego.MENU_PRINCIPAL.getEscena(),true);
         dibuja=true;
     }
 
@@ -123,7 +115,7 @@ public class EscenaConfiguracion extends Escena{
      * @param frameMov imagen que se voltea
      * @param giraUnPoco true: dobla los grados que se gira la imagen
      * @param giraUnPocoMas true: dobla los grados que se gira la imagen
-     * @return
+     * @return la imagen volteada
      */
     public Bitmap volteaImagen(Bitmap frameMov,boolean giraUnPoco,boolean giraUnPocoMas){
         Matrix matrix = new Matrix();
@@ -136,7 +128,7 @@ public class EscenaConfiguracion extends Escena{
 
     /**
      * Dibuja los botones cuando están creados. Si están en proceso de creación dibuja un símbolo de carga que da vueltas hasta que termine
-     * @param c
+     * @param c canvas
      */
     @Override
     public void dibuja(Canvas c) {
@@ -158,8 +150,8 @@ public class EscenaConfiguracion extends Escena{
 
     /**
      * Gestiona la pulsación de los botones
-     * @param e
-     * @return
+     * @param e evento
+     * @return numero de la escena a la que se cambia
      */
     @Override
     int onTouchEvent(MotionEvent e) {
@@ -208,11 +200,11 @@ public class EscenaConfiguracion extends Escena{
 
     /**
      * cambia el valor useMusic y cambia el color del botón para indicar su valor
-     * @param useMusic
+     * @param useMusic true: se usa música. False: no se usa música
      */
     public void setUseMusic(boolean useMusic) {
         this.useMusic = useMusic;
-        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),this.useMusic);
+        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),this.useMusic);
         if(useMusic){
             this.escenario.Reproduce();
         }else{
@@ -222,10 +214,10 @@ public class EscenaConfiguracion extends Escena{
 
     /**
      * cambia el valor de useSFX y cambia el color del botón para indicar su valor
-     * @param useSFX
+     * @param useSFX True: se usan los sfx. False: no se usan los sfx
      */
     public void setUseSFX(boolean useSFX) {
         this.useSFX = useSFX;
-        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT),scn.SETTINGS.getEscena(),useSFX);
+        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useSFX);
     }
 }

@@ -60,7 +60,7 @@ public class Frame {
         this.frameMov = volteaImagen(frameMov, isPlayer);
         this.esGolpeo = esGolpeo;
         this.damage = damage;
-        this.energy = energy;
+        //this.energy = energy;
     }
 
     public Bitmap getFrameMov() {

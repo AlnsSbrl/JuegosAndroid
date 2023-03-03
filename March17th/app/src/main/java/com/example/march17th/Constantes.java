@@ -3,7 +3,6 @@ package com.example.march17th;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.media.AudioManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -116,7 +115,7 @@ public class Constantes {
         editor.putBoolean("SFX",emplearSFX);
         editor.putBoolean("vibracion",emplearVibracion);
 
-        editor.commit();
+        editor.apply(); //uso esto en vez de commit porque los cambia como hilo y no al instante
     }
 
     /**
@@ -139,7 +138,7 @@ public class Constantes {
 
     /**
      * Cambia el idioma
-     * @param idioma
+     * @param idioma idioma al que se quiere cambiar
      * @author Javier Conde
      */
     public static void setIdioma(String idioma){
@@ -153,6 +152,11 @@ public class Constantes {
         Log.i("idioma", "setIdioma: "+lang);
         res.updateConfiguration(conf, dm);
     }
+
+    /**
+     * Consigue el idioma actual de la aplicación
+     * @return idioma actual
+     */
     public static String getIdioma(){
         return lang;
     }

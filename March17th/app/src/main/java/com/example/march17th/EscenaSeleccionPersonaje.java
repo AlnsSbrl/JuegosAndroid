@@ -7,30 +7,59 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import static com.example.march17th.Constantes.*;
-
 import androidx.core.view.GestureDetectorCompat;
-
 import java.util.ArrayList;
 
+/**
+ * Escena donde se escoge el personaje a utilizar y el mapa donde se combate
+ */
 public class EscenaSeleccionPersonaje extends Escena{
 
 
     //todo -> dtap elige al enemigo, tap
-    //todo -> hacer que si no se selecciona ningún personaje se escoja aleatoriamente (es un motivo por el que peta)
+    /**
+     * Indica el personaje seleccionado por el jugador
+     */
     int selectedCharacter=-1;
-    int selectedMap=3;
+
+    /**
+     * Marcos de los distintos personajes y colección donde se guardan
+     */
     RecuadroSeleccionPersonaje selecRyu;
     RecuadroSeleccionPersonaje selecTerry;
     RecuadroSeleccionPersonaje selecRandom;
-    ArrayList<RecuadroSeleccionPersonaje> plantelLuchadores;
+    ArrayList<RecuadroSeleccionPersonaje> plantelLuchadores; //todo ponerlos en un array normal lol
+    /**
+     * Colección de los distintos mapas donde se puede luchar
+     */
     ArrayList<Bitmap> selectorDeMapas= new ArrayList<>();
+
+    /**
+     * Marco que se dibuja alrededor del mapa para que quede más bonito eono
+     */
+    Bitmap marcoMapa;
+
+    /**
+     * Índice del mapa elegido
+     */
     int indexMapa=0;
+    /**
+     * Detector de gestos
+     */
     public GestureDetectorCompat detectorDeGestos;
+
+    /**
+     * Botones para ir al combate o volver al menú
+     */
     Boton aceptar;
     Boton atras;
-    Bitmap marcoMapa;
     //todo agregar el marcador, donde se ponen los nombres y los recuadros del seleccionado (tanto para player como para enemigo) en grande
 
+    /**
+     * Inicia los valores según los parámetros
+     * @param numEscena Id de la escena
+     * @param escenarioCombate fondo + música
+     */
     public EscenaSeleccionPersonaje(int numEscena, EscenarioCombate escenarioCombate) {
         super(numEscena, escenarioCombate);
         for(int i = 0; i<MapaSelector.bitmapsCombate.length; i++){
@@ -44,15 +73,27 @@ public class EscenaSeleccionPersonaje extends Escena{
         plantelLuchadores.add(selecRandom);
         plantelLuchadores.add(selecRyu);
         plantelLuchadores.add(selecTerry);
-        atras= new Boton(0,altoPantalla*7/10, anchoPantalla*3/10,altoPantalla/10, context.getResources().getString(R.string.Atras).toUpperCase(),scn.MENU_PRINCIPAL.getEscena(), true);
-
+        atras= new Boton(0,altoPantalla*7/10, anchoPantalla*3/10,altoPantalla/10, context.getResources().getString(R.string.Atras).toUpperCase(), EscenasJuego.MENU_PRINCIPAL.getEscena(), true);
         detectorDeGestos = new GestureDetectorCompat(context,new EscenaSeleccionPersonaje.MultiTouchHandler());
     }
+
+    /**
+     * Inicia los valores según los parámetros
+     * @param numEscena id de la escena
+     * @param escenarioCombate fondo + música
+     * @param isTutorial la escena siguiente pertenece al modo entrenamiento
+     */
     public EscenaSeleccionPersonaje(int numEscena,EscenarioCombate escenarioCombate, boolean isTutorial){
         this(numEscena, escenarioCombate);
         aceptar= new Boton(anchoPantalla*7/10,altoPantalla*7/10, anchoPantalla*3/10,altoPantalla/10, context.getResources().getString(R.string.Empezar).toUpperCase(),isTutorial?scn.TUTORIAL.getEscena():scn.COMBATE_REAL.getEscena(), true);
 
     }
+
+    /**
+     * Maneja los eventos de pulsacion que no se manejan con la clase MultitouchHandler
+     * @param e evento
+     * @return número de la escena a la que se cambia
+     */
     int onTouchEvent(MotionEvent e) {
 
         int x = (int) e.getX();
@@ -62,34 +103,24 @@ public class EscenaSeleccionPersonaje extends Escena{
             return aux;
         }
 
-        /*
-        //todo gestionar el fling desde aqui????
-        if(!detectorDeGestos.onTouchEvent(e)){
-            int accion=e.getActionMasked();
-            switch (accion){
-
-            }
-        }*/
-
-        if(aceptar.onTouch(x,y)){
+        if(aceptar.hitbox.contains(x,y)){
             Log.i("scn", "onTouchEvent: "+aceptar.numEscena);
             return aceptar.numEscena;
         }
-        if(atras.onTouch(x,y)){
+        if(atras.hitbox.contains(x,y)){
             Log.i("scn", "onTouchEvent: "+atras.numEscena);
             return atras.numEscena;
         }
         return this.numEscena;
     }
-    @Override
-    public void actualizaFisica() {
-        super.actualizaFisica();
-    }
 
+    /**
+     * Dibuja los componentes de la escena en pantalla
+     * @param c canvas
+     */
     @Override
     public void dibuja(Canvas c) {
         super.dibuja(c);
-        //c.drawBitmap(this.escenarioCombate.fondo, 0,0,null);
         selecRyu.dibujar(c);
         selecTerry.dibujar(c);
         selecRandom.dibujar(c);
@@ -111,16 +142,7 @@ public class EscenaSeleccionPersonaje extends Escena{
         @Override
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
 
-            int x = (int) motionEvent.getX();
-            int y = (int) motionEvent.getY();
 
-            for(RecuadroSeleccionPersonaje r:plantelLuchadores){
-                r.isSelected=false;
-                if(r.onTouch(x,y)){
-                    r.isSelected=true;
-                    selectedCharacter=r.personaje;
-                }
-            }
             return false;
         }
         //todo asignar a player
@@ -150,6 +172,16 @@ public class EscenaSeleccionPersonaje extends Escena{
 
         @Override
         public boolean onSingleTapUp(MotionEvent motionEvent) {
+            int x = (int) motionEvent.getX();
+            int y = (int) motionEvent.getY();
+
+            for(RecuadroSeleccionPersonaje r:plantelLuchadores){
+                r.isSelected=false;
+                if(r.onTouch(x,y)){
+                    r.isSelected=true;
+                    selectedCharacter=r.personaje;
+                }
+            }
             return true;
         }
 

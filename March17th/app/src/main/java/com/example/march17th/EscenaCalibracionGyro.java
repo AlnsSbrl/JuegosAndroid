@@ -3,11 +3,9 @@ package com.example.march17th;
 import static android.hardware.Sensor.TYPE_ROTATION_VECTOR;
 
 import static com.example.march17th.Constantes.FPS;
-import static com.example.march17th.Constantes.ac;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.context;
-import static com.example.march17th.Constantes.scn;
 import static com.example.march17th.Constantes.umbralDefaultEnY;
 import static com.example.march17th.Constantes.umbralDefaultEnX;
 import static com.example.march17th.Constantes.umbralSensibilidadX;
@@ -42,7 +40,7 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
      * Si se pulsa el botón empieza a "calibrar", coge datos durante un tiempo para luego hacer la media.
      * Indica si está calibrando o no
      */
-    boolean isCalibrating=false;
+    boolean isCalibrating;//=false;
     /**
      * colección de las medidas del giroscopio cuando entra en el modo calibración
      */
@@ -121,11 +119,6 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
     int contCalibre=0;
 
     /**
-     * Clase para obtener el sensor de rotación
-     */
-    private SensorManager sensorManager;
-
-    /**
      * Valores actuales de sensibilidad y posición que emplea el giroscopio
      */
     float umbrX;
@@ -136,7 +129,8 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
 
     /**
      * Inicia valores y establece el sensor de rotación
-     * @param numEscena
+     * @param numEscena id de la escena
+     * @param escenario fondo y música
      */
     public EscenaCalibracionGyro(int numEscena, EscenarioCombate escenario) {
         super(numEscena,escenario);
@@ -154,19 +148,19 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
 
         valorIniX= valorInicialInclinacionX;
         valorIniY=valorInicialInclinacionY;
-        btnCalibrar= new Boton(anchoPantalla/6,altoPantalla/7-altoPantalla/10,anchoPantalla/3,altoPantalla/10, context.getString(R.string.GyroConfig).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(),true);
-        btnRestablecer= new Boton(anchoPantalla/6+anchoPantalla/3,altoPantalla/7-altoPantalla/10,anchoPantalla/3,altoPantalla/10, context.getString(R.string.ReestablecerGyro).toUpperCase(Locale.ROOT),scn.CALIBRACION.getEscena(),true);
+        btnCalibrar= new Boton(anchoPantalla/6,altoPantalla/7-altoPantalla/10,anchoPantalla/3,altoPantalla/10, context.getString(R.string.GyroConfig).toUpperCase(Locale.ROOT), EscenasJuego.CALIBRACION.getEscena(),true);
+        btnRestablecer= new Boton(anchoPantalla/6+anchoPantalla/3,altoPantalla/7-altoPantalla/10,anchoPantalla/3,altoPantalla/10, context.getString(R.string.ReestablecerGyro).toUpperCase(Locale.ROOT), EscenasJuego.CALIBRACION.getEscena(),true);
 
-        btnIndicaSenseX= new Boton(0,5*altoPantalla/14-altoPantalla/10,anchoPantalla*2/12,altoPantalla*2/15, context.getString(R.string.GyroSensibilityOnX),scn.CALIBRACION.getEscena(),false);
-        btnIndicaSenseY= new Boton(0,4*altoPantalla/7-altoPantalla/10,anchoPantalla*2/12,altoPantalla*2/15, context.getString(R.string.GyroSensibilityOnY),scn.CALIBRACION.getEscena(),false);
+        btnIndicaSenseX= new Boton(0,5*altoPantalla/14-altoPantalla/10,anchoPantalla*2/12,altoPantalla*2/15, context.getString(R.string.GyroSensibilityOnX), EscenasJuego.CALIBRACION.getEscena(),false);
+        btnIndicaSenseY= new Boton(0,4*altoPantalla/7-altoPantalla/10,anchoPantalla*2/12,altoPantalla*2/15, context.getString(R.string.GyroSensibilityOnY), EscenasJuego.CALIBRACION.getEscena(),false);
 
-        btnSalirSinGuardar  =new Boton(anchoPantalla/4,6*altoPantalla/7-altoPantalla/10,anchoPantalla*3/12,altoPantalla/10, context.getString(R.string.CancelOptions),scn.SETTINGS.getEscena(),true);
-        btnConfirmar =new Boton(anchoPantalla/4+anchoPantalla*3/12,6*altoPantalla/7-altoPantalla/10,anchoPantalla*3/12,altoPantalla/10, context.getString(R.string.SaveOptions),scn.SETTINGS.getEscena(),true);
+        btnSalirSinGuardar  =new Boton(anchoPantalla/4,6*altoPantalla/7-altoPantalla/10,anchoPantalla*3/12,altoPantalla/10, context.getString(R.string.CancelOptions), EscenasJuego.SETTINGS.getEscena(),true);
+        btnConfirmar =new Boton(anchoPantalla/4+anchoPantalla*3/12,6*altoPantalla/7-altoPantalla/10,anchoPantalla*3/12,altoPantalla/10, context.getString(R.string.SaveOptions), EscenasJuego.SETTINGS.getEscena(),true);
 
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.silithus),anchoPantalla*11/10,altoPantalla*11/10,true);
         player= new PersonajeCalibracion(anchoPantalla*8/10,altoPantalla/2,100,true);
 
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         Sensor vectorRotacion = sensorManager.getDefaultSensor(TYPE_ROTATION_VECTOR);
         if(vectorRotacion!=null){
             sensorManager.registerListener(this,vectorRotacion,SensorManager.SENSOR_DELAY_NORMAL,SensorManager.SENSOR_DELAY_UI);
@@ -190,7 +184,7 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
      * @param frameMov imagen que se voltea
      * @param giraUnPoco true: dobla los grados que se gira la imagen
      * @param giraUnPocoMas true: dobla los grados que se gira la imagen
-     * @return
+     * @return la imagen rotada
      */
     public Bitmap volteaImagen(Bitmap frameMov,boolean giraUnPoco,boolean giraUnPocoMas){
         Matrix matrix = new Matrix();
@@ -210,22 +204,20 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
             if(valoresSensibilidad[i]==umbrX){
                 indexMarcado=i;
             }
-            btnesSensibilidadX[i]= new Boton(anchoPantalla/4+(i*anchoPantalla*2/12),5*altoPantalla/14-altoPantalla/10,anchoPantalla*2/12,altoPantalla/10, context.getString(textoBtnesSensibilidad[i]),scn.CALIBRACION.getEscena(),i==indexMarcado);
+            btnesSensibilidadX[i]= new Boton(anchoPantalla/4+(i*anchoPantalla*2/12),5*altoPantalla/14-altoPantalla/10,anchoPantalla*2/12,altoPantalla/10, context.getString(textoBtnesSensibilidad[i]), EscenasJuego.CALIBRACION.getEscena(),i==indexMarcado);
         }
         indexMarcado=-1;
         for (int i =0; i<btnesSensibilidadY.length;i++){
             if(valoresSensibilidad[i]==umbrY){
                 indexMarcado=i;
             }
-            btnesSensibilidadY[i]= new Boton(anchoPantalla/4+(i*anchoPantalla*2/12),4*altoPantalla/7-altoPantalla/10,anchoPantalla*2/12,altoPantalla/10, context.getString(textoBtnesSensibilidad[i]),scn.CALIBRACION.getEscena(),i==indexMarcado);
+            btnesSensibilidadY[i]= new Boton(anchoPantalla/4+(i*anchoPantalla*2/12),4*altoPantalla/7-altoPantalla/10,anchoPantalla*2/12,altoPantalla/10, context.getString(textoBtnesSensibilidad[i]), EscenasJuego.CALIBRACION.getEscena(),i==indexMarcado);
         }
     }
 
     /**
      * Entra o sale del modo calibración según el parámetro
-     * True: empieza a calibrar, mientras se está en este modo el giroscopio va rellenando valores de un arraylist
-     * False: deja de calibrar, consigue los valores de ese arraylist y hace una media para establecer la posición actual
-     * @param calibrar
+     * @param calibrar  True: empieza a calibrar, mientras se está en este modo el giroscopio va rellenando valores de un arraylist. False: deja de calibrar, consigue los valores de ese arraylist y hace una media para establecer la posición actual
      */
     public void calibrar(boolean calibrar){
         if(calibrar){
@@ -374,12 +366,12 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
 
     /**
      * Cambia la animación del personaje según los valores del vector rotación
-     * @param event
+     * @param event evento a gestionar
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType()==TYPE_ROTATION_VECTOR){
-            float R[] = new float[9];
+            float [] R= new float[9];
             SensorManager.getRotationMatrixFromVector(R,event.values);
             float[] YPR = new float[3];
             SensorManager.getOrientation(R,YPR);
@@ -389,28 +381,28 @@ public class EscenaCalibracionGyro extends Escena implements SensorEventListener
             if(!isCalibrating){
 
                 if(valorIniY-rotacionEnY>umbrY){
-                    if(player.getCurrentAction()!=ac.PROTECT.getAction()){
-                        player.setCurrentAnimation(ac.PROTECT.getAction());
+                    if(player.getCurrentAction()!= AccionesPersonaje.PROTECT.getAction()){
+                        player.setCurrentAnimation(AccionesPersonaje.PROTECT.getAction());
                     }
                 }else if(rotacionEnY-valorIniY>umbrY){
                     if(!player.isDoingAMove){
-                        player.setCurrentAnimation(ac.CROUCH.getAction());
+                        player.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
                     }
                 }else if(valorIniX-rotacionEnX>umbrX){
 
-                    if(player.getCurrentAction()!=ac.MOVE_BACKWARDS.getAction()) {
+                    if(player.getCurrentAction()!= AccionesPersonaje.MOVE_BACKWARDS.getAction()) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
-                        player.setCurrentAnimation(ac.MOVE_BACKWARDS.getAction());
+                        player.setCurrentAnimation(AccionesPersonaje.MOVE_BACKWARDS.getAction());
                     }
                 }else if(rotacionEnX-valorIniX>umbrX){
 
-                    if(player.getCurrentAction()!=ac.MOVE_FORWARD.getAction()) {
+                    if(player.getCurrentAction()!= AccionesPersonaje.MOVE_FORWARD.getAction()) {
                         //tengo que hacer esta comprobacion dentro, ya que si no se va al else (y empieza a hacer el iddle)
-                        player.setCurrentAnimation(ac.MOVE_FORWARD.getAction());
+                        player.setCurrentAnimation(AccionesPersonaje.MOVE_FORWARD.getAction());
                     }
                 }else{
-                    if(player.getCurrentAction()!=ac.IDDLE.getAction()) {
-                        player.setCurrentAnimation(ac.IDDLE.getAction());
+                    if(player.getCurrentAction()!= AccionesPersonaje.IDDLE.getAction()) {
+                        player.setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
                     }
                 }
             }else{

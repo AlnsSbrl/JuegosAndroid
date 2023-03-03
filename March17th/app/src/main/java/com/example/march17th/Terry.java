@@ -8,16 +8,30 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 
+/**
+ * Representación de un personaje
+ */
 public class Terry extends Personaje{
 
+    /**
+     * animación de un proyectil exclusivo de este personaje
+     */
     Frame[] powerGeyser;
 
+    /**
+     * Inicia los valores según los parámetros
+     * @param posX posicion del personaje en X
+     * @param posY posición del personaje en Y
+     * @param vida puntos de vida totales
+     * @param isPlayer si lo maneja el jugador o no
+     */
     public Terry(int posX, int posY, int vida,boolean isPlayer) {
         super(posX, posY, vida,isPlayer);
         IniciaAnimaciones();
         iniciaSFX();
         this.name="Terry";
     }
+
     /**
      * Establece los valores de los efectos de sonido que emite al realizar ciertas acciones
      */
@@ -27,6 +41,9 @@ public class Terry extends Personaje{
         mpProjectile=MediaPlayer.create(context,R.raw.terryburnknucle);
     }
 
+    /**
+     * Inicia los valores de todas las animaciones
+     */
     private void IniciaAnimaciones(){
         parryFrame=3;
         throwingProjectileFrame=6;
@@ -138,7 +155,7 @@ public class Terry extends Personaje{
     /**
      * Actualiza la posición del personaje y su hitbox según el movimiento empleado
      * Amplía la función de la clase padre para actualizar los movimientos específicos de Ryu
-     * @param action
+     * @param action acción que está realizando el personaje
      */
     @Override
     public void actualizaFisica(int action) {

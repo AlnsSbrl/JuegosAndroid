@@ -15,20 +15,69 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
 
+/**
+ * Representa el marco que existe en el combate donde se muestran las victorias de cada personaje y el tiempo de combate
+ */
 public class Scoreboard {
+
+    /**
+     * Imagen del recuadro
+     */
     Bitmap marco;
+
+    /**
+     * Victorias actuales del jugador
+     */
     int playerWins;
+
+    /**
+     * Nombre del personaje del jugador
+     */
     String playerName;
+
+    /**
+     * Victorias actuales de la CPU
+     */
     int cpuWins;
+
+    /**
+     * Nombre del personaje de la CPU
+     */
     String cpuName;
+
+    /**
+     * Tiempo restante del combate
+     */
     int currentTime;
+
+    /**
+     * Parámetros de alto y ancho que ocupa el componente
+     */
     int height;
     int width;
+
+    /**
+     * Indica si el marco se pondrá en el combate o en el modo entrenamiento (donde no habrá límite de tiempo ni victorias/derrotas)
+     */
     boolean isTutorial;
+
+    /**
+     * Paints para dibujar
+     */
     Paint pCountDown;
     Paint pPerso;
+
+    /**
+     * Fuente de texto que se usa
+     */
     Typeface clockFont;
 
+    /**
+     * Inicializa el componente según los parámetros
+     * @param playerName nombre del personaje del jugador
+     * @param cpuName nombre del personaje de la cpu
+     * @param isTutorial indica si estará representado en el training mode o en el combate
+     */
     public Scoreboard(String playerName,String cpuName,boolean isTutorial){
         this.marco=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.scoreboard),anchoPantalla*8/10,altoPantalla/4,true);
         this.playerWins=currentPlayerWins;
@@ -54,6 +103,10 @@ public class Scoreboard {
         pCountDown.setTextAlign(Paint.Align.CENTER);
     }
 
+    /**
+     * Dibuja los componentes en pantalla
+     * @param c canvas
+     */
     public void dibuja(Canvas c){
         c.drawBitmap(marco,anchoPantalla/10,0,null);
         //esta condicion es para luego poder poner esto en el tutorial y no mostrar ningún número ahí

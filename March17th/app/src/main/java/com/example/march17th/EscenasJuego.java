@@ -2,6 +2,9 @@ package com.example.march17th;
 
 import org.jetbrains.annotations.Contract;
 
+/**
+ * Enumerado de las distintas escenas
+ */
 public enum EscenasJuego {
 
     MENU_PRINCIPAL(0),
@@ -14,7 +17,7 @@ public enum EscenasJuego {
     CREDITOS(7),
     CALIBRACION(8);
 
-    private int escena;
+    private final int escena;
 
     EscenasJuego(int escena){
         this.escena =escena;

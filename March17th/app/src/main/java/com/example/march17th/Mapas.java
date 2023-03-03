@@ -2,6 +2,9 @@ package com.example.march17th;
 
 import org.jetbrains.annotations.Contract;
 
+/**
+ * Lista de mapas donde se puede combatir
+ */
 public enum Mapas {
 
     EDIFICIO(0),

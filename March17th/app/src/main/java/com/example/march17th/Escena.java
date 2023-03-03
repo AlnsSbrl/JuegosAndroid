@@ -5,7 +5,7 @@ import android.view.MotionEvent;
 
 public class Escena {
 
-    int numEscena=-1;
+    int numEscena;//=-1;
     boolean hasFinished;
 
     /**
@@ -32,8 +32,8 @@ public class Escena {
     }
 
     int onTouchEvent(MotionEvent e){
-        int x= (int)e.getX();
-        int y=(int)e.getY();
+        //int x= (int)e.getX();
+        //int y=(int)e.getY();
 
         return this.numEscena;
     }

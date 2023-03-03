@@ -1,5 +1,6 @@
 package com.example.march17th;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -15,16 +16,15 @@ import static com.example.march17th.Constantes.*;
 import androidx.annotation.NonNull;
 
 public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callback {
+
     long lastTick;
     long tickTimer;
-    SurfaceHolder surfaceHolder;
+    final SurfaceHolder surfaceHolder;
     DrawingThread hiloDibuja;
     long sleepTime=0;//
     boolean slowHit=false;
-    AudioManager audioManager;//=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-    //static int volume;//= audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-    long nanosEnUnSegundo=1000000000;
-    Escena escenaActual;//=new Escena(0);
+    AudioManager audioManager;
+    Escena escenaActual;
     int nuevaEscena;
     public GameSceneManager(Context context, Point resolucion){
         super(context);
@@ -36,7 +36,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         altoPantalla=resolucion.y;
         anchoPantalla=resolucion.x;
         this.surfaceHolder=getHolder();
-        this.surfaceHolder.addCallback(this);//todo ver esto
+        this.surfaceHolder.addCallback(this);
         hiloDibuja =new DrawingThread();
         hiloDibuja.start();
         setFocusable(true);
@@ -46,13 +46,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        //escenaActual=new EscenaMenu(0);
-        //escenaActual=new EscenaCalibracionGyro(8);
-        escenaActual = new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(),MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),false);
-        //escenaActual= new EscenaConfiguracion(scn.SETTINGS.getEscena());
-        //escenaActual=new EscenaPelea(0);
-
-
+        escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
     }
 
     @Override
@@ -88,11 +82,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     }
                 }
             }
-        int pointerIndex = event.getActionIndex();
-        int pointerID = event.getPointerId(pointerIndex);
         int accion = event.getActionMasked();
-        int x = (int)event.getX();
-        int y = (int)event.getY();
 
         switch (accion){
             case MotionEvent.ACTION_DOWN:
@@ -100,14 +90,12 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 cambiaEscena(nuevaEscena);
                 return true;
         }
-
         return super.onTouchEvent(event);
     }
 
     public void cambiaEscena(int nuevaEscena){
         if(escenaActual.numEscena!=nuevaEscena){
             EscenasJuego scn = EscenasJuego.values()[nuevaEscena];
-            Log.i("scn", "cambiaEscena: "+scn);
             escenaActual.escenario.Pausa();
             switch (scn){
                 case MENU_PRINCIPAL:
@@ -120,12 +108,15 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     if(persoPlayer<0) persoPlayer=0;
                     escenaActual = new EscenaPelea(1,MapaSelector.consigueMapa(map),persoPlayer,0);//aqui pasarle dos personajes
                     break;
+
                 case SETTINGS:
                     escenaActual = new EscenaConfiguracion(3,escenaActual instanceof EscenaCalibracionGyro?escenaActual.escenario:MapaSelector.consigueMenu(Menus.OPCIONES.getMenu()));
                     break;
+
                 case CALIBRACION:
                     escenaActual = new EscenaCalibracionGyro(8,escenaActual.escenario);
                     break;
+
                 case ELEGIR_PERSONAJES:
                     Log.i("scn", "cambiaEscena: "+scn);
                     //boolean isTutorial=true;
@@ -154,6 +145,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     boolean termina=true;
     class DrawingThread extends Thread{
 
+        @SuppressLint("HandlerLeak")
         @Override
         public void run() {
             Looper.prepare();
@@ -166,7 +158,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 Canvas canvas=null;
                 try {
                     if(!surfaceHolder.getSurface().isValid())continue;
-                    if(canvas==null) canvas=surfaceHolder.lockCanvas();
+                    canvas=surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder){
                         escenaActual.actualizaFisica();
                         escenaActual.dibuja(canvas);

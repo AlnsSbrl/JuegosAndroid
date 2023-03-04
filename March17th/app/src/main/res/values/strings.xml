@@ -10,6 +10,7 @@
     <string name="Sound" translatable="false">Sonido</string>
     <string name="UseMusic">Música</string>
     <string name="UseSFX" translatable="false">SFX</string>
+    <string name="UseVibrator" translatable="false">Vibración</string>
     <string name="FPSControl">Ajuste de frames</string>
     <string name="GyroOption">Giroscopio</string>
     <string name="SaveOptions">Guardar</string>

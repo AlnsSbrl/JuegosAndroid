@@ -43,6 +43,7 @@ public class Constantes {
     static int totalPlayerWins;
     static int currentCPUWins;
     static int totalCPUWins;
+    static int rachaActual;
     static int recordVictoriasConsecutivas;
     static int victoriasConsecutivas;
 
@@ -52,7 +53,6 @@ public class Constantes {
     static boolean emplearMusicaFondo=false;
     static boolean emplearSFX=false;
     static boolean emplearVibracion=false; //todo hacer la implementación de esto
-
     /**
      * Volumen de la música del juego
      */
@@ -104,6 +104,7 @@ public class Constantes {
         if(victoriasConsecutivas>recordVictoriasConsecutivas){
             editor.putInt("recordVictoriasConsecutivas",victoriasConsecutivas);
         }
+        editor.putInt("rachaActual",rachaActual);
 
         editor.putFloat("iniX",valorInicialInclinacionX);
         editor.putFloat("iniY",valorInicialInclinacionY);
@@ -134,6 +135,7 @@ public class Constantes {
         emplearMusicaFondo = sharedPreferences.getBoolean("musicaFondo",true);
         emplearSFX = sharedPreferences.getBoolean("SFX",true);
         emplearVibracion = sharedPreferences.getBoolean("vibracion",true);
+        rachaActual = sharedPreferences.getInt("rachaActual",0);
     }
 
     /**

@@ -28,7 +28,7 @@ public class EscenaCreditos extends Escena {
             TobyFox,Megalovania,Spear,
             AndrewJeremy,coffe1,cof2,cof3,
             Simon,Exosuit,
-                    
+
     };
     int[] textSizes = new int[]{a/4,a/6,
             a/7,a/12,

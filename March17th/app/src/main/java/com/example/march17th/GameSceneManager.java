@@ -1,13 +1,17 @@
 package com.example.march17th;
 
+import static android.content.Context.VIBRATOR_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -26,6 +30,11 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     AudioManager audioManager;
     Escena escenaActual;
     int nuevaEscena;
+    int victoriasPlayer=0;
+    int victoriasCPU=0;
+    int vicSeguidas;//=rachaActual;
+
+
     public GameSceneManager(Context context, Point resolucion){
         super(context);
         Constantes.context=context;
@@ -42,12 +51,16 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         setFocusable(true);
         lastTick=System.nanoTime();
         tickTimer=System.nanoTime();
+        vicSeguidas=rachaActual;
+        //vibrator=
+
+
     }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        //escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
-        escenaActual= new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+        escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+        //escenaActual= new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
     }
 
     @Override
@@ -109,6 +122,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
             switch (scn){
                 case MENU_PRINCIPAL:
                     escenaActual= new EscenaMenu(0, MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+                    victoriasPlayer=0;
+                    victoriasCPU=0;
                     break;
 
                 case COMBATE_REAL:
@@ -116,6 +131,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     int map = ((EscenaSeleccionPersonaje)escenaActual).indexMapa;
                     if(persoPlayer<0) persoPlayer=0;
                     escenaActual = new EscenaPelea(1,MapaSelector.consigueMapa(map),persoPlayer,0);//aqui pasarle dos personajes
+                    ((EscenaPelea)escenaActual).scoreboard.playerWins=victoriasPlayer;
+                    ((EscenaPelea)escenaActual).scoreboard.cpuWins=victoriasCPU;
+
                     break;
 
                 case SETTINGS:
@@ -131,6 +149,23 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     //boolean isTutorial=true;
                     if(escenaActual instanceof EscenaPelea || (escenaActual instanceof EscenaMenu && !((EscenaMenu) escenaActual).goesToTutorial)){
                         Log.i("scn", "detecta para poner tutorial: "+scn);
+
+                        if(escenaActual instanceof EscenaPelea){
+                            if(((EscenaPelea)escenaActual).player.vidaActual<((EscenaPelea)escenaActual).enemy.vidaActual){
+                                victoriasCPU++;
+                                if(vicSeguidas>victoriasConsecutivas){
+                                    victoriasConsecutivas=vicSeguidas;
+                                }
+                                vicSeguidas=0;
+                            }else{
+                                victoriasPlayer++;
+                                vicSeguidas++;
+                            }
+                            totalPlayerWins+=victoriasPlayer;
+                            totalCPUWins+=victoriasCPU;
+                            rachaActual=vicSeguidas;
+                            guardarValores();
+                        }
                         //sera que con el instanceof o el cast hace que no pueda aprovechar
                         escenaActual= new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(),MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),false);
 
@@ -160,7 +195,12 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
      */
     public Handler mHandler;
     boolean termina=true;
+
+    /**
+     * Hilo que se encarga de dibujar la escena actual al framerate deseado.
+     */
     class DrawingThread extends Thread{
+
 
         @SuppressLint("HandlerLeak")
         @Override
@@ -171,6 +211,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     // process incoming messages here
                 }
             };
+
             while(termina){
                 Canvas canvas=null;
                 try {
@@ -190,6 +231,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
                 if(slowHit) {
                     try {
+
                         Thread.sleep(250); //esto es como una pausa que se hace cuando hay un golpe, para darle efecto
                         slowHit = false;
                     }catch(InterruptedException e){

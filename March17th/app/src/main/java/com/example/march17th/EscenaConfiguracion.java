@@ -55,10 +55,11 @@ public class EscenaConfiguracion extends Escena{
     int[] resBtnIdioma= new int[]{R.string.ES,R.string.EN,R.string.GL,R.string.DE,R.string.ZH};
 
     /**
-     * permite al usuario cambiar si se usan o no los sonidos
+     * permite al usuario cambiar si se usan o no los sonidos o la vibración
      */
     boolean useMusic;
     boolean useSFX;
+    boolean useVibration;
 
     /**
      * cuando se cambia el idioma deja de dibujar los botones mientras se generan de nuevo
@@ -76,6 +77,7 @@ public class EscenaConfiguracion extends Escena{
         escn=new EscenarioCombate(R.drawable.snow,R.raw.megalovania);
         useMusic=Constantes.emplearMusicaFondo;
         useSFX=Constantes.emplearSFX;
+        useVibration=Constantes.emplearVibracion;
         iniciaLoad();
         Init();
     }
@@ -91,11 +93,12 @@ public class EscenaConfiguracion extends Escena{
         for (int i =0; i<languages.length;i++){
             btnIdiomas[i]= new Boton(anchoPantalla/4+(i*anchoPantalla/10),5*altoPantalla/6-altoPantalla/10,anchoPantalla*2/30,altoPantalla/10, context.getString(resBtnIdioma[i]), EscenasJuego.SETTINGS.getEscena(),!lang.equals(languages[i]));
         }
-        botones=new Boton[4];
-        botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic), EscenasJuego.SETTINGS.getEscena(),useMusic);
-        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useSFX);
-        botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.GyroOption).toUpperCase(Locale.ROOT), EscenasJuego.CALIBRACION.getEscena(), true);
-        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT), EscenasJuego.MENU_PRINCIPAL.getEscena(),true);
+        botones=new Boton[5];
+        botones[0]=new Boton(anchoPantalla/4,altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getString(R.string.UseMusic), EscenasJuego.SETTINGS.getEscena(),useMusic);
+        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useSFX);
+        botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseVibrator).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useVibration);
+        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.GyroOption).toUpperCase(Locale.ROOT), EscenasJuego.CALIBRACION.getEscena(), true);
+        botones[4]= new Boton(anchoPantalla/4,5*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.SaveOptions).toUpperCase(Locale.ROOT), EscenasJuego.MENU_PRINCIPAL.getEscena(),true);
         dibuja=true;
     }
 
@@ -144,9 +147,10 @@ public class EscenaConfiguracion extends Escena{
         }else{
             frameDibuja++;
             c.drawBitmap(loading[frameDibuja%loading.length],0,0,null);
-
         }
     }
+
+
 
     /**
      * Gestiona la pulsación de los botones
@@ -167,9 +171,12 @@ public class EscenaConfiguracion extends Escena{
                     this.setUseMusic(!this.useMusic);
                 }else if(b==botones[1]) {
                     this.setUseSFX(!useSFX);
+                }else if(b==botones[2]){
+                    this.setUseVibration(!useVibration);
                 }else{
                     Constantes.emplearSFX=this.useSFX;
                     Constantes.emplearMusicaFondo= this.useMusic;
+                    Constantes.emplearVibracion=  this.useVibration;
                     Constantes.guardarValores();
                     return b.numEscena;
                 }
@@ -218,6 +225,12 @@ public class EscenaConfiguracion extends Escena{
      */
     public void setUseSFX(boolean useSFX) {
         this.useSFX = useSFX;
-        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useSFX);
+        botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseSFX).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useSFX);
+    }
+
+    public void setUseVibration(boolean useVibration) {
+        this.useVibration = useVibration;
+        botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/7-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.UseVibrator).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),useVibration);
+
     }
 }

@@ -1,5 +1,6 @@
 package com.example.march17th;
 
+import static android.content.Context.VIBRATOR_SERVICE;
 import static android.hardware.Sensor.TYPE_ROTATION_VECTOR;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,6 +20,7 @@ import static com.example.march17th.Constantes.FPS;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.context;
+import static com.example.march17th.Constantes.emplearVibracion;
 import static com.example.march17th.Constantes.umbralSensibilidadX;
 import static com.example.march17th.Constantes.umbralSensibilidadY;
 import static com.example.march17th.Constantes.valorInicialInclinacionX;
@@ -95,6 +98,10 @@ public class EscenaPelea extends Escena implements SensorEventListener {
      */
     Scoreboard scoreboard;
 
+    Vibrator vibrator;//
+
+
+
     public EscenaPelea(int numEscena,EscenarioCombate escenario){
         super(numEscena,escenario);
     }
@@ -162,6 +169,9 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                     SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
         }
         detectorDeGestos = new GestureDetectorCompat(context,new MultiTouchHandler());
+        if(Build.VERSION.SDK_INT>=26){
+            vibrator = (Vibrator)context.getSystemService(VIBRATOR_SERVICE);
+        }
     }
 
     @Override
@@ -220,6 +230,8 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             enemy.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
             dmgDoneDisplay=player.damageMov;
             dmgDoneTextModifier=1;
+            if(emplearVibracion) vibrator.vibrate(250);
+
         }
 
         if(enemy.golpea(player.hurtbox)&&!player.isInvulnerable&&!player.isBlocking){
@@ -228,6 +240,8 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             player.setVidaActual(enemy.damageMov);
             dmgTakenDisplay=enemy.damageMov;
             dmgTakenTextModifier=1;
+            if(emplearVibracion) vibrator.vibrate(250);
+
         }
 
         if(enemy.golpea(player.hurtbox)&&player.isBlocking){
@@ -270,6 +284,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             Proyectil pr = proyectiles.get(i-1);
             if(pr.golpea(pr.isFromPlayer?enemy.hurtbox:player.hurtbox)){
                 proyectiles.remove(pr);
+                if(emplearVibracion) vibrator.vibrate(250);
                 if(pr.isFromPlayer && !enemy.currentMoveAnimation[enemy.getCurrentAnimationFrame()].esGolpeo){
                     enemy.setVidaActual(pr.damageMov);
                     enemy.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
@@ -287,7 +302,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
         //TODO clase enemigo, que contiene un personaje
         if(!enemy.isDoingAMove){
-            tomaDecisionDeLaIA();
+            //tomaDecisionDeLaIA();
         }
 
         if(enemy.getCurrentAnimationFrame()==enemy.parryFrame && enemy.getCurrentAction()== AccionesPersonaje.PROTECT.getAction()){

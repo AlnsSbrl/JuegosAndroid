@@ -5,9 +5,9 @@
     <string name="FirstTimePrompt2">it is highly recommended to set it up before playing</string>
     <string name="GyroConfigStarting">Hold the device with both hands and wait until it\'s finished</string>
     <string name="GyroConfigInProcess">Calibrating...</string>
-    <string name="ReestablecerGyro">Done!</string>
-    <string name="GyroSensibilityOnX">Sensibility on X Axis</string>
-    <string name="GyroSensibilityOnY">Sensibility on Y Axis</string>
+    <string name="ReestablecerGyro">Default</string>
+    <string name="GyroSensibilityOnX">X Axis</string>
+    <string name="GyroSensibilityOnY">Y Axis</string>
     <string name="UseMusic">Music</string>
     <string name="FPSControl">Frame Rate</string>
     <string name="GyroOption">Gyroscope</string>
@@ -17,4 +17,11 @@
     <string name="LOW">Low</string>
     <string name="MEDIUM">Medium</string>
     <string name="HIGH">High</string>
+    <string name="GyroConfig" translatable="false">Calibrate</string>
+    <string name="Tutorial">Training</string>
+    <string name="Credits">Credits</string>
+    <string name="Records" translatable="false">Records</string>
+    <string name="PlayAgainstComputer">Battle</string>
+    <string name="Empezar">Start</string>
+    <string name="Atras">Go back</string>
 </resources>

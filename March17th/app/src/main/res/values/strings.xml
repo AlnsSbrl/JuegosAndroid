@@ -3,7 +3,7 @@
     <string name="pantalla_inicio">Presione para continuar</string>
     <string name="FirstTimePrompt">El giroscopio es necesario para el control básico del personaje</string>
     <string name="FirstTimePrompt2">se recomienda configurar las preferencias antes de jugar</string>
-    <string name="GyroConfig" translatable="false">Calibrar</string>
+    <string name="GyroConfig">Calibrar</string>
     <string name="ReestablecerGyro">Por defecto</string>
     <string name="GyroSensibilityOnX">Eje X</string>
     <string name="GyroSensibilityOnY">Eje Y</string>
@@ -14,11 +14,11 @@
     <string name="GyroOption">Giroscopio</string>
     <string name="SaveOptions">Guardar</string>
     <string name="CancelOptions">Cancelar</string>
-    <string name="Tutorial" translatable="false">Tutorial</string>
-    <string name="PlayAgainstComputer" translatable="false">Jugar</string>
+    <string name="Tutorial">Entrenamiento</string>
+    <string name="PlayAgainstComputer">Combate</string>
     <string name="Settings">Configuración</string>
-    <string name="Records" translatable="false">Records</string>
-    <string name="Credits" translatable="false">Créditos</string>
+    <string name="Records">Records</string>
+    <string name="Credits">Créditos</string>
     <string name="ES" translatable="false">🇪🇸</string>
     <string name="EN" translatable="false">🇬🇧</string>
     <string name="GL" translatable="false">🇵🇹</string>
@@ -27,9 +27,24 @@
     <string name="LOW">Poca</string>
     <string name="MEDIUM">Media</string>
     <string name="HIGH">Alta</string>
-    <string name="Empezar" translatable="false">Empezar</string>
-    <string name="Atras" translatable="false">Atrás</string>
-
+    <string name="Empezar">Empezar</string>
+    <string name="Atras">Atrás</string>
+    <string name="StaffCredits" translatable="false">Staff Credits</string>
+    <string name="pablo" translatable="false">Pablo Alonso Sobral</string>
+    <string name="LeadProgramming" translatable="false">Lead Programming</string>
+    <string name="GameDesign" translatable="false">Game Design</string>
+    <string name="MusicArtists" translatable="false">Music Artists</string>
+    <string name="TheZame" translatable="false">The Zame</string>
+    <string name="TobyFox" translatable="false">Toby Fox</string>
+    <string name="AndrewJeremy" translatable="false">Andrew Jeremy</string>
+    <string name="Simon" translatable="false">Simon Chylinski</string>
+    <string name="Canciones" translatable="false">Songs</string>
+    <string name="Megalovania" translatable="false">\"Megalovania\" from Undertale</string>
+    <string name="Spear" translatable="false">\"Spear of Justice\" from Undertale</string>
+    <string name="Exosuit" translatable="false">\"Exosuit\" from Subnautica</string>
+    <string name="coffe1" translatable="false">\"A day with Coffee\" from Coffee Talk</string>
+    <string name="cof2" translatable="false">\"Sunset in the city\" from Coffee Talk</string>
+    <string name="cof3" translatable="false">\"Way too soon\" from Coffe Talk</string>
 
 
 </resources>

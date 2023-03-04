@@ -46,7 +46,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+        //escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+        escenaActual= new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
     }
 
     @Override
@@ -75,6 +76,14 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
             }
                 if(escenaActual.getClass()==EscenaSeleccionPersonaje.class){
                     if(!((EscenaSeleccionPersonaje)escenaActual).detectorDeGestos.onTouchEvent(event)){
+                        int action=event.getActionMasked();
+                        switch (action){
+
+                        }
+                    }
+                }
+                if(escenaActual.getClass()==EscenaCreditos.class){
+                    if(!((EscenaCreditos)escenaActual).detectorDeGestos.onTouchEvent(event)){
                         int action=event.getActionMasked();
                         switch (action){
 
@@ -133,6 +142,14 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                         escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),true);
                     }
                     */
+                    break;
+                case CREDITOS:
+                    escenaActual = new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.CREDITOS.getMenu()));
+                    break;
+                case TUTORIAL:
+                    int personajePlayer = ((EscenaSeleccionPersonaje)escenaActual).selectedCharacter;
+                    int mapa = ((EscenaSeleccionPersonaje)escenaActual).indexMapa;
+                    if(personajePlayer<0) persoPlayer=0;
             }
         }
     }

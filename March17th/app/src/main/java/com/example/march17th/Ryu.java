@@ -222,12 +222,16 @@ public class Ryu extends Personaje{
             case 7:
             case 8:
             case 9:
+                isInvulnerable=true; //parche rápido del problema que no caes al suelo si te golpean en el aire(porque cambia de animación y no se ejecuta el resto del código)
                 moverEnY(-altoPantalla*2/23);
                 break;
             case 13:
             case 14:
+                moverEnY(altoPantalla*2/23);
+                break;
             case 15:
                 moverEnY(altoPantalla*2/23);
+                isInvulnerable=false;
                 break;
         }
     }

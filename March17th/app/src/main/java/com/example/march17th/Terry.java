@@ -185,12 +185,17 @@ public class Terry extends Personaje{
             case 3:
             case 4:
             case 5:
+                isInvulnerable=true;
                 moverEnY(-altoPantalla*2/23);
                 moverEnX(anchoPantalla/23);
                 break;
             case 8:
             case 9:
+                moverEnY(altoPantalla*2/23);
+                moverEnX(anchoPantalla/23);
+                break;
             case 10:
+                isInvulnerable=false;
                 moverEnY(altoPantalla*2/23);
                 moverEnX(anchoPantalla/23);
                 break;

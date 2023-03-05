@@ -5,3 +5,39 @@ Jan 17		se pulió la animación de puñetazo de jotaro para que se mostrase corr
 Jan 18		modularización del juego, implementación del lector de rotacion y onTouchEvent, ahora las animaciones producen ataques epilépticos
 Jan 19		correción del control temporal del juego, ahora las imágenes se reproducen adecuadamente y el personaje principal reacciona a eventos producidos por el usuario
 Jan 19		se creó el changelog
+Jan 23		recorte de varias animaciones
+Jan 30		añadida la funcionalidad básica de detección de hits y una pista de música
+Jan 31		añadida una cuenta atras en el combate, así como las barras de vida de los personajes, que actualizan su valor cuando son golpeados
+Feb 1		el juego termina el hilo de dibujar cuando la vida de algún personaje llega a 0 (es decir, la escena tiene ahora condición de salida)
+Feb 2		se ha añadido una fuente no nativa para mostrar en pantalla el daño que hace cada personaje cuando golpea
+Feb 6		se ha añadido el multitouch que gestiona el fling, se han añadido mas animaciones, ahora el personaje si recibe daño cambia de animacion para demostrar que recibe un golpe
+Feb 8		se ha creado una clase que gestiona los gestos simples y dobles al tocar la pantalla, corrigiéndose un bug de la versión anterior (ahora se diferencian claramente el fling del tap)
+Feb 10		se ha creado un enumerado y se han hecho cambios en el codigo para que sea más fácil leer el código al establecer la animación de un personaje
+Feb 13		ahora se gestiona perfectamente los flings (antes se gestionaban las velocidades, ahora los parametros x e y de los motionevent1 y motionevent2). Se ha eliminado al personaje jotaro y se ha introducido a Ryu. Al crear los sprites del personaje estos se voltean dependiento de si el personaje pertenece al jugador o a la CPU.
+Feb 13		mejor modularización de la gestión de las físicas de los movimientos, antes actualizaban su valor dentro del sensorChanged del giroscopio, ahora lo actualizan propiamente los personajes
+Feb 14		ahora el personaje mantiene la posicion de estar bloqueando al mantener el giroscopio en esa posicion. Se ha creado la clase base proyectil, en el long press se hace la animacion de lanzar el proyectil. Se han corregido animaciones que estaban bug, asi como el arreglo de la correcta posición de algunas hitboxes tras desplazar al personaje.
+Feb 15		se añaden sfx a algunos movimientos, se añaden strings al xml, se crea una clase fondo que compacta un bitmap+musica, se crearon constantes booleanas para determinar si se usa musica o sfx
+Feb 15		primeros inicios de la IA. El proyectil base está casi terminado.
+Feb 16		mejor fragmentación de la toma de decisión de la IA.
+Feb 17		se logra cambiar de escena del juego al pulsar botones. Al pulsar un boton pasa a la escena de juego y al terminar esta vuelve al menu.
+Feb 18		se ha creado el proyecto que se va a entregar. Se ha modificado la clase botón para poder crear distintos tipos de botones.
+Feb 18		se ha creado un enumerado para las distintas escenas, se ha creado la escena de configuración, donde hay botones para activar o desactivar música y efectos sonoros.
+Feb 18		se ha logrado enlazar unas escenas con otras, el juego al terminar (por tiempo o por victoria/derrota) vuelve al menu. Se han implementado imágenes y canciones, arreglado el menu principal, el texto ahora es proporcional al tamaño del boton y el display del texto se hace en el medio de los límites del botón.
+Feb 19		se ha creado una clase Scoreboard que muestra en pantalla las victorias actuales de los personajes y el tiempo en pantalla. En caso de ser tutorial muestra un simbolo de infinito y no muestra número de victorias. Se han modificado los displays de vida de los personajes para encajar bien con el scoreboard
+Feb 20		se han añadido botones de configuracion que te cambian el idioma, con una imagen de carga mientras se actualizan los botones. Se ha implementado la calibración del giroscopio, tanto los valores iniciales donde empieza a calvular la diferencia para detectar movimiento como los valores del umbral para ejecutar la acción (poco,medio,alto). Para visualizar esto se ha creado un personaje nuevo con funciones limitadas que muestra las animaciones de los movimientos asociados al giroscopio en el propio menú de calibración
+Feb 23		se ha creado una esceba de seleccioón de personaje, una clase marco de personaje y un enumerado que distingue a los personajes
+Feb 24		se han añadido animaciones, se ha creado la clase power geyser que hereda de proyectil y se ha actualizado la fisica de Terry al usar algunos movimientos.
+Feb 28		se ha añadido una clase que contiene un arraylist con todos los escenarios de combate, que guarda los valores de bitmap+musica. Tiene un método estático que te devuelve un escenario de combate según un valor que se puede identificar claramente mediante un enumerado de Mapas.
+Feb 28	 	se ha modificado ligeramente la escena de calibración (se ha cambiado la pantalla por un botón de carga, los botones de sensibilidad cambian de color al clickar, se ha añadido un boton de establecer valores por defecto y el personaje muestra correctamente las animaciones en pantalla)
+Feb 28		se ha modificado ligeramente la escena de combate (ahora pilla los valores establecidos por el usuario y no unos a machete)
+Feb 28		se han añadido los recuadros de los personajes jugables, canciones y mapas varios.
+Mar 1		se han finalizado las clases que se usaban para los settings (mentira). Remodularizacion de como se cambia el idioma, ahora se usan los shared prefferences para guardar y leer las constantes empleadas que se pueden modificar, asi como los records. El selector de personaje empieza a cobrar forma y ahora selecciona el personaje cuando clickas sobre él.
+Mar 2		se han comentado varias clases en javadoc (boton, accionesPersonaje) ahora la clase de selección de personaje tiene para seleccionar el mapa con fling y es capaz de loopear con el combate sin petar, es decir, está casi funcional. Ahora la clase escena tiene por defecto un escenario (bitmap+musica).
+Mar 2		ahora el combate cambia el personaje del jugador y el escenario de combate según los valores dados como parámetro. Se han solucionado varios bugs (Scoreboard no bajaba el tiempo, no se salía luego de la escena de combate...)
+Mar 2		se ha cambiado el funcionamiento de la clase que gestiona los mapas y la música, ya no tiene una coleccion de las clases de los mapas, sino que solo guarda por separado los bitmaps y los recursos de la música, es decir, la funcion getMapa() devuelve un nuevo archivo de musica creado a partir de los arrays, y no un elemento ya existente de la coleccion. Esto soluciona un bug que hacía que petase el juego por un tema de memoria (cuando se entraba de manera consecutiva en una escena el archivo de música empezaba a reproducirse donde lo había dejado la última vez y tras un rato dejaba de poder escucharse las pistas de audio y finalmente crasheaba)
+Mar 2		se han modificado todos los constructores de las escenas para admitir un parámetro mapa. Ahora si no seleccionas ningún personaje el juego te asigna uno aleatoriamente (evita crasheos).
+Mar 2		se han creado enumerados de mapas y menus, para distinguir bien qué se crea en cada momento.
+Mar 3		se han agregado bastantes comentarios en javadoc así como la supresión de warnings que detectaba android studio (AKA código sucio)
+Mar 4		se ha creado la escena que muestra los créditos, ayudándose de la clase TextoCreditos, que almacena el texto, lo mueve y lo dibuja. Esta escena tiene la opción de aumentar la velocidad en la que se mueven los textos haciendo doble tap
+Mar 4		se ha añadido la vibración al hacer golpeos, así como la opción de activar o desactivar la vibración desde el menú
+Mar 4		se ha actualizado el changelog que no se tocaba desde Jan 19

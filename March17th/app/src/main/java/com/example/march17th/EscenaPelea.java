@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Vibrator;
 import android.util.Log;
@@ -20,6 +21,7 @@ import static com.example.march17th.Constantes.FPS;
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.context;
+import static com.example.march17th.Constantes.emplearSFX;
 import static com.example.march17th.Constantes.emplearVibracion;
 import static com.example.march17th.Constantes.umbralSensibilidadX;
 import static com.example.march17th.Constantes.umbralSensibilidadY;
@@ -100,7 +102,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
 
     Vibrator vibrator;//
 
-
+    MediaPlayer mpParry;
 
     public EscenaPelea(int numEscena,EscenarioCombate escenario){
         super(numEscena,escenario);
@@ -136,6 +138,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                 Log.i("scn", "CUIDADO EL RANDOM TIENE MAL EL RANGO ");
                 break;
         }
+        mpParry= MediaPlayer.create(context,R.raw.parry);
         perso = ListaPersonajes.values()[personajeEnemigo];
         if(personajeEnemigo== ListaPersonajes.RANDOM.getPersonaje()){
             int max=ListaPersonajes.values().length-1;
@@ -245,6 +248,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
 
         if(enemy.golpea(player.hurtbox)&&player.isBlocking){
+            if(emplearSFX&&mpParry!=null)mpParry.start();
             player.setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
             slowHit=true;
             enemy.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
@@ -252,12 +256,13 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         }
 
         if(player.golpea(enemy.hurtbox)&&enemy.isBlocking){
+            if(emplearSFX&&mpParry!=null)mpParry.start();
             enemy.setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
             slowHit=true;
             player.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
             player.isInvulnerable=false;
         }
-
+    
         if(player.getCurrentAction()== AccionesPersonaje.PROJECTILE.getAction()&&player.getCurrentAnimationFrame()==player.throwingProjectileFrame){
             Proyectil pr = new Proyectil(player.projectile,player.projectileFinished,true,player.posXProyectil,player.posYProyectil);
             proyectiles.add(pr);
@@ -300,14 +305,14 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                 }
             }
         }
-        //TODO clase enemigo, que contiene un personaje
         if(!enemy.isDoingAMove){
-            //tomaDecisionDeLaIA();
+            int a = (int)(Math.random()*3);
+            if(a==1)tomaDecisionDeLaIA();
         }
 
         if(enemy.getCurrentAnimationFrame()==enemy.parryFrame && enemy.getCurrentAction()== AccionesPersonaje.PROTECT.getAction()){
-            //todo random para que no haga este frame y se quede bloqueando de manera infinita
-            enemy.setDeltaCurrentAnimationFrame(-1);
+            int a = (int)(Math.random()*5);
+            if(a!=1)enemy.setDeltaCurrentAnimationFrame(-1);
             enemy.isBlocking=true;
         }
 
@@ -360,7 +365,6 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             }else{
                 comportamientoCercano(15);//todo tbh me falta incluir más veces el iddle animation
             }
-            //comportamientoCercano();
         }
 
     }

@@ -39,14 +39,18 @@ public class Terry extends Personaje{
         mpUpperCut= MediaPlayer.create(context,R.raw.terrypowerdank);
         mpBackwardsAttack= MediaPlayer.create(context, R.raw.terrycrackshoot);
         mpProjectile=MediaPlayer.create(context,R.raw.terryburnknucle);
+        mpLowerAttack= MediaPlayer.create(context,R.raw.terrypowergeiser);
+        mpProjectile = MediaPlayer.create(context,R.raw.terrypowerwave);
     }
 
     /**
      * Inicia los valores de todas las animaciones
      */
     private void IniciaAnimaciones(){
-        parryFrame=3;
+        parryFrame=1;
         throwingProjectileFrame=6;
+        //todo crouch,
+
         iddleAnimation= new Frame[11];
         punchAnimation = new Frame[4];
         strongPunch = new Frame[5];
@@ -54,9 +58,29 @@ public class Terry extends Personaje{
         backwardAttack = new Frame[8];
         forwardAttack = new Frame[10];
         uppercut = new Frame[13];
-        throwingProjectile= new Frame[3];
+        throwingProjectile= new Frame[11];
         downwardAttack = new Frame[11];
         powerGeyser = new Frame[9];
+        moveBackwards= new Frame[7];
+        moveForward = new Frame[7];
+        parry = new Frame[2];
+        projectile = new Frame[4];
+        crouch = new Frame[4];
+
+        crouch[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryagachao),width,height,true),false,this.isPlayer,0,0);
+        crouch[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryagachao),width,height,true),false,this.isPlayer,0,0);
+        crouch[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryagachao),width,height,true),false,this.isPlayer,0,0);
+        crouch[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryagachao),width,height,true),false,this.isPlayer,0,0);
+
+        parry[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryparry1),width,height,true),false,this.isPlayer,0,0);
+        parry[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryparry2),width,height,true),false,this.isPlayer,0,0);
+
+        projectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave1),width,height,true),true,this.isPlayer,20,0);
+        projectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave2),width,height,true),true,this.isPlayer,20,0);
+        projectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave3),width,height,true),true,this.isPlayer,20,0);
+        projectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave4),width,height,true),true,this.isPlayer,20,0);
+
+
         powerGeyser[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powergeiser1),width,height,true),false,this.isPlayer,0,0);
         powerGeyser[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powergeiser2),width,height,true),false,this.isPlayer,0,0);
         powerGeyser[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powergeiser3),width,height,true),false,this.isPlayer,0,0);
@@ -143,9 +167,34 @@ public class Terry extends Personaje{
         uppercut[11]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingup13),width,height,true),false,this.isPlayer,0,0);
         uppercut[12]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingup13),width,height,true),false,this.isPlayer,0,0);
 
-        throwingProjectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress1),width,height,true),false,this.isPlayer,0,0);
-        throwingProjectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress2),width,height,true),false,this.isPlayer,0,0);
-        throwingProjectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuonlongpress3),width,height,true),false,this.isPlayer,0,0);
+
+        moveForward[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward1),width,height,true),false,this.isPlayer,0,0);
+        moveForward[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward2),width,height,true),false,this.isPlayer,0,0);
+        moveForward[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward3),width,height,true),false,this.isPlayer,0,0);
+        moveForward[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward4),width,height,true),false,this.isPlayer,0,0);
+        moveForward[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward5),width,height,true),false,this.isPlayer,0,0);
+        moveForward[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward6),width,height,true),false,this.isPlayer,0,0);
+        moveForward[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymoveforward7),width,height,true),false,this.isPlayer,0,0);
+
+        moveBackwards[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards1),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards2),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards3),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards4),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards5),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards6),width,height,true),false,this.isPlayer,0,0);
+        moveBackwards[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrymovebackwards7),width,height,true),false,this.isPlayer,0,0);
+
+        throwingProjectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown1),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown2),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown3),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown4),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[4]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown5),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[5]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown6),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[6]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown7),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown8),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[8]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown9),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[9]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown10),width,height,true),false,this.isPlayer,0,0);
+        throwingProjectile[10]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryflingdown11),width,height,true),false,this.isPlayer,0,0);
 
         this.posXProyectil=this.posX+(isPlayer?width:0);
         this.posYProyectil=this.posY+height;
@@ -168,6 +217,7 @@ public class Terry extends Personaje{
             case UPPERCUT:
                 actualizaUpperCut();//todo: aqui hay un problema cuando te golpean mientras estás airborne-> realizar una nueva accion de heavy damage y boolean de isAirborne
                 //en caso de que te golpeen en el aire te quedas en esa animacion hasta que llegues al "suelo"
+                //(al final hice una solución...menos elegante)
                 break;
             case ATTACK_BACKWARDS:
                 actualizaCrackShoot();
@@ -191,6 +241,7 @@ public class Terry extends Personaje{
                 break;
             case 8:
             case 9:
+                isInvulnerable=true;
                 moverEnY(altoPantalla*2/23);
                 moverEnX(anchoPantalla/23);
                 break;

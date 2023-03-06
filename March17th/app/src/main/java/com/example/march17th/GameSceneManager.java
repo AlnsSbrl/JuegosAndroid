@@ -103,6 +103,12 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                         }
                     }
                 }
+                if(escenaActual.getClass()==EscenaEntrenamiento.class){
+                    if(!((EscenaEntrenamiento)escenaActual).detectorDeGestos.onTouchEvent(event)){
+
+                        ((EscenaEntrenamiento)escenaActual).onTouchEvent(event);
+                    }
+                }
             }
         int accion = event.getActionMasked();
 
@@ -147,36 +153,37 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 case ELEGIR_PERSONAJES:
                     Log.i("scn", "cambiaEscena: "+scn);
                     //boolean isTutorial=true;
-                    if(escenaActual instanceof EscenaPelea || (escenaActual instanceof EscenaMenu && !((EscenaMenu) escenaActual).goesToTutorial)){
-                        Log.i("scn", "detecta para poner tutorial: "+scn);
+                    if(escenaActual.getClass()== EscenaPelea.class || (escenaActual instanceof EscenaMenu && !((EscenaMenu) escenaActual).goesToTutorial)) {
+                        Log.i("scn", "detecta para poner tutorial: " + scn);
 
-                        if(escenaActual instanceof EscenaPelea){
-                            if(((EscenaPelea)escenaActual).player.vidaActual<((EscenaPelea)escenaActual).enemy.vidaActual){
+                        if (escenaActual.getClass()== EscenaPelea.class) {
+                            if (((EscenaPelea) escenaActual).player.vidaActual < ((EscenaPelea) escenaActual).enemy.vidaActual) {
                                 victoriasCPU++;
-                                if(vicSeguidas>victoriasConsecutivas){
-                                    victoriasConsecutivas=vicSeguidas;
+                                if (vicSeguidas > victoriasConsecutivas) {
+                                    victoriasConsecutivas = vicSeguidas;
                                 }
-                                vicSeguidas=0;
-                            }else{
+                                vicSeguidas = 0;
+                            } else {
                                 victoriasPlayer++;
                                 vicSeguidas++;
                             }
-                            totalPlayerWins+=victoriasPlayer;
-                            totalCPUWins+=victoriasCPU;
-                            rachaActual=vicSeguidas;
+                            totalPlayerWins += victoriasPlayer;
+                            totalCPUWins += victoriasCPU;
+                            rachaActual = vicSeguidas;
                             guardarValores();
                         }
                         //sera que con el instanceof o el cast hace que no pueda aprovechar
-                        escenaActual= new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(),MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),false);
+                        escenaActual = new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(), MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()), false);
 
-
+                    }else{
+                        escenaActual = new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(), MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),true);
                     }
 
-                    /*
-                    if(escenaActual instanceof EscenaTutorial || (escenaActual instanceof  EscenaMenu && !((EscenaMenu)escenaActual).goesToTutorial)){
-                        escenaActual = new EscenaSeleccionPersonaje(scn.ELEGIR_PERSONAJES.getEscena(),true);
-                    }
-                    */
+/*
+                    if(escenaActual instanceof EscenaEntrenamiento || (escenaActual instanceof  EscenaMenu && !((EscenaMenu)escenaActual).goesToTutorial)){
+                        escenaActual = new EscenaSeleccionPersonaje(EscenasJuego.ELEGIR_PERSONAJES.getEscena(), MapaSelector.consigueMenu(Menus.CHAR_SELECT.getMenu()),true);
+                    }*/
+
                     break;
                 case CREDITOS:
                     escenaActual = new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.CREDITOS.getMenu()));
@@ -184,7 +191,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 case TUTORIAL:
                     int personajePlayer = ((EscenaSeleccionPersonaje)escenaActual).selectedCharacter;
                     int mapa = ((EscenaSeleccionPersonaje)escenaActual).indexMapa;
-                    if(personajePlayer<0) persoPlayer=0;
+                    if(personajePlayer<0) personajePlayer=0;
+                    escenaActual = new EscenaEntrenamiento(1,MapaSelector.consigueMapa(mapa),personajePlayer,0);//aqui pasarle dos personajes
+                    break;
             }
         }
     }

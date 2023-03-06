@@ -38,8 +38,8 @@ public class EscenaMenu extends Escena{
         botones[0]=new Boton(anchoPantalla/4,altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10, context.getResources().getString(R.string.Tutorial).toUpperCase(Locale.ROOT), EscenasJuego.ELEGIR_PERSONAJES.getEscena(),true);
         botones[1]= new Boton(anchoPantalla/4,2*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.PlayAgainstComputer).toUpperCase(Locale.ROOT), EscenasJuego.ELEGIR_PERSONAJES.getEscena(),true);
         botones[2]= new Boton(anchoPantalla/4,3*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.Settings).toUpperCase(Locale.ROOT), EscenasJuego.SETTINGS.getEscena(),true);
-        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.Records).toUpperCase(Locale.ROOT),4,true);
-        botones[4]= new Boton(anchoPantalla/4,5*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.Credits).toUpperCase(Locale.ROOT),5,true);
+        botones[3]= new Boton(anchoPantalla/4,4*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.Records).toUpperCase(Locale.ROOT),EscenasJuego.RECORDS.getEscena(), true);
+        botones[4]= new Boton(anchoPantalla/4,5*altoPantalla/6-altoPantalla/10,anchoPantalla/2,altoPantalla/10,context.getResources().getString(R.string.Credits).toUpperCase(Locale.ROOT),EscenasJuego.CREDITOS.getEscena(), true);
     }
 
     /**

@@ -233,6 +233,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             enemy.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
             dmgDoneDisplay=player.damageMov;
             dmgDoneTextModifier=1;
+            player.damageBoost=1;
             if(emplearVibracion) vibrator.vibrate(250);
 
         }
@@ -243,6 +244,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             player.setVidaActual(enemy.damageMov);
             dmgTakenDisplay=enemy.damageMov;
             dmgTakenTextModifier=1;
+            enemy.damageBoost=1;
             if(emplearVibracion) vibrator.vibrate(250);
 
         }
@@ -250,6 +252,8 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         if(enemy.golpea(player.hurtbox)&&player.isBlocking){
             if(emplearSFX&&mpParry!=null)mpParry.start();
             player.setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
+            enemy.damageBoost=1;
+            dmgTakenTextModifier=1;
             slowHit=true;
             enemy.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
             enemy.isInvulnerable=false;
@@ -257,7 +261,9 @@ public class EscenaPelea extends Escena implements SensorEventListener {
 
         if(player.golpea(enemy.hurtbox)&&enemy.isBlocking){
             if(emplearSFX&&mpParry!=null)mpParry.start();
+            player.damageBoost=1;
             enemy.setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
+            dmgDoneTextModifier=1;
             slowHit=true;
             player.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
             player.isInvulnerable=false;
@@ -271,15 +277,15 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             PowerGeyser pr = new PowerGeyser(((Terry) player).powerGeyser,((Terry) player).powerGeyser,true,player.posXProyectil,player.posYProyectil);
             proyectiles.add(pr);
         }
-        //todo: checkear si los proyectiles se golpean entre sí
+        //todo: checkear si los proyectiles se golpean entre sí (sudo, que sean intangibles)
         if(enemy.getCurrentAction()== AccionesPersonaje.PROJECTILE.getAction()&&enemy.getCurrentAnimationFrame()==enemy.throwingProjectileFrame){
             Proyectil pr = new Proyectil(enemy.projectile,enemy.projectileFinished,false,enemy.posXProyectil-enemy.width,enemy.posYProyectil);
             proyectiles.add(pr);
         }
-        /*if(enemy instanceof Terry &&enemy.getCurrentAction()==ac.LOWKICK.getAction() && enemy.getCurrentAnimationFrame()==enemy.throwingProjectileFrame){
+        if(enemy instanceof Terry &&enemy.getCurrentAction()==AccionesPersonaje.LOWKICK.getAction() && enemy.getCurrentAnimationFrame()==enemy.throwingProjectileFrame){
             PowerGeyser pr = new PowerGeyser(((Terry) enemy).powerGeyser,((Terry) enemy).powerGeyser,false,enemy.posXProyectil,enemy.posYProyectil);
             proyectiles.add(pr);
-        }*/
+        }
 
         for(Proyectil p: proyectiles){
             p.moverEnX(p.speed);
@@ -288,27 +294,30 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         for(int i=proyectiles.size();i>0;i--){
             Proyectil pr = proyectiles.get(i-1);
             if(pr.golpea(pr.isFromPlayer?enemy.hurtbox:player.hurtbox)){
-                proyectiles.remove(pr);
                 if(emplearVibracion) vibrator.vibrate(250);
-                if(pr.isFromPlayer && !enemy.currentMoveAnimation[enemy.getCurrentAnimationFrame()].esGolpeo){
+                if(pr.isFromPlayer && !enemy.currentMoveAnimation[enemy.getCurrentAnimationFrame()%enemy.currentMoveAnimation.length].esGolpeo){
                     enemy.setVidaActual(pr.damageMov);
+                    player.damageBoost=1;
                     enemy.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
                     slowHit=true;
                     dmgDoneDisplay=pr.damageMov;
                     dmgDoneTextModifier=1;
-                }else if(!pr.isFromPlayer && !player.currentMoveAnimation[player.getCurrentAnimationFrame()].esGolpeo){
+                }else if(!pr.isFromPlayer && !player.currentMoveAnimation[player.getCurrentAnimationFrame()%player.currentMoveAnimation.length].esGolpeo){
                     player.setVidaActual(pr.damageMov);
+                    enemy.damageBoost=1;
                     player.setCurrentAnimation(AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction());
                     slowHit=true;
                     dmgTakenDisplay=pr.damageMov;
                     dmgTakenTextModifier=1;
                 }
+                proyectiles.remove(pr);
             }
         }
         if(!enemy.isDoingAMove){
-            int a = (int)(Math.random()*3);
+            int a = (int)(Math.random()*4);
             if(a==1)tomaDecisionDeLaIA();
         }
+        //TODO COMPROBAR EL ORDEN DE DECISION DE MOVER PROYECTILES Y CHECKEAR CUANDO GOLPEAN, IGUAL PETA POR ESO
 
         if(enemy.getCurrentAnimationFrame()==enemy.parryFrame && enemy.getCurrentAction()== AccionesPersonaje.PROTECT.getAction()){
             int a = (int)(Math.random()*5);
@@ -377,7 +386,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                 enemy.setCurrentAnimation(AccionesPersonaje.UPPERCUT.getAction());
                 break;
             case 4:
-                enemy.setCurrentAnimation(AccionesPersonaje.PROJECTILE.getAction());
+                enemy.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
                 break;
             case 5:
             case 6:
@@ -420,6 +429,8 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         int accion = (int)(Math.random()*max+1);
         switch (accion){
             case 1:
+                enemy.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
+                break;
             case 2:
             case 3:
             case 4:
@@ -444,6 +455,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                 break;
             case 3:
             case 4:
+                enemy.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
             case 5:
             case 6:
             case 7:
@@ -498,6 +510,8 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                 enemy.setCurrentAnimation(AccionesPersonaje.ATTACK_BACKWARDS.getAction());
                 break;
             case 14:
+                enemy.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
+                break;
             case 15:
             case 16:
             case 17:

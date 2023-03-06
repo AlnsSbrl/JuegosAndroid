@@ -121,6 +121,6 @@ public class Scoreboard {
     }
 
     public void actualizaTiempo(){
-        currentTime--;
+        if (!isTutorial) currentTime--;
     }
 }

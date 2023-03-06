@@ -36,7 +36,7 @@ public class Ryu extends Personaje{
         iddleAnimation=new Frame[7];
         backwardAttack = new Frame[17];
         strongPunch= new Frame[9];
-        crouch = new Frame[1];
+        crouch = new Frame[4];
         downwardAttack = new Frame[5];
         forwardAttack = new Frame[14];
         uppercut = new Frame[16];
@@ -92,7 +92,10 @@ public class Ryu extends Personaje{
         strongPunch[7]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryudtap8),width,height,true),false,this.isPlayer,0,0);
         strongPunch[8]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryudtap9),width,height,true),false,this.isPlayer,0,0);
 
-        crouch[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuagachao),width/2,height/2,true),false,this.isPlayer,0,0);
+        crouch[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryucrouch),width,height,true),false,this.isPlayer,0,0);
+        crouch[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryucrouch),width,height,true),false,this.isPlayer,0,0);
+        crouch[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryucrouch),width,height,true),false,this.isPlayer,0,0);
+        crouch[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryucrouch),width,height,true),false,this.isPlayer,0,0);
 
 
         iddleAnimation[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryuiddle1),width,height,true),false,this.isPlayer,0,0);
@@ -227,6 +230,7 @@ public class Ryu extends Personaje{
                 break;
             case 13:
             case 14:
+                isInvulnerable=true;
                 moverEnY(altoPantalla*2/23);
                 break;
             case 15:

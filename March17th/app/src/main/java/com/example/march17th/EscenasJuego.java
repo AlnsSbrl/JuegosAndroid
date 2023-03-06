@@ -15,7 +15,8 @@ public enum EscenasJuego {
     VICTORIA(5),
     DERROTA(6),
     CREDITOS(7),
-    CALIBRACION(8);
+    CALIBRACION(8),
+    RECORDS(9);
 
     private final int escena;
 

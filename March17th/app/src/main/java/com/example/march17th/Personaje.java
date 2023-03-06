@@ -2,8 +2,11 @@ package com.example.march17th;
 
 import static com.example.march17th.Constantes.altoPantalla;
 import static com.example.march17th.Constantes.anchoPantalla;
+import static com.example.march17th.Constantes.context;
 import static com.example.march17th.Constantes.emplearSFX;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -98,6 +101,8 @@ public class Personaje {
     Frame[] projectileFinished;
     //hubiese sido mucho mejor condensar los frames+mediaplayer en una clase? pues sí, pero te jodes meu, xa é demasiado tarde
 
+
+    Bitmap boost= Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.boost),altoPantalla/15,altoPantalla/15,true);
     /**
      * Sonido que realiza al hacer el ataque hacia arriba
      */
@@ -234,6 +239,7 @@ public class Personaje {
      */
     boolean invierteAnimacion;
 
+    float damageBoost=1;
 
     public int getCurrentAnimationFrame() {
         return currentAnimationFrame;
@@ -292,7 +298,9 @@ public class Personaje {
         }
         pVida.setARGB(255,compR,compG,0);
         canvas.drawRect(displayVidaActual,pVida);
-
+        if(damageBoost>1){
+            canvas.drawBitmap(boost,isPlayer?anchoPantalla*6/52:anchoPantalla*29/52,altoPantalla*5/25,null);
+        }
 
         pMarcoVida.setColor(Color.WHITE);
         pMarcoVida.setStrokeWidth(15);
@@ -308,7 +316,7 @@ public class Personaje {
      */
     public boolean golpea(Rect hurtboxEnemigo){
         this.posEnemigo=(hurtboxEnemigo.left);
-        damageMov=currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].damage;
+        damageMov=(int)(currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].damage*damageBoost);
         return (currentMoveAnimation[currentAnimationFrame%currentMoveAnimation.length].esGolpeo && hurtbox.intersect(hurtboxEnemigo));
     }
 
@@ -337,7 +345,11 @@ public class Personaje {
      */
     public void actualizaFisica(int action){
         if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!= AccionesPersonaje.IDDLE.getAction()){
-            setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
+            if(currentAction==AccionesPersonaje.CROUCH.getAction()){
+                damageBoost=1.5f;
+            }
+
+                setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
         }
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
         switch (ac){
@@ -433,11 +445,11 @@ public class Personaje {
      */
     public void moverEnX(int posX) {
 
-        if(this.posX+posX<anchoPantalla-width && this.posX+posX>0&&((isPlayer&&this.posX+posX<posEnemigo-this.width/3)||!isPlayer&&this.posX-posX>posEnemigo+this.width/3)) {
+        if(this.posX+(isPlayer?posX:-posX)<anchoPantalla-width && this.posX+(isPlayer?posX:-posX)>0&&((isPlayer&&this.posX+posX<posEnemigo-this.width/3)||!isPlayer&&this.posX-posX>posEnemigo+this.width/3)) {
             this.posX += isPlayer?posX:-posX;
-        }else if(this.posX+posX>anchoPantalla-width){
+        }else if(this.posX+(isPlayer?posX:-posX)>anchoPantalla-width){
             this.posX=anchoPantalla-width;
-        }else if(this.posX+posX<0){
+        }else if(this.posX+(isPlayer?posX:-posX)<0){
             this.posX=0;
         }
         actualizaHitbox();

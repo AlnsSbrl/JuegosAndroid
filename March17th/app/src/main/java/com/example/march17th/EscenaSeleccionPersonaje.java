@@ -20,7 +20,7 @@ public class EscenaSeleccionPersonaje extends Escena{
     /**
      * Indica el personaje seleccionado por el jugador
      */
-    int selectedCharacter=-1;
+    int selectedCharacter=0;
 
     /**
      * Marcos de los distintos personajes y colección donde se guardan
@@ -70,6 +70,7 @@ public class EscenaSeleccionPersonaje extends Escena{
         selecRandom = new RecuadroSeleccionPersonaje(anchoPantalla/2,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RANDOM.getPersonaje());
         selecRyu= new RecuadroSeleccionPersonaje(anchoPantalla/2-anchoPantalla/10,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RYU.getPersonaje());
         selecTerry = new RecuadroSeleccionPersonaje(anchoPantalla/2+anchoPantalla/10,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.TERRY.getPersonaje());
+        selecRandom.isSelected=true;
         plantelLuchadores.add(selecRandom);
         plantelLuchadores.add(selecRyu);
         plantelLuchadores.add(selecTerry);
@@ -104,7 +105,7 @@ public class EscenaSeleccionPersonaje extends Escena{
         }
 
         if(aceptar.hitbox.contains(x,y)){
-            Log.i("scn", "onTouchEvent: "+aceptar.numEscena);
+            Log.i("scn", "onTouchEvent??: "+aceptar.numEscena);
             return aceptar.numEscena;
         }
         if(atras.hitbox.contains(x,y)){
@@ -176,8 +177,10 @@ public class EscenaSeleccionPersonaje extends Escena{
             int y = (int) motionEvent.getY();
 
             for(RecuadroSeleccionPersonaje r:plantelLuchadores){
-                r.isSelected=false;
-                if(r.onTouch(x,y)){
+                if(r.hitbox.contains(x,y)){
+                    for (RecuadroSeleccionPersonaje rr:plantelLuchadores){
+                        rr.isSelected=false;
+                    }
                     r.isSelected=true;
                     selectedCharacter=r.personaje;
                 }

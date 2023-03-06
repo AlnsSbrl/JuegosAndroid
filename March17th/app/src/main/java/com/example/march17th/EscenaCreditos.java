@@ -1,12 +1,16 @@
 package com.example.march17th;
 
 import static com.example.march17th.Constantes.altoPantalla;
+import static com.example.march17th.Constantes.anchoPantalla;
 import static com.example.march17th.Constantes.context;
 import static com.example.march17th.R.string.*;
 import static android.graphics.Color.*;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
+import android.graphics.Paint;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -21,6 +25,12 @@ public class EscenaCreditos extends Escena {
     public GestureDetectorCompat detectorDeGestos;
     int a=altoPantalla;
     TextoCreditos[] textosCreditos;
+    Paint pTransparency;
+    Bitmap terry=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terrypantallote),anchoPantalla*2/3,altoPantalla*2/3,true);
+
+    Bitmap ryu=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.ryupantallote),altoPantalla,altoPantalla,true);
+
+
     int[] recursosDeLosTextos= new int[]{app_name,StaffCredits,
             LeadProgramming,pablo,
             GameDesign,pablo,
@@ -74,6 +84,8 @@ public class EscenaCreditos extends Escena {
         detectorDeGestos = new GestureDetectorCompat(context,new EscenaCreditos.MultiTouchHandler());
         hasFinished=false;
         returnEscene=EscenasJuego.MENU_PRINCIPAL.getEscena();
+        pTransparency= new Paint();
+        pTransparency.setAlpha(100);
     }
 
     @Override
@@ -90,6 +102,8 @@ public class EscenaCreditos extends Escena {
     @Override
     public void dibuja(Canvas c) {
         super.dibuja(c);
+        c.drawBitmap(terry,0,altoPantalla/3,pTransparency);
+        c.drawBitmap(ryu,anchoPantalla-altoPantalla,0,pTransparency);
         for(TextoCreditos t: textosCreditos){
             t.dibujar(c);
         }

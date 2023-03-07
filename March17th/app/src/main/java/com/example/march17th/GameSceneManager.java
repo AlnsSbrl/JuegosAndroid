@@ -53,25 +53,25 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         tickTimer=System.nanoTime();
         vicSeguidas=rachaActual;
         //vibrator=
-        escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), MapaSelector.consigueMenu(Menus.RECORDS.getMenu()));
-
-
+        //EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
+        //escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
+        //cambiaEscena(EscenasJuego.INICIO.getEscena());
     }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         //escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
         //escenaActual= new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
-        EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
-        escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
-        Log.i("scn", "surfaceCreated: "+e.mp.isPlaying());
+        //EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
+        //escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
+        //Log.i("scn", "surfaceCreated: "+e.mp.isPlaying());
 
     }
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder surfaceHolder, int i, int i1, int i2) {
         //todo: arreglar aqui cuando sales de la app y vuelves a entrar
-        this.escenaActual.escenario.Pausa();
+        if(escenaActual!=null)this.escenaActual.escenario.Pausa();
     }
 
     @Override
@@ -88,10 +88,10 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
                     int accion=event.getActionMasked();
                     switch (accion){
+                        }
                     }
-                }
 
-            }
+                }
                 if(escenaActual.getClass()==EscenaSeleccionPersonaje.class){
                     if(!((EscenaSeleccionPersonaje)escenaActual).detectorDeGestos.onTouchEvent(event)){
                         int action=event.getActionMasked();
@@ -127,10 +127,17 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void cambiaEscena(int nuevaEscena){
-        if(escenaActual.numEscena!=nuevaEscena){
+        if(escenaActual==null){
+            escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), MapaSelector.consigueMenu(Menus.RECORDS.getMenu()));
+        }else if(escenaActual.numEscena!=nuevaEscena){
+            /*if(escenaActual.getClass()!=EscenaCalibracionGyro.class && nuevaEscena!=EscenasJuego.CALIBRACION.getEscena()) */escenaActual.escenario.QuitarCancion(); //todo checkear las que usan la misma
             EscenasJuego scn = EscenasJuego.values()[nuevaEscena];
-            escenaActual.escenario.Pausa();
+            //escenaActual.escenario.mp.pause();
             switch (scn){
+                case INICIO:
+                    escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), MapaSelector.consigueMenu(Menus.RECORDS.getMenu()));
+                    break;
+
                 case MENU_PRINCIPAL:
                     escenaActual= new EscenaMenu(0, MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
                     victoriasPlayer=0;
@@ -144,7 +151,6 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     escenaActual = new EscenaPelea(1,MapaSelector.consigueMapa(map),persoPlayer,0);//aqui pasarle dos personajes
                     ((EscenaPelea)escenaActual).scoreboard.playerWins=victoriasPlayer;
                     ((EscenaPelea)escenaActual).scoreboard.cpuWins=victoriasCPU;
-
                     break;
 
                 case SETTINGS:
@@ -157,7 +163,6 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
                 case ELEGIR_PERSONAJES:
                     Log.i("scn", "cambiaEscena: "+scn);
-                    //boolean isTutorial=true;
                     if(escenaActual.getClass()== EscenaPelea.class || (escenaActual instanceof EscenaMenu && !((EscenaMenu) escenaActual).goesToTutorial)) {
                         Log.i("scn", "detecta para poner tutorial: " + scn);
 
@@ -232,8 +237,11 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     if(!surfaceHolder.getSurface().isValid())continue;
                     canvas=surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder){
-                        escenaActual.actualizaFisica();
-                        escenaActual.dibuja(canvas);
+
+                            escenaActual.actualizaFisica();
+                            escenaActual.dibuja(canvas);
+
+
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -264,6 +272,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     if(escenaActual.hasFinished){
                         cambiaEscena(escenaActual.returnEscene);
                     }
+                }else{
+                    cambiaEscena(EscenasJuego.INICIO.getEscena());
                 }
             //todo aqui iria el control de frames? en plan, lo hago siempre
             }

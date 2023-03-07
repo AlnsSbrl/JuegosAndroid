@@ -41,12 +41,17 @@ public class EscenarioCombate {
          mp.setVolume(volume/2,volume/2);
     }
     public void Reproduce(){
-        if(Constantes.emplearMusicaFondo){
+        if(Constantes.emplearMusicaFondo && mp!=null){
             mp.start();
             Log.i("scn", "toca otra vez Sam: ");
         }
     }
     public void Pausa(){
         mp.pause();
+    }
+
+    public void QuitarCancion(){
+        //this.Pausa();
+        mp.release();
     }
 }

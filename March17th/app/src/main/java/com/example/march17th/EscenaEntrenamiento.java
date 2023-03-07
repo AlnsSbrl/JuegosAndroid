@@ -35,7 +35,8 @@ public class EscenaEntrenamiento extends EscenaPelea{
         int x = (int)e.getX();
         int y = (int)e.getY();
         if(bSalir.hitbox.contains(x,y)){
-            hasFinished=true;
+            escenario.mp.setLooping(false);
+            //hasFinished=true;
             return bSalir.numEscena;
         }
         return this.numEscena;

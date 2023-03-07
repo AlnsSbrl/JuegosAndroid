@@ -66,7 +66,9 @@ public class EscenaInicio extends Escena{
     @Override
     int onTouchEvent(MotionEvent e) {
         if(canSkip) {
-            hasFinished = true;
+            this.escenario.mp.setLooping(false);
+            //hasFinished = true;
+            return EscenasJuego.MENU_PRINCIPAL.getEscena();
         }
         return this.numEscena;
     }

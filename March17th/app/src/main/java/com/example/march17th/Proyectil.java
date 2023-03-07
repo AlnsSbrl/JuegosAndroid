@@ -80,7 +80,7 @@ public class Proyectil {
      */
     public boolean golpea(Rect hurtboxEnemigo){
         damageMov=currentAnimation[frame%currentAnimation.length].damage;
-        return (currentAnimation[frame%currentAnimation.length].esGolpeo && hitbox.intersect(hurtboxEnemigo));
+        return (currentAnimation[frame%currentAnimation.length].esGolpeo && hurtboxEnemigo.contains(hitbox));//tiene que estar todo el proyectil dentro del personaje pa que detecte
     }
 
     /**

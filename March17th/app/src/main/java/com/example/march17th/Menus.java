@@ -10,7 +10,8 @@ public enum Menus {
     CHAR_SELECT(1),
     OPCIONES(2),
     CREDITOS(3),
-    RECORDS(4);
+    RECORDS(4),
+    INICIO(5);
         private final int menu;
         Menus(int menu){
             this.menu =menu;

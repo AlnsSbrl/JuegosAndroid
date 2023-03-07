@@ -53,14 +53,19 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         tickTimer=System.nanoTime();
         vicSeguidas=rachaActual;
         //vibrator=
+        escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), MapaSelector.consigueMenu(Menus.RECORDS.getMenu()));
 
 
     }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+        //escenaActual=new EscenaMenu(EscenasJuego.MENU_PRINCIPAL.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
         //escenaActual= new EscenaCreditos(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.MENU_PRINCIPAL.getMenu()));
+        EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
+        escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
+        Log.i("scn", "surfaceCreated: "+e.mp.isPlaying());
+
     }
 
     @Override

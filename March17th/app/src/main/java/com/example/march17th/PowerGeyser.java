@@ -33,7 +33,9 @@ public class PowerGeyser extends Proyectil{
         actualizaHitbox();
         this.frame++;
         Log.i("geyser", "mueve: ");
-
+        /*if(frame>=currentAnimation.length){
+            hasFinished=true;
+        }*/
         return frame>=currentAnimation.length;
     }
 
@@ -48,16 +50,15 @@ public class PowerGeyser extends Proyectil{
         super.dibuja(canvas);
     }
 
+    /**
+     * Comprueba la colisión con el enemigo y actualiza el daño actual que estaría haciendo el personaje
+     * @param hurtboxEnemigo la otra hitbox
+     * @return si ha chocado o no
+     */
     @Override
     public boolean golpea(Rect hurtboxEnemigo) {
         //todo arreglar esto para que el power geyser siga la animacion aunque golpee
         damageMov=currentAnimation[frame%currentAnimation.length].damage;
-        boolean hit = currentAnimation[frame%currentAnimation.length].esGolpeo && hitbox.intersect(hurtboxEnemigo);
-        if(hit&&this.currentAnimation!=hitAnimation){
-            this.currentAnimation=hitAnimation;
-            return hit;
-        }
-        //bro que pedazo codigo espaguetti es esto
-        return hit;
+        return currentAnimation[frame%currentAnimation.length].esGolpeo && hitbox.intersect(hurtboxEnemigo);
     }
 }

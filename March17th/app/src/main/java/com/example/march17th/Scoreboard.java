@@ -120,6 +120,9 @@ public class Scoreboard {
         }
     }
 
+    /**
+     * Resta el contador de tiempo restante en una unidad, en el caso de que la escena a la que pertenezca sea un combate contra la IA
+     */
     public void actualizaTiempo(){
         if (!isTutorial) currentTime--;
     }

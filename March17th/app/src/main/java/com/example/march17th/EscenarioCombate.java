@@ -26,7 +26,7 @@ public class EscenarioCombate {
      * Canción multimedia que suena de fondo
      */
     MediaPlayer mp;
-
+    int resourceAudio;
     /**
      * Inicia el escenario
      * @param resourceBitmap imagen del escenario
@@ -35,15 +35,19 @@ public class EscenarioCombate {
     public EscenarioCombate(int resourceBitmap, int resourceAudio){
         fondo=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),resourceBitmap),(int)(anchoPantalla*1.1),(int)(altoPantalla*1.1),true);
         mp=MediaPlayer.create(context,resourceAudio);
-
-
+        this.resourceAudio=resourceAudio;
+        mp.setVolume(0.9f,0.9f);
            // mp.prepareAsync();
-         mp.setVolume(volume/2,volume/2);
+        // mp.setVolume(volume/2,volume/2);
     }
     public void Reproduce(){
+        Log.i("scn", Constantes.emplearMusicaFondo+"toca otra vez Sam: "+( mp!=null)+" ");
         if(Constantes.emplearMusicaFondo && mp!=null){
-            mp.start();
-            Log.i("scn", "toca otra vez Sam: ");
+            mp=MediaPlayer.create(context,resourceAudio);
+        //    mp.prepareAsync();
+          mp.start();
+          mp.setVolume(0.9f,0.9f);
+            Log.i("scn", "toca otra vez Sam: "+mp.isPlaying());
         }
     }
     public void Pausa(){

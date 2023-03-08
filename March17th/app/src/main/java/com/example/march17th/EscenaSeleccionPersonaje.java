@@ -3,6 +3,7 @@ package com.example.march17th;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -53,6 +54,8 @@ public class EscenaSeleccionPersonaje extends Escena{
      */
     Boton aceptar;
     Boton atras;
+
+    Paint p;
     //todo agregar el marcador, donde se ponen los nombres y los recuadros del seleccionado (tanto para player como para enemigo) en grande
 
     /**
@@ -63,19 +66,22 @@ public class EscenaSeleccionPersonaje extends Escena{
     public EscenaSeleccionPersonaje(int numEscena, EscenarioCombate escenarioCombate) {
         super(numEscena, escenarioCombate);
         for(int i = 0; i<MapaSelector.bitmapsCombate.length; i++){
-            selectorDeMapas.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),MapaSelector.bitmapsCombate[i]),anchoPantalla/2,altoPantalla/3,true));
+            selectorDeMapas.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),MapaSelector.bitmapsCombate[i]),anchoPantalla*9/20,altoPantalla*9/30,true));
         }
-        marcoMapa= Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.marcoseleccionmapa),anchoPantalla/2,altoPantalla/3,true);
+        marcoMapa= Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.marcodisplaymapa),anchoPantalla*9/19,altoPantalla/3,true);
         plantelLuchadores = new ArrayList<>();
-        selecRandom = new RecuadroSeleccionPersonaje(anchoPantalla/2,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RANDOM.getPersonaje());
-        selecRyu= new RecuadroSeleccionPersonaje(anchoPantalla/2-anchoPantalla/10,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RYU.getPersonaje());
-        selecTerry = new RecuadroSeleccionPersonaje(anchoPantalla/2+anchoPantalla/10,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.TERRY.getPersonaje());
+        selecRandom = new RecuadroSeleccionPersonaje(anchoPantalla/2-anchoPantalla/20,altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RANDOM.getPersonaje());
+        selecRyu= new RecuadroSeleccionPersonaje(anchoPantalla/2-(int)(anchoPantalla*1.5/10),altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.RYU.getPersonaje());
+        selecTerry = new RecuadroSeleccionPersonaje(anchoPantalla/2+(int)(anchoPantalla*0.5/10),altoPantalla/2,anchoPantalla/10,anchoPantalla/10,ListaPersonajes.TERRY.getPersonaje());
         selecRandom.isSelected=true;
         plantelLuchadores.add(selecRandom);
         plantelLuchadores.add(selecRyu);
         plantelLuchadores.add(selecTerry);
         atras= new Boton(0,altoPantalla*7/10, anchoPantalla*3/10,altoPantalla/10, context.getResources().getString(R.string.Atras).toUpperCase(), EscenasJuego.MENU_PRINCIPAL.getEscena(), true);
         detectorDeGestos = new GestureDetectorCompat(context,new EscenaSeleccionPersonaje.MultiTouchHandler());
+        escenarioCombate.mp.setLooping(true);
+        p = new Paint();
+        p.setAlpha(125);
     }
 
     /**
@@ -130,7 +136,7 @@ public class EscenaSeleccionPersonaje extends Escena{
         atras.dibujar(c);
 
         c.drawBitmap(selectorDeMapas.get(indexMapa),(int)(anchoPantalla*2.5/10),altoPantalla/10,null);
-        c.drawBitmap(marcoMapa,(int)(anchoPantalla*2.5/10),altoPantalla/10,null);
+        c.drawBitmap(marcoMapa,(int)((anchoPantalla*2.5/10)*95/100),altoPantalla*9/100,p);
     }
 
     /**
@@ -146,12 +152,10 @@ public class EscenaSeleccionPersonaje extends Escena{
 
             return false;
         }
-        //todo asignar a player
 
 
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
-            //todo asignar a enemigo
             return true;
         }
 
@@ -171,6 +175,11 @@ public class EscenaSeleccionPersonaje extends Escena{
         public void onShowPress(MotionEvent motionEvent) {
         }
 
+        /**
+         * Si se clicka dentro de los límites de un recuadro, selecciona ese personaje y deselecciona cualquiera que estuviese seleccionado previamente
+         * @param motionEvent evento
+         * @return true
+         */
         @Override
         public boolean onSingleTapUp(MotionEvent motionEvent) {
             int x = (int) motionEvent.getX();
@@ -198,10 +207,17 @@ public class EscenaSeleccionPersonaje extends Escena{
 
         }
 
+        /**
+         * Cambia de map
+         * @param me
+         * @param me1
+         * @param vX
+         * @param vY
+         * @return
+         */
         @Override
         public boolean onFling(MotionEvent me, MotionEvent me1, float vX, float vY) {
 
-            Log.i("scn", "cambia mapa: "+indexMapa);
             if(me.getX()<me1.getX()){
                 if(indexMapa==0){
                     indexMapa=selectorDeMapas.size()-1;

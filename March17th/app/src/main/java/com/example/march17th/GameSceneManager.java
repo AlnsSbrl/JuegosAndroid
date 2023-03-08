@@ -65,6 +65,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         //EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
         //escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
         //Log.i("scn", "surfaceCreated: "+e.mp.isPlaying());
+        if(escenaActual!=null)this.escenaActual.escenario.Reproduce();
+
 
     }
 
@@ -76,6 +78,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
+        if(escenaActual!=null && escenaActual.escenario.mp.isPlaying())this.escenaActual.escenario.Pausa();
 
     }
 
@@ -224,6 +227,7 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         @SuppressLint("HandlerLeak")
         @Override
         public void run() {
+
             Looper.prepare();
             mHandler = new Handler() {
                 public void handleMessage(Message msg) {
@@ -231,7 +235,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 }
             };
 
+
             while(termina){
+                lastTick=System.nanoTime();
                 Canvas canvas=null;
                 try {
                     if(!surfaceHolder.getSurface().isValid())continue;
@@ -248,8 +254,14 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 }finally {
                     if(canvas!=null)surfaceHolder.unlockCanvasAndPost(canvas);
                 }
-                lastTick+=Constantes.ticksPerFrame;
-                sleepTime = lastTick -System.nanoTime();
+//             lastTick+=Constantes.ticksPerFrame;
+                //sleepTime = lastTick -System.nanoTime();
+                long finTic=System.nanoTime();
+                long rest=finTic-lastTick;
+
+
+
+               // long tduerm=ticksPerFrame()
 
                 if(slowHit) {
                     try {
@@ -260,10 +272,10 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                         e.printStackTrace();
                     }
                 }
-                else if(sleepTime>0){
+                else if((ticksPerFrame-rest)>0){
                     try {
-                        Thread.sleep(sleepTime/1000000);
-
+                        Thread.sleep(  (ticksPerFrame-rest)/1000000);
+                        //lastTick=;
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }

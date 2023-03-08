@@ -51,7 +51,8 @@ public class Proyectil {
     boolean isFromPlayer;
 
 
-    boolean hasFinished=false; //esto para eliminarlo luego de la coleccion, porque no puedo hacerlo en el foreach (creo)
+    boolean hasFinished=false;
+
     Paint p;
 
     /**
@@ -80,7 +81,7 @@ public class Proyectil {
      */
     public boolean golpea(Rect hurtboxEnemigo){
         damageMov=currentAnimation[frame%currentAnimation.length].damage;
-        return (currentAnimation[frame%currentAnimation.length].esGolpeo && hurtboxEnemigo.contains(hitbox));//tiene que estar todo el proyectil dentro del personaje pa que detecte
+        return (currentAnimation[frame%currentAnimation.length].esGolpeo && hurtboxEnemigo.contains(hitbox));//tiene que estar _todo_ el proyectil dentro del personaje pa que detecte (visualmente quedaba feo el otro método de detección, desaparecía el proyectil antes de tocar al personaje)
     }
 
     /**
@@ -93,7 +94,7 @@ public class Proyectil {
     }
 
     /**
-     * mueve el proyectil dentro de los confines posibles
+     * mueve el proyectil dentro de los confines posibles y en el caso de que el movimiento fuese imposible cambia el valor de la booleana para eliminarlo en la colección
      * @param posX incremento en el eje X
      */
     public boolean moverEnX(int posX) {
@@ -102,6 +103,7 @@ public class Proyectil {
             actualizaHitbox();
         }
         if(this.posX==0||this.posX>=anchoPantalla){
+            hasFinished=true;
             return false;
         }
         return true;

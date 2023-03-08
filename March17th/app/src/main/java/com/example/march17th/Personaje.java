@@ -239,6 +239,9 @@ public class Personaje {
      */
     boolean invierteAnimacion;
 
+    /**
+     * Multiplicador de daño
+     */
     float damageBoost=1;
 
     public int getCurrentAnimationFrame() {
@@ -346,7 +349,7 @@ public class Personaje {
     public void actualizaFisica(int action){
         if(currentAnimationFrame>=currentMoveAnimation.length && currentAction!= AccionesPersonaje.IDDLE.getAction()){
             if(currentAction==AccionesPersonaje.CROUCH.getAction()){
-                damageBoost=1.5f;
+                damageBoost=1.5f; //si hace un crouch se boostea el daño que se realiza un 50% en el próximo movimiento
             }
 
                 setCurrentAnimation(AccionesPersonaje.IDDLE.getAction());
@@ -365,7 +368,7 @@ public class Personaje {
     }
 
     /**
-     * Cambia el movimiento del personaje, así como las características especiales que puedan tener estos
+     * Cambia el movimiento del personaje, así como las características especiales que puedan tener estos. También reproduce el audio
      * @param action la acción que se va a realizar
      */
     public void setCurrentAnimation(int action){

@@ -75,10 +75,10 @@ public class Terry extends Personaje{
         parry[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryparry1),width,height,true),false,this.isPlayer,0,0);
         parry[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryparry2),width,height,true),false,this.isPlayer,0,0);
 
-        projectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave1),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
-        projectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave2),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
-        projectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave3),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
-        projectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave4),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
+        projectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave1),width*3/5,height*3/5,true),true,this.isPlayer,20,0);
+        projectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave2),width*3/5,height*3/5,true),true,this.isPlayer,20,0);
+        projectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave3),width*3/5,height*3/5,true),true,this.isPlayer,20,0);
+        projectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave4),width*3/5,height*3/5,true),true,this.isPlayer,20,0);
 
 
         powerGeyser[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powergeiser1),width,height,true),false,this.isPlayer,0,0);
@@ -212,10 +212,11 @@ public class Terry extends Personaje{
         AccionesPersonaje ac = AccionesPersonaje.values()[action];
         //actualiza en cualquier momento la posición de donde se lanzaría el proyectil
         this.posXProyectil=this.posX+(isPlayer?width:0);
-        this.posYProyectil=this.posY;
+        //este personaje tiene dos proyectiles de distinto tamaño, entonces la posición inicial del proyectil varía
+        this.posYProyectil=this.posY+(currentAction==AccionesPersonaje.PROJECTILE.getAction()?height*2/5:0);
         switch (ac){
             case UPPERCUT:
-                actualizaUpperCut();//todo: aqui hay un problema cuando te golpean mientras estás airborne-> realizar una nueva accion de heavy damage y boolean de isAirborne
+                actualizaUpperCut();//todo: aqui hay(habia) un problema cuando te golpean mientras estás airborne-> realizar una nueva accion de heavy damage y boolean de isAirborne
                 //en caso de que te golpeen en el aire te quedas en esa animacion hasta que llegues al "suelo"
                 //(al final hice una solución...menos elegante)
                 break;

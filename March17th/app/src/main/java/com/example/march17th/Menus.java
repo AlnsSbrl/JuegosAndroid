@@ -12,6 +12,7 @@ public enum Menus {
     CREDITOS(3),
     RECORDS(4),
     INICIO(5);
+
         private final int menu;
         Menus(int menu){
             this.menu =menu;

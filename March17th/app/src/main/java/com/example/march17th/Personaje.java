@@ -277,8 +277,8 @@ public class Personaje {
         isDoingAMove=false;
         isInvulnerable=false;
         this.isPlayer=isPlayer;
-        displayMarcoVidaTotal = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,isPlayer?anchoPantalla*8/52+anchoPantalla*16/52:anchoPantalla*27/52+anchoPantalla*16/53,altoPantalla*7/25);
-        displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,(vidaActual/vidaMaxima)*(isPlayer?anchoPantalla*8/52+anchoPantalla*16/52:anchoPantalla*27/52+anchoPantalla*16/53),altoPantalla*7/25);
+        displayMarcoVidaTotal = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*28/52,altoPantalla*6/25,isPlayer?anchoPantalla*8/52+anchoPantalla*16/52:anchoPantalla*28/52+anchoPantalla*16/53,altoPantalla*7/25);
+        displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*28/52,altoPantalla*6/25,(vidaActual/vidaMaxima)*(isPlayer?anchoPantalla*8/52+anchoPantalla*16/52:anchoPantalla*28/52+anchoPantalla*16/53),altoPantalla*7/25);
         hurtbox=new Rect(posX,posY,posX+width,posY+height);
     }
 
@@ -299,7 +299,7 @@ public class Personaje {
         pVida.setARGB(255,compR,compG,0);
         canvas.drawRect(displayVidaActual,pVida);
         if(damageBoost>1){
-            canvas.drawBitmap(boost,isPlayer?anchoPantalla*6/52:anchoPantalla*29/52,altoPantalla*5/25,null);
+            canvas.drawBitmap(boost,isPlayer?anchoPantalla*6/52:anchoPantalla*28/52+anchoPantalla*16/53,altoPantalla*6/27,null);
         }
 
         pMarcoVida.setColor(Color.WHITE);
@@ -331,7 +331,7 @@ public class Personaje {
     public void setVidaActual(int damageTaken) {
         this.vidaActual = Math.max(vidaActual - damageTaken, 0);
         this.moverEnX(-anchoPantalla/35);
-        displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52,altoPantalla*6/25,(isPlayer?anchoPantalla*8/52:anchoPantalla*27/52)+(vidaActual*anchoPantalla*16/52/vidaMaxima),altoPantalla*7/25);
+        displayVidaActual = new Rect(isPlayer?anchoPantalla*8/52:anchoPantalla*28/52,altoPantalla*6/25,(isPlayer?anchoPantalla*8/52:anchoPantalla*28/52)+(vidaActual*anchoPantalla*16/52/vidaMaxima),altoPantalla*7/25);
         if(vidaActual<=0){
             isAlive=false;
         }

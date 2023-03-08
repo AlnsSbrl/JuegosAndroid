@@ -37,6 +37,8 @@ public class PowerGeyser extends Proyectil{
         return frame>=currentAnimation.length;
     }
 
+
+
     /**
      * dibuja al proyectil
      * @param canvas canvas
@@ -55,7 +57,7 @@ public class PowerGeyser extends Proyectil{
             this.currentAnimation=hitAnimation;
             return hit;
         }
-
+        //bro que pedazo codigo espaguetti es esto
         return hit;
     }
 }

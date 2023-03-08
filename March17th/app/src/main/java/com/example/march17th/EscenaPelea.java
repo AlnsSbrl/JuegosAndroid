@@ -369,7 +369,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
                 //intenta acercarse
                 comportamientoADistanciaArrinconado(10);
             }else if(isWinning){
-                comportamientoCercano(40); //todo menos bloq, se queda pillado
+                comportamientoCercano(40);
                 //comportamiento algo mas pasivo, incluso se echa para atras
             }else{
                 comportamientoCercano(15);//todo tbh me falta incluir más veces el iddle animation
@@ -456,10 +456,12 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             case 3:
             case 4:
                 enemy.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction());
+                break;
             case 5:
             case 6:
             case 7:
                 enemy.setCurrentAnimation(AccionesPersonaje.PROJECTILE.getAction());
+                //enemy.setCurrentAnimation(AccionesPersonaje.CROUCH.getAction()); //debugging
                 break;
             case 8:
             case 9:
@@ -542,17 +544,21 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         pDmgDone.setTypeface(dmgFont);
         pDmgTaken.setTypeface(dmgFont);
         pDmgDone.setTextSize(dmgDoneTextModifier*30);
-        pDmgTaken.setTextSize(dmgTakenDisplay*30);
+        pDmgTaken.setTextSize(dmgTakenTextModifier*30);
         pDmgDone.setARGB(255/dmgDoneTextModifier*30,255,255,255);
         pDmgTaken.setARGB(255/dmgTakenTextModifier*30,255,255,255);
         scoreboard.dibuja(c);
 
-        if(enemy.isInvulnerable){
+        //pongo DOS condiciones para mostrar el texto de daño, que esté en la animación de recibir daño Y que sea invulnerable,
+        //esto se debe a dos cosas:
+        // 1: al parar un golpe TAMBIÉN se pone al rival en esa animación (pero no es invulnerable)
+        // 2: hay acciones que te ponen en un estado invulnerable de por sí
+        if(enemy.currentAction==AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction()&&enemy.isInvulnerable){
             c.drawText(String.valueOf(dmgDoneDisplay),enemy.posX+enemy.width,enemy.height,pDmgDone);
             dmgDoneTextModifier++;
         }
-        if(player.isInvulnerable){
-            c.drawText(String.valueOf(dmgTakenDisplay),player.posX,enemy.height,pDmgDone);
+        if(player.currentAction==AccionesPersonaje.TAKING_LIGHT_DAMAGE.getAction()&& player.isInvulnerable){
+            c.drawText(String.valueOf(dmgTakenDisplay),player.posX,enemy.height,pDmgTaken);
             dmgTakenTextModifier++;
         }
 

@@ -75,10 +75,10 @@ public class Terry extends Personaje{
         parry[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryparry1),width,height,true),false,this.isPlayer,0,0);
         parry[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.terryparry2),width,height,true),false,this.isPlayer,0,0);
 
-        projectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave1),width,height,true),true,this.isPlayer,20,0);
-        projectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave2),width,height,true),true,this.isPlayer,20,0);
-        projectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave3),width,height,true),true,this.isPlayer,20,0);
-        projectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave4),width,height,true),true,this.isPlayer,20,0);
+        projectile[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave1),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
+        projectile[1]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave2),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
+        projectile[2]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave3),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
+        projectile[3]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powerwave4),width*2/5,height*2/5,true),true,this.isPlayer,20,0);
 
 
         powerGeyser[0]=new Frame(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.powergeiser1),width,height,true),false,this.isPlayer,0,0);

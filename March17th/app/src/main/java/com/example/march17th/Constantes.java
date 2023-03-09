@@ -127,7 +127,9 @@ public class Constantes {
         lang = sharedPreferences.getString("lang","es_ES");
         totalPlayerWins= sharedPreferences.getInt("victoriasTotales",0);
         totalCPUWins = sharedPreferences.getInt("derrotasTotales",0);
+        rachaActual = sharedPreferences.getInt("rachaActual",0);
         recordVictoriasConsecutivas = sharedPreferences.getInt("recordVictoriasConsecutivas",0);
+
         valorInicialInclinacionX = sharedPreferences.getFloat("iniX",valorDefaultInclinacionY);
         valorInicialInclinacionY=sharedPreferences.getFloat("iniY",valorDefaultInclinacionY);
         umbralSensibilidadX = sharedPreferences.getFloat("senseX",umbralDefaultEnX);
@@ -135,7 +137,6 @@ public class Constantes {
         emplearMusicaFondo = sharedPreferences.getBoolean("musicaFondo",true);
         emplearSFX = sharedPreferences.getBoolean("SFX",true);
         emplearVibracion = sharedPreferences.getBoolean("vibracion",true);
-        rachaActual = sharedPreferences.getInt("rachaActual",0);
     }
 
     /**

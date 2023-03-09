@@ -294,6 +294,7 @@ public class EscenaPelea extends Escena implements SensorEventListener {
         if (enemy.getCurrentAction() == AccionesPersonaje.PROJECTILE.getAction() && enemy.getCurrentAnimationFrame() == enemy.throwingProjectileFrame) {
             Proyectil pr = new Proyectil(enemy.projectile, enemy.projectileFinished, false, enemy.posXProyectil - enemy.width, enemy.posYProyectil);
             proyectiles.add(pr);
+            Log.i("proy", "crea1 proyect: ");
         }
 
         //si el enemigo es terry
@@ -310,6 +311,8 @@ public class EscenaPelea extends Escena implements SensorEventListener {
             Proyectil pr = proyectiles.get(i - 1);
             if (pr.moverEnX(pr.speed)) {
                 proyectiles.remove(pr); //si se mueve fuera de límites
+                Log.i("proy", "borra proyect: (outOfBounds ");
+
             } else {
 
                 if (pr.golpea(pr.isFromPlayer ? enemy.hurtbox : player.hurtbox)) {

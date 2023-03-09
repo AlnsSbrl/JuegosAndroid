@@ -54,8 +54,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         vicSeguidas=rachaActual;
         //vibrator=
         //EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
-        //escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
+        //escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), MapaSelector.consigueMenu(Menus.RECORDS.getMenu()));
         //cambiaEscena(EscenasJuego.INICIO.getEscena());
+        escenaActual = new EscenaRecords(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.CREDITOS.getMenu()));
     }
 
     @Override
@@ -65,9 +66,10 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         //EscenarioCombate e = MapaSelector.consigueMenu(Menus.RECORDS.getMenu());
         //escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), e);
         //Log.i("scn", "surfaceCreated: "+e.mp.isPlaying());
-        if(escenaActual!=null)this.escenaActual.escenario.Reproduce();
-
-
+        if(escenaActual!=null){
+            this.escenaActual.escenario.QuitarCancion();
+            this.escenaActual.escenario.Reproduce();
+        }
     }
 
     @Override
@@ -87,35 +89,47 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
 
             synchronized (surfaceHolder){
                 if(escenaActual.getClass()==EscenaPelea.class){
-                    if(!((EscenaPelea)escenaActual).detectorDeGestos.onTouchEvent(event)){
+                    if(((EscenaPelea)escenaActual).detectorDeGestos!=null){
+                        if(!((EscenaPelea)escenaActual).detectorDeGestos.onTouchEvent(event)){
 
-                    int accion=event.getActionMasked();
-                    switch (accion){
+                            int accion=event.getActionMasked();
+                            switch (accion){
+                            }
                         }
                     }
+
 
                 }
                 if(escenaActual.getClass()==EscenaSeleccionPersonaje.class){
-                    if(!((EscenaSeleccionPersonaje)escenaActual).detectorDeGestos.onTouchEvent(event)){
-                        int action=event.getActionMasked();
-                        switch (action){
+                    if(((EscenaSeleccionPersonaje)escenaActual).detectorDeGestos!=null){
+                        if(!((EscenaSeleccionPersonaje)escenaActual).detectorDeGestos.onTouchEvent(event)){
+                            int action=event.getActionMasked();
+                            switch (action){
 
+                            }
                         }
                     }
+
                 }
                 if(escenaActual.getClass()==EscenaCreditos.class){
-                    if(!((EscenaCreditos)escenaActual).detectorDeGestos.onTouchEvent(event)){
-                        int action=event.getActionMasked();
-                        switch (action){
+                    if(((EscenaCreditos)escenaActual).detectorDeGestos!=null){
+                        if(!((EscenaCreditos)escenaActual).detectorDeGestos.onTouchEvent(event)){
+                            int action=event.getActionMasked();
+                            switch (action){
 
+                            }
                         }
                     }
+
                 }
                 if(escenaActual.getClass()==EscenaEntrenamiento.class){
-                    if(!((EscenaEntrenamiento)escenaActual).detectorDeGestos.onTouchEvent(event)){
+                    if(((EscenaEntrenamiento)escenaActual).detectorDeGestos!=null){
+                        if(!((EscenaEntrenamiento)escenaActual).detectorDeGestos.onTouchEvent(event)){
 
-                        ((EscenaEntrenamiento)escenaActual).onTouchEvent(event);
+                            ((EscenaEntrenamiento)escenaActual).onTouchEvent(event);
+                        }
                     }
+
                 }
             }
         int accion = event.getActionMasked();
@@ -133,7 +147,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
         if(escenaActual==null){
             escenaActual = new EscenaInicio(EscenasJuego.INICIO.getEscena(), MapaSelector.consigueMenu(Menus.RECORDS.getMenu()));
         }else if(escenaActual.numEscena!=nuevaEscena){
-            /*if(escenaActual.getClass()!=EscenaCalibracionGyro.class && nuevaEscena!=EscenasJuego.CALIBRACION.getEscena()) */escenaActual.escenario.QuitarCancion(); //todo checkear las que usan la misma
+            /*if(escenaActual.getClass()!=EscenaCalibracionGyro.class && nuevaEscena!=EscenasJuego.CALIBRACION.getEscena()) */
+            escenaActual.escenario.QuitarCancion(); //todo checkear las que usan la misma
             EscenasJuego scn = EscenasJuego.values()[nuevaEscena];
             //escenaActual.escenario.mp.pause();
             switch (scn){
@@ -179,6 +194,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                             } else {
                                 victoriasPlayer++;
                                 vicSeguidas++;
+                                if(vicSeguidas>recordVictoriasConsecutivas){
+                                    recordVictoriasConsecutivas=vicSeguidas;
+                                }
                             }
                             totalPlayerWins += victoriasPlayer;
                             totalCPUWins += victoriasCPU;
@@ -206,6 +224,9 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     int mapa = ((EscenaSeleccionPersonaje)escenaActual).indexMapa;
                     if(personajePlayer<0) personajePlayer=0;
                     escenaActual = new EscenaEntrenamiento(1,MapaSelector.consigueMapa(mapa),personajePlayer,0);//aqui pasarle dos personajes
+                    break;
+                case RECORDS:
+                    escenaActual = new EscenaRecords(EscenasJuego.CREDITOS.getEscena(), MapaSelector.consigueMenu(Menus.CREDITOS.getMenu()));
                     break;
             }
         }
@@ -260,7 +281,6 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                 long rest=finTic-lastTick;
 
 
-
                // long tduerm=ticksPerFrame()
 
                 if(slowHit) {
@@ -281,6 +301,8 @@ public class GameSceneManager extends SurfaceView implements SurfaceHolder.Callb
                     }
                 }
                 if(escenaActual!=null){
+                    Log.i("scn", "is playing: "+escenaActual.escenario!=null&&escenaActual.escenario.mp!=null?""+escenaActual.escenario.mp.isPlaying():"caca");
+
                     if(escenaActual.hasFinished){
                         cambiaEscena(escenaActual.returnEscene);
                     }

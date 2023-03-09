@@ -46,6 +46,11 @@
     <string name="coffe1" translatable="false">\"A day with Coffee\" from Coffee Talk</string>
     <string name="cof2" translatable="false">\"Sunset in the city\" from Coffee Talk</string>
     <string name="cof3" translatable="false">\"Way too soon\" from Coffe Talk</string>
+    <string name="victorias" translatable="false">Victorias totales</string>
+    <string name="derrotas" translatable="false">Derrotas totales</string>
+    <string name="porcentaje" translatable="false">Porcentaje de victorias</string>
+    <string name="bestracha" translatable="false">Mejor racha de victorias consecutivas</string>
+    <string name="rachaactual" translatable="false">Victorias consecutivas actuales</string>
 
 
 </resources>

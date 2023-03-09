@@ -104,9 +104,8 @@ public class Proyectil {
         }
         if(this.posX==0||this.posX>=anchoPantalla){
             hasFinished=true;
-            return false;
         }
-        return true;
+        return hasFinished;
     }
 
     /**

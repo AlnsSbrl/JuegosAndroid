@@ -21,7 +21,7 @@ public class MapaSelector {
             R.drawable.characterselection,
             R.drawable.mezquita,
             R.drawable.mishimadojo,
-            R.drawable.backgroundpantallote,
+            R.drawable.pantallitarecords,
             R.drawable.backgroundpantallote
     };/*
     MENU_PRINCIPAL(0),
